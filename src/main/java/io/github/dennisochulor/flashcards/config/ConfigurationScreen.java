@@ -11,6 +11,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.session.telemetry.WorldLoadedEvent;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 
@@ -24,7 +25,7 @@ public class ConfigurationScreen extends Screen {
     }
 
     private ButtonWidget intervalButton;
-    private ButtonWidget reloadButton;
+    private ButtonWidget editButton;
     private ButtonWidget doneButton;
     private TextFieldWidget intervalTextField;
     private TextWidget titleText;
@@ -59,7 +60,9 @@ public class ConfigurationScreen extends Screen {
             }
         });
 
-        reloadButton = ButtonWidget.builder(Text.literal("Reload"), button -> QuestionScheduler.reload()).dimensions(width/2 - 35,85,75,20).build();
+        editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> {
+            MinecraftClient.getInstance().setScreen(new EditScreen());
+        }).dimensions(width/2 - 60,85,100,20).build();
 
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"));
@@ -77,7 +80,7 @@ public class ConfigurationScreen extends Screen {
         addDrawable(intervalText);
         addDrawableChild(intervalTextField);
         addDrawableChild(intervalButton);
-        addDrawableChild(reloadButton);
+        addDrawableChild(editButton);
         addDrawableChild(doneButton);
     }
 

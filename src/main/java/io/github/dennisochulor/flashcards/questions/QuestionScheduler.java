@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -15,14 +16,15 @@ import java.util.concurrent.*;
 public class QuestionScheduler {
     private QuestionScheduler() {}
 
-    private static final List<Question> questions = new ArrayList<>(FileManager.getQuestions());
+    private static final List<Question> questions = new ArrayList<>();
     private static final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private static ModConfig config = FileManager.getConfig();
     private static ScheduledFuture<?> future;
 
     public static void reload() {
         questions.clear();
-        questions.addAll(FileManager.getQuestions());
+        FileManager.getQuestions().values().forEach(questions::addAll);
+        Collections.shuffle(questions);
         schedule();
     }
 

@@ -28,7 +28,7 @@ public class ClientModInit implements ClientModInitializer {
     public void onInitializeClient() {
         LOGGER.info("Initializing flashcards client");
         FileManager.init();
-        QuestionScheduler.schedule();
+        QuestionScheduler.reload();
 
         final KeyBinding keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "Flashcards Config Menu",
