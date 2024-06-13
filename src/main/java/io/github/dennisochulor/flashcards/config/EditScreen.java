@@ -8,10 +8,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
 
 import java.util.HashMap;
@@ -26,8 +23,11 @@ public class EditScreen extends Screen {
 
     private final Screen parent;
     final HashMap<String,List<Question>> map = FileManager.getQuestions();
-    final CategoryListWidget categoryList = new CategoryListWidget(map);
+    private final ModConfig config = FileManager.getConfig();
+    final CategoryListWidget categoryList = new CategoryListWidget(map,config.categoryToggle());
     final QuestionListWidget questionList = new QuestionListWidget(map.get(categoryList.getSelectedOrNull().name));;
+    private TextWidget categoryTitle;
+    private TextWidget questionTitle;
     private ButtonWidget categoryRenameButton;
     private ButtonWidget categoryAddButton;
     private ButtonWidget categoryDeleteButton;
@@ -38,6 +38,11 @@ public class EditScreen extends Screen {
 
     @Override
     protected void init() {
+        categoryTitle = new TextWidget(Text.literal("Categories"),MinecraftClient.getInstance().textRenderer);
+        categoryTitle.setPosition(22,7);
+        questionTitle = new TextWidget(Text.literal("Questions"),MinecraftClient.getInstance().textRenderer);
+        questionTitle.setPosition(220,7);
+
         categoryList.setPosition(width/2 - 230, 20);
         categoryList.setDimensions(75,100);
 
@@ -82,11 +87,20 @@ public class EditScreen extends Screen {
 
         applyButton = ButtonWidget.builder(Text.literal("Apply Changes"),button -> {
             FileManager.updateQuestions(map);
+
+            HashMap<String,Boolean> categoryToggle = new HashMap<>();
+            for(var category : categoryList.children()) {
+                categoryToggle.put(category.name,category.enabled);
+            }
+
+            FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),categoryToggle));
             QuestionScheduler.reload();
             this.close();
         }).build();
         applyButton.setDimensionsAndPosition(120,20,width/2 - 60,235);
 
+        addDrawable(categoryTitle);
+        addDrawable(questionTitle);
         addDrawableChild(categoryList);
         addDrawableChild(questionList);
         addDrawableChild(categoryRenameButton);

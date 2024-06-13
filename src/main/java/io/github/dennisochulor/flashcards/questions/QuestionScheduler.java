@@ -22,8 +22,11 @@ public class QuestionScheduler {
     private static ScheduledFuture<?> future;
 
     public static void reload() {
+        config = FileManager.getConfig();
         questions.clear();
-        FileManager.getQuestions().values().forEach(questions::addAll);
+        FileManager.getQuestions().forEach((category,list) -> {
+            if(config.categoryToggle().get(category)) questions.addAll(list);
+        });
         Collections.shuffle(questions);
         schedule();
     }

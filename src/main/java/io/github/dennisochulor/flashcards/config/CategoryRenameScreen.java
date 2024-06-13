@@ -43,7 +43,7 @@ class CategoryRenameScreen extends Screen {
         title.alignCenter().setDimensionsAndPosition(200,30,width/2-90,10);
         title2.alignCenter().setDimensionsAndPosition(100,15,width/2-40,50);
         textField.setDimensionsAndPosition(100,20,width/2-42,70);
-        textField.setMaxLength(20);
+        textField.setMaxLength(10);
         textField.setChangedListener(text -> doneButton.active = !text.isBlank());
         doneButton.setDimensionsAndPosition(100,20,width/2-45,200);
         doneButton.active = false;

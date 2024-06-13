@@ -1,6 +1,5 @@
 package io.github.dennisochulor.flashcards.config;
 
-import io.github.dennisochulor.flashcards.ClientModInit;
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.fabricmc.api.EnvType;
@@ -10,12 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.session.telemetry.WorldLoadedEvent;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
-
-import java.io.File;
 
 @Environment(EnvType.CLIENT)
 public class ConfigurationScreen extends Screen {
@@ -41,9 +35,7 @@ public class ConfigurationScreen extends Screen {
         intervalText.setPosition(width/2 - 150, 50);
 
         intervalButton = ButtonWidget.builder(Text.literal(config.intervalToggle() ? "ON" : "OFF"), button -> {
-            if (button.getMessage().getString().equals("ON")) {
-                button.setMessage(Text.literal("OFF"));
-            }
+            if (button.getMessage().getString().equals("ON")) button.setMessage(Text.literal("OFF"));
             else button.setMessage(Text.literal("ON"));
         }).dimensions(width/2 + 75, 40, 30, 20).build();
 
@@ -63,7 +55,7 @@ public class ConfigurationScreen extends Screen {
         editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).dimensions(width/2 - 50,85,100,20).build();
 
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
-            ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"));
+            ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.categoryToggle());
             if(newConfig.equals(config)) {
                 this.close();
                 return;

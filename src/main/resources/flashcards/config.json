@@ -1,4 +1,7 @@
 {
   "interval": 3,
-  "intervalToggle": true
+  "intervalToggle": true,
+  "categoryToggle": {
+    "default": true
+  }
 }

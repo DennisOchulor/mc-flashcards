@@ -30,7 +30,7 @@ class CategoryAddScreen extends Screen {
         if(parent.map.containsKey(newName))  addDrawable(warningText);
         else {
             parent.map.put(newName,new ArrayList<>());
-            CategoryListWidget.Entry e = new CategoryListWidget.Entry(newName);
+            CategoryListWidget.Entry e = new CategoryListWidget.Entry(newName,true);
             parent.categoryList.children().add(e);
             parent.questionList.setSelected(null);
             this.close();
@@ -44,7 +44,7 @@ class CategoryAddScreen extends Screen {
         title.alignCenter().setDimensionsAndPosition(150,30,width/2-65,10);
         title2.alignCenter().setDimensionsAndPosition(100,15,width/2-40,50);
         textField.setDimensionsAndPosition(100,20,width/2-42,70);
-        textField.setMaxLength(20);
+        textField.setMaxLength(10);
         textField.setChangedListener(text -> doneButton.active = !text.isBlank());
         doneButton.setDimensionsAndPosition(100,20,width/2-45,200);
         doneButton.active = false;
