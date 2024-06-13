@@ -39,7 +39,7 @@ class QuestionEditScreen extends Screen {
         title2.alignCenter().setDimensionsAndPosition(100,15,width/2-45,50);
         title3.alignCenter().setDimensionsAndPosition(100,15,width/2-45,140);
         questionEditBox.setDimensionsAndPosition(200,50,width/2-95,70);
-        questionEditBox.setMaxLength(250);
+        questionEditBox.setMaxLength(200);
         questionEditBox.setChangeListener(text -> doneButton.active = !text.isBlank() && !answerEditBox.getText().isBlank());
         answerEditBox.setDimensionsAndPosition(200,50,width/2-95,160);
         answerEditBox.setMaxLength(100);

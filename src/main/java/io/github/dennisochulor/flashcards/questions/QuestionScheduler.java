@@ -27,6 +27,7 @@ public class QuestionScheduler {
         FileManager.getQuestions().forEach((category,list) -> {
             if(config.categoryToggle().get(category)) questions.addAll(list);
         });
+        if(questions.isEmpty()) return;
         Collections.shuffle(questions);
         schedule();
     }

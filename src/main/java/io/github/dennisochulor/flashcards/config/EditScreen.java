@@ -64,6 +64,7 @@ public class EditScreen extends Screen {
             categoryList.children().remove(categoryList.getSelectedOrNull());
             categoryList.setSelected(null);
             questionList.children().clear();
+            questionList.setSelected(null);
         }).build();
         categoryDeleteButton.setDimensionsAndPosition(60,20,width/2 - 223,195);
 
@@ -120,6 +121,18 @@ public class EditScreen extends Screen {
     @Override
     public void close() {
         MinecraftClient.getInstance().setScreen(parent);
+    }
+
+    @Override
+    public void tick() {
+        categoryDeleteButton.active = !(categoryList.getSelectedOrNull() == null);
+        categoryRenameButton.active = !(categoryList.getSelectedOrNull() == null);
+
+        questionEditButton.active = !(questionList.getSelectedOrNull() == null);
+        questionDeleteButton.active = !(questionList.getSelectedOrNull() == null);
+
+        applyButton.active = !categoryList.children().isEmpty();
+        questionAddButton.active = !(categoryList.getSelectedOrNull() == null);
     }
 
 }

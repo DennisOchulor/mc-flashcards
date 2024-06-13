@@ -1,12 +1,8 @@
 package io.github.dennisochulor.flashcards.questions;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.MultilineTextWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
@@ -18,7 +14,7 @@ public class QuestionScreen extends Screen {
     }
 
     private TextWidget titleText;
-    private TextFieldWidget answerTextField;
+    private EditBoxWidget answerEditBox;
     private ButtonWidget submitButton;
     private MultilineTextWidget questionText;
     private final Question question;
@@ -36,21 +32,19 @@ public class QuestionScreen extends Screen {
         questionText.setMaxWidth(250);
         questionText.setCentered(true);
 
-        MutableText text = Text.empty();
-        answerTextField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 300, 15,text);
-        answerTextField.setPosition(width/2 - 150, 100);
-        answerTextField.setMaxLength(100);
-        answerTextField.setPlaceholder(Text.literal("Write your answer here."));
-        answerTextField.setChangedListener(answer -> submitButton.active = !answerTextField.getText().isBlank());
+        answerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,200,50,Text.literal("Write your answer here..."),Text.empty());
+        answerEditBox.setPosition(width/2 - 100, 120);
+        answerEditBox.setMaxLength(100);
+        answerEditBox.setChangeListener(answer -> submitButton.active = !answerEditBox.getText().isBlank());
 
         submitButton = ButtonWidget.builder(Text.literal("Submit"), button -> {
-            MinecraftClient.getInstance().setScreen(new ResultScreen(question,answerTextField.getText()));
+            MinecraftClient.getInstance().setScreen(new ResultScreen(question, answerEditBox.getText()));
         }).dimensions(width/2 - 35,200,75,20).build();
         submitButton.active = false;
 
         addDrawable(titleText);
         addDrawable(questionText);
-        addDrawableChild(answerTextField);
+        addDrawableChild(answerEditBox);
         addDrawableChild(submitButton);
     }
 

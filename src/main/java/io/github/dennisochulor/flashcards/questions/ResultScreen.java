@@ -45,13 +45,13 @@ class ResultScreen extends Screen {
         questionText.setCentered(true);
 
         yourAnswerText = new MultilineTextWidget(Text.literal("Your answer:\n" + userAnswer + QuestionScreen.offset), MinecraftClient.getInstance().textRenderer);
-        yourAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 100);
+        yourAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 130);
         yourAnswerText.setMaxWidth(250);
         yourAnswerText.setCentered(true);
 
         if(!isCorrect) {
             correctAnswerText = new MultilineTextWidget(Text.literal("Correct answer:\n" + question.answer() + QuestionScreen.offset), MinecraftClient.getInstance().textRenderer);
-            correctAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 150);
+            correctAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 180);
             correctAnswerText.setMaxWidth(250);
             correctAnswerText.setCentered(true);
             addDrawable(correctAnswerText);
@@ -60,7 +60,7 @@ class ResultScreen extends Screen {
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             QuestionScheduler.schedule();
             this.close();
-        }).dimensions(width/2 - 35,200,75,20).build();
+        }).dimensions(width/2 - 35,220,75,20).build();
 
         addDrawable(titleText);
         addDrawable(resultText);
