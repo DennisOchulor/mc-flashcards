@@ -18,18 +18,16 @@ class QuestionListWidget extends AlwaysSelectedEntryListWidget<QuestionListWidge
 
     void changeList(List<Question> questions) {
         this.children().clear();
-        for(int i=0; i<questions.size(); i++) {
-            this.children().add(new Entry(questions.get(i),i));
-        }
+        this.setSelected(null);
+        questions.forEach(q -> this.children().add(new Entry(q)));
     }
 
     static class Entry extends AlwaysSelectedEntryListWidget.Entry<Entry> {
-        final Question question;
+        Question question;
         int index;
 
-        Entry(Question question, int index) {
+        Entry(Question question) {
             this.question = question;
-            this.index = index;
         }
 
         @Override
@@ -39,6 +37,7 @@ class QuestionListWidget extends AlwaysSelectedEntryListWidget<QuestionListWidge
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            this.index = index;
             context.drawText(MinecraftClient.getInstance().textRenderer, question.question(), x, y, Colors.WHITE, false);
         }
     }

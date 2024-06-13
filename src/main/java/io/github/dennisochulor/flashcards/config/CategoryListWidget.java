@@ -19,6 +19,13 @@ class CategoryListWidget extends AlwaysSelectedEntryListWidget<CategoryListWidge
         });
     }
 
+    void updateList(HashMap<String, List<Question>> map) {
+        this.children().clear();
+        map.keySet().forEach(category -> {
+            this.children().add(new Entry(category));
+        });
+    }
+
     static class Entry extends AlwaysSelectedEntryListWidget.Entry<Entry> {
         String name;
 
