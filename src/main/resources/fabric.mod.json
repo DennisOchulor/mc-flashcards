@@ -3,20 +3,17 @@
   "id": "flashcards",
   "version": "${version}",
   "name": "Flashcards",
-  "description": "Flashcards in Minecraft, so you can study and play at the same time.",
+  "description": "Study while playing Minecraft",
   "authors": [
     "Ninjaking312"
   ],
   "contact": {
-    "repo": "https://github.com/user/MC Flashcards"
+    "repo": "https://github.com/DennisOchulor/mc-flashcards"
   },
   "license": "MIT",
   "icon": "assets/flashcards/icon.png",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
-    "main": [
-      "io.github.dennisochulor.flashcards.ModInit"
-    ],
     "client": [
       "io.github.dennisochulor.flashcards.ClientModInit"
     ]

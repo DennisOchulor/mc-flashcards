@@ -4,7 +4,6 @@ import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
@@ -27,40 +26,40 @@ public class QuestionScheduler {
         FileManager.getQuestions().forEach((category,list) -> {
             if(config.categoryToggle().get(category)) questions.addAll(list);
         });
-        if(questions.isEmpty()) return;
         Collections.shuffle(questions);
-        schedule();
     }
 
     public static void schedule() {
-        if(questions.isEmpty()) {
-            reload();
-            return;
-        }
+        if(config.intervalToggle() == false) return;
         if(future != null) future.cancel(false);
 
         future = executor.schedule(() -> {
-            if(MinecraftClient.getInstance().world == null) {schedule(); return;}
-            if(!config.intervalToggle()) {schedule(); return;}
-
             while(MinecraftClient.getInstance().currentScreen != null) {
                 try {
                     Thread.sleep(1000); //wait till no screens are open...
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                } catch (InterruptedException ignored) {
+                    return;
                 }
             }
-            MinecraftClient.getInstance().execute(() -> {
-                int rand = ThreadLocalRandom.current().nextInt(0,questions.size());
-                Question question = questions.remove(rand);
-                MinecraftClient.getInstance().setScreen(new QuestionScreen(question));
-            });
+            MinecraftClient.getInstance().execute(QuestionScheduler::promptQuestion);
         },config.interval(),TimeUnit.MINUTES);
+    }
+
+    public static void stop() {
+        future.cancel(false);
     }
 
     public static void updateConfig(ModConfig newConfig) {
         config = newConfig;
-        schedule();
+        future.cancel(true);
+        if(newConfig.intervalToggle()) schedule();
+    }
+
+    public static void promptQuestion() {
+        if(questions.isEmpty()) reload();
+        int rand = ThreadLocalRandom.current().nextInt(0,questions.size());
+        Question question = questions.remove(rand);
+        MinecraftClient.getInstance().setScreen(new QuestionScreen(question));
     }
 
 }

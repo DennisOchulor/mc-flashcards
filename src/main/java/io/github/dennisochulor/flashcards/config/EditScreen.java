@@ -94,8 +94,10 @@ public class EditScreen extends Screen {
                 categoryToggle.put(category.name,category.enabled);
             }
 
-            FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),categoryToggle));
+            ModConfig newConfig = new ModConfig(config.interval(),config.intervalToggle(),categoryToggle);
+            FileManager.updateConfig(newConfig);
             QuestionScheduler.reload();
+            QuestionScheduler.updateConfig(newConfig);
             this.close();
         }).build();
         applyButton.setDimensionsAndPosition(120,20,width/2 - 60,235);
