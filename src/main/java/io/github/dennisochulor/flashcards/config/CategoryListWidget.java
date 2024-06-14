@@ -44,7 +44,7 @@ class CategoryListWidget extends AlwaysSelectedEntryListWidget<CategoryListWidge
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             EditScreen screen = (EditScreen) MinecraftClient.getInstance().currentScreen;
             screen.questionList.changeList(screen.map.get(name));
-            if(button == GLFW.GLFW_MOUSE_BUTTON_1 && mouseX>=73) { // x is -61, then plus 135, minus a little
+            if(button == GLFW.GLFW_MOUSE_BUTTON_1 && mouseX>=screen.width/2.0 - 168) { // x is -61, then plus 135, minus a little
                 enabled = !enabled;
             }
             return true;

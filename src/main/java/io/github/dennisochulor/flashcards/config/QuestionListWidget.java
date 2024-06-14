@@ -38,7 +38,8 @@ class QuestionListWidget extends AlwaysSelectedEntryListWidget<QuestionListWidge
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             this.index = index;
-            context.drawText(MinecraftClient.getInstance().textRenderer, question.question(), x, y, Colors.WHITE, false);
+            if(question.question().length() > 38) context.drawText(MinecraftClient.getInstance().textRenderer, question.question().substring(0,38) + "...", x, y, Colors.WHITE, false);
+            else context.drawText(MinecraftClient.getInstance().textRenderer, question.question(), x, y, Colors.WHITE, false);
         }
     }
 

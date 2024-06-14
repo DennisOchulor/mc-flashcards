@@ -7,6 +7,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -45,13 +47,13 @@ class ResultScreen extends Screen {
         questionText.setCentered(true);
 
         yourAnswerText = new MultilineTextWidget(Text.literal("Your answer:\n" + userAnswer + QuestionScreen.offset), MinecraftClient.getInstance().textRenderer);
-        yourAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 130);
+        yourAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 115);
         yourAnswerText.setMaxWidth(250);
         yourAnswerText.setCentered(true);
 
         if(!isCorrect) {
             correctAnswerText = new MultilineTextWidget(Text.literal("Correct answer:\n" + question.answer() + QuestionScreen.offset), MinecraftClient.getInstance().textRenderer);
-            correctAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 180);
+            correctAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 165);
             correctAnswerText.setMaxWidth(250);
             correctAnswerText.setCentered(true);
             addDrawable(correctAnswerText);
@@ -67,6 +69,9 @@ class ResultScreen extends Screen {
         addDrawable(questionText);
         addDrawableChild(doneButton);
         addDrawable(yourAnswerText);
+
+        if(isCorrect) MinecraftClient.getInstance().player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER,1,1);
+        else MinecraftClient.getInstance().player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.MASTER,1,1);
     }
 
     @Override

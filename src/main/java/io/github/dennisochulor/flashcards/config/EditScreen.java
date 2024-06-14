@@ -39,9 +39,9 @@ public class EditScreen extends Screen {
     @Override
     protected void init() {
         categoryTitle = new TextWidget(Text.literal("Categories"),MinecraftClient.getInstance().textRenderer);
-        categoryTitle.setPosition(22,7);
+        categoryTitle.setPosition(width/2-218,7);
         questionTitle = new TextWidget(Text.literal("Questions"),MinecraftClient.getInstance().textRenderer);
-        questionTitle.setPosition(220,7);
+        questionTitle.setPosition(width/2-20,7);
 
         categoryList.setPosition(width/2 - 230, 20);
         categoryList.setDimensions(75,100);

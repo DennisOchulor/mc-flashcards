@@ -52,7 +52,7 @@ public class ConfigurationScreen extends Screen {
             }
         });
 
-        editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).dimensions(width/2 - 50,85,100,20).build();
+        editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).dimensions(width/2 - 45,85,100,20).build();
 
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.categoryToggle());

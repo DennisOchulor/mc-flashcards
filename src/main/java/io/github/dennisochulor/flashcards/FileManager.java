@@ -51,8 +51,9 @@ public class FileManager {
 
     public static void updateConfig(ModConfig config) {
         try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             FileWriter writer = new FileWriter(configFile);
-            new Gson().toJson(config,ModConfig.class,writer);
+            gson.toJson(config,ModConfig.class,writer);
             writer.flush();
             writer.close();
         }
