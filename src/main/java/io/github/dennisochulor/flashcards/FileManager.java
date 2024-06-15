@@ -7,6 +7,7 @@ import io.github.dennisochulor.flashcards.questions.Question;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -20,7 +21,6 @@ public class FileManager {
     private static final Path dotMinecraftFolder;
     private static final File configFile;
     private static final File questionsFolder;
-    private static final boolean isDev = true; //TODO
 
     static {
         try {
@@ -29,8 +29,10 @@ public class FileManager {
             configFile = new File(dotMinecraftFolder + "/config/flashcards/config.json");
             questionsFolder = new File(dotMinecraftFolder + "/config/flashcards/questions/");
 
-            if(!configFile.exists() && !isDev) {
-                Files.copy(FileManager.class.getResourceAsStream("/flashcards"), Path.of(dotMinecraftFolder + "/config/flashcards"));
+            if(!questionsFolder.exists()) {
+                questionsFolder.mkdirs();
+                Files.copy(FileManager.class.getResourceAsStream("/flashcards/config.json"),Path.of(dotMinecraftFolder + "/config/flashcards/config.json"));
+                Files.copy(FileManager.class.getResourceAsStream("/flashcards/questions/default.json"),Path.of(questionsFolder + "/default.json"));
             }
         }
         catch (IOException e) {
