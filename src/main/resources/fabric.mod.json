@@ -11,7 +11,7 @@
     "repo": "https://github.com/DennisOchulor/mc-flashcards"
   },
   "license": "MIT",
-  "icon": "assets/flashcards/icon.png",
+  "icon": "icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
