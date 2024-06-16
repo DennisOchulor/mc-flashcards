@@ -1,2 +1,2 @@
-<h1>Flashcards</h1>
-The source code for Flashcards.
+# Flashcards
+The source code for [Flashcards](https://modrinth.com/mod/flashcards).
