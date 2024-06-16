@@ -29,12 +29,8 @@ public class ClientModInit implements ClientModInitializer {
         LOGGER.info("Initializing flashcards client");
         FileManager.init();
         QuestionScheduler.reload();
-        ServerWorldEvents.LOAD.register((server,world) -> {
-            QuestionScheduler.schedule();
-        });
-        ServerWorldEvents.UNLOAD.register((server,world) -> {
-            QuestionScheduler.stop();
-        });
+        ServerWorldEvents.LOAD.register((server,world) -> QuestionScheduler.schedule());
+        ServerWorldEvents.UNLOAD.register((server,world) -> QuestionScheduler.stop());
 
         KeyBinding keyBindingConfigMenu = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "Flashcards Config Menu",

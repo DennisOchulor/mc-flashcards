@@ -4,9 +4,6 @@ import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.questions.Question;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
@@ -25,7 +22,7 @@ public class EditScreen extends Screen {
     final HashMap<String,List<Question>> map = FileManager.getQuestions();
     private final ModConfig config = FileManager.getConfig();
     final CategoryListWidget categoryList = new CategoryListWidget(map,config.categoryToggle());
-    final QuestionListWidget questionList = new QuestionListWidget(map.get(categoryList.getSelectedOrNull().name));;
+    final QuestionListWidget questionList = new QuestionListWidget(map.get(categoryList.getSelectedOrNull().name));
     private TextWidget categoryTitle;
     private TextWidget questionTitle;
     private ButtonWidget categoryRenameButton;

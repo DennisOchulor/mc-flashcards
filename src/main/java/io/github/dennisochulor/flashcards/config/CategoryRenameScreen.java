@@ -1,11 +1,9 @@
 package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.questions.Question;
-import io.github.dennisochulor.flashcards.questions.QuestionScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;

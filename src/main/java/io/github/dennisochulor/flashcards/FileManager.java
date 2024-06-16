@@ -7,7 +7,6 @@ import io.github.dennisochulor.flashcards.questions.Question;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
