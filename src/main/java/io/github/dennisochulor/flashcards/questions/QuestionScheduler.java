@@ -57,6 +57,7 @@ public class QuestionScheduler {
 
     public static void promptQuestion() {
         if(questions.isEmpty()) reload();
+        if(questions.isEmpty()) return; // there are no questions... so just do nothing
         int rand = ThreadLocalRandom.current().nextInt(0,questions.size());
         Question question = questions.remove(rand);
         MinecraftClient.getInstance().setScreen(new QuestionScreen(question));
