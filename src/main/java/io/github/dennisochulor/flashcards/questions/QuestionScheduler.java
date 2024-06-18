@@ -46,12 +46,12 @@ public class QuestionScheduler {
     }
 
     public static void stop() {
-        future.cancel(false);
+        if(future != null) future.cancel(false);
     }
 
     public static void updateConfig(ModConfig newConfig) {
         config = newConfig;
-        future.cancel(true);
+        if(future != null) future.cancel(true);
         if(newConfig.intervalToggle()) schedule();
     }
 
