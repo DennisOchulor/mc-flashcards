@@ -1,10 +1,12 @@
 package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.FileManager;
+import io.github.dennisochulor.flashcards.ModStats;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.PopupScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -22,6 +24,7 @@ public class ConfigurationScreen extends Screen {
     private ButtonWidget editButton;
     private ButtonWidget doneButton;
     private ButtonWidget additionalConfigButton;
+    private ButtonWidget statsButton;
     private TextFieldWidget intervalTextField;
     private TextWidget titleText;
     private TextWidget intervalText;
@@ -57,6 +60,22 @@ public class ConfigurationScreen extends Screen {
 
         additionalConfigButton = ButtonWidget.builder(Text.literal("Additional Config..."), button -> MinecraftClient.getInstance().setScreen(new AdditionalConfigScreen())).dimensions(width/2 - 45,120,100,20).build();
 
+        statsButton = ButtonWidget.builder(Text.literal("Stats"), button -> {
+            ModStats stats = FileManager.getStats();
+            float correctPercentage, wrongPercentage;
+            if(stats.totalQuestionsAnswered() == 0) { // avoid DivideByZeroException
+                correctPercentage = 0;
+                wrongPercentage = 0;
+            }
+            else {
+                correctPercentage = (float) stats.correctAnswers() / stats.totalQuestionsAnswered() * 100;
+                wrongPercentage = (float) stats.wrongAnswers() / stats.totalQuestionsAnswered() * 100;
+            }
+            Text msg = Text.literal(String.format("Total questions answered: %d\nCorrect answers: %d (%.2f%%)\nWrong answers: %d (%.2f%%)",stats.totalQuestionsAnswered(),stats.correctAnswers(),correctPercentage,stats.wrongAnswers(),wrongPercentage));
+            PopupScreen popup = new PopupScreen.Builder(this,Text.literal("Flashcards Mod Stats")).message(msg).button(Text.literal("Done"),PopupScreen::close).build();
+            MinecraftClient.getInstance().setScreen(popup);
+        }).dimensions(width/2 - 45,155,100,20).build();
+
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands());
             if(newConfig.equals(config)) {
@@ -75,6 +94,7 @@ public class ConfigurationScreen extends Screen {
         addDrawableChild(intervalButton);
         addDrawableChild(editButton);
         addDrawableChild(additionalConfigButton);
+        addDrawableChild(statsButton);
         addDrawableChild(doneButton);
     }
 

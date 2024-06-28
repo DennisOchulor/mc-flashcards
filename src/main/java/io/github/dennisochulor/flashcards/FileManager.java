@@ -2,6 +2,9 @@ package io.github.dennisochulor.flashcards;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import io.github.dennisochulor.flashcards.config.ModConfig;
 import io.github.dennisochulor.flashcards.questions.Question;
 import net.fabricmc.api.EnvType;
@@ -22,6 +25,7 @@ public class FileManager {
 
     private static final Path dotMinecraftFolder;
     private static final File configFile;
+    private static final File statsFile;
     private static final File questionsFolder;
 
     static {
@@ -29,6 +33,7 @@ public class FileManager {
             dotMinecraftFolder = MinecraftClient.getInstance().runDirectory.toPath();
 
             configFile = new File(dotMinecraftFolder + "/config/flashcards/config.json");
+            statsFile = new File(dotMinecraftFolder + "/config/flashcards/stats.json");
             questionsFolder = new File(dotMinecraftFolder + "/config/flashcards/questions/");
 
             if(!questionsFolder.exists()) {
@@ -36,10 +41,14 @@ public class FileManager {
                 Files.copy(FileManager.class.getResourceAsStream("/flashcards/config.json"),Path.of(dotMinecraftFolder + "/config/flashcards/config.json"));
                 Files.copy(FileManager.class.getResourceAsStream("/flashcards/questions/default.json"),Path.of(questionsFolder + "/default.json"));
             }
+            if(!statsFile.exists()) {
+                Files.copy(FileManager.class.getResourceAsStream("/flashcards/stats.json"),Path.of(dotMinecraftFolder + "/config/flashcards/stats.json"));
+            }
+
             importQuestions();
         }
         catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -112,24 +121,94 @@ public class FileManager {
         }
     }
 
+    public static ModStats getStats() {
+        try {
+            return new Gson().fromJson(Files.readString(statsFile.toPath()),ModStats.class);
+        }
+        catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public static void updateStats(ModStats stats) {
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            FileWriter writer = new FileWriter(statsFile);
+            gson.toJson(stats,ModStats.class,writer);
+            writer.flush();
+            writer.close();
+        }
+        catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     private static void importQuestions() {
         File[] files = questionsFolder.listFiles();
-        Stream<File> stream = Arrays.stream(files).filter(f -> f.getName().endsWith(".txt"));
-        importAnki(stream.filter(f -> f.getName().contains("anki")));
+        List<File> list = Arrays.stream(files).filter(f -> !f.getName().endsWith(".json")).toList();
+        importAnki(list.stream().filter(f -> f.getName().contains("anki")));
+        importCSV(list.stream().filter(f -> f.getName().endsWith(".csv")));
+        importTSV(list.stream().filter(f -> f.getName().endsWith(".tsv")));
     }
 
     private static void importAnki(Stream<File> stream) {
         stream.forEach(f -> {
             try {
                 List<Question> importedQuestions = new ArrayList<>();
-                List<String> lines = Files.readAllLines(f.toPath());
+                CSVReader reader =  new CSVReaderBuilder(new FileReader(f)).withSkipLines(2).withCSVParser(new CSVParserBuilder().withSeparator('\t').build()).build();
+                List<String[]> questions = reader.readAll();
+                reader.close();
+                questions.forEach(q -> importedQuestions.add(new Question(q[0],q[1])));
 
-                lines.stream().filter(line -> !line.startsWith("#")).forEach(line -> {
-                    String[] q =  line.split("\t",2);
-                    importedQuestions.add(new Question(q[0],q[1]));
-                });
+                String filename = "anki-" + ThreadLocalRandom.current().nextInt(0,99999);
+                FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                gson.toJson(importedQuestions.toArray(), Question[].class, writer);
+                writer.flush();
+                writer.close();
 
-                String filename = "anki-" + ThreadLocalRandom.current().nextInt(0,1000);
+                f.delete();
+            }
+            catch (Exception e) {
+                ClientModInit.LOGGER.warn(f.getName() + " encountered an error during import!", e);
+            }
+        });
+    }
+
+    private static void importCSV(Stream<File> stream) {
+        stream.forEach(f -> {
+            try {
+                List<Question> importedQuestions = new ArrayList<>();
+                CSVReader reader =  new CSVReader(new FileReader(f));
+                List<String[]> questions = reader.readAll();
+                reader.close();
+                questions.forEach(q -> importedQuestions.add(new Question(q[0],q[1])));
+
+                String filename = "csv-" + ThreadLocalRandom.current().nextInt(0,99999);
+                FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                gson.toJson(importedQuestions.toArray(), Question[].class, writer);
+                writer.flush();
+                writer.close();
+
+                f.delete();
+            }
+            catch (Exception e) {
+                ClientModInit.LOGGER.warn(f.getName() + " encountered an error during import!", e);
+            }
+        });
+    }
+
+    private static void importTSV(Stream<File> stream) {
+        stream.forEach(f -> {
+            try {
+                List<Question> importedQuestions = new ArrayList<>();
+                CSVReader reader =  new CSVReaderBuilder(new FileReader(f)).withCSVParser(new CSVParserBuilder().withSeparator('\t').build()).build();
+                List<String[]> questions = reader.readAll();
+                reader.close();
+                questions.forEach(q -> importedQuestions.add(new Question(q[0],q[1])));
+
+                String filename = "tsv-" + ThreadLocalRandom.current().nextInt(0,99999);
                 FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 gson.toJson(importedQuestions.toArray(), Question[].class, writer);

@@ -1,6 +1,7 @@
 package io.github.dennisochulor.flashcards.questions;
 
 import io.github.dennisochulor.flashcards.FileManager;
+import io.github.dennisochulor.flashcards.ModStats;
 import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -85,6 +86,10 @@ class ResultScreen extends Screen {
 
         if(isCorrect) MinecraftClient.getInstance().player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER,1,1);
         else MinecraftClient.getInstance().player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.MASTER,1,1);
+
+        ModStats stats = FileManager.getStats();
+        if(isCorrect) FileManager.updateStats(stats.incrementCorrect());
+        else FileManager.updateStats(stats.incrementWrong());
     }
 
     @Override
