@@ -3,5 +3,7 @@
   "intervalToggle": true,
   "categoryToggle": {
     "default": true
-  }
+  },
+  "correctAnswerCommands": [],
+  "wrongAnswerCommands": []
 }

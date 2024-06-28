@@ -1,5 +1,7 @@
 package io.github.dennisochulor.flashcards.questions;
 
+import io.github.dennisochulor.flashcards.FileManager;
+import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -62,6 +64,17 @@ class ResultScreen extends Screen {
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             QuestionScheduler.schedule();
             this.close();
+            ModConfig config = FileManager.getConfig();
+
+            // run correct/wrong commands if applicable
+            if(MinecraftClient.getInstance().isIntegratedServerRunning()) {
+                if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
+                else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
+            }
+            else if(MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
+                if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
+                else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
+            }
         }).dimensions(width/2 - 35,220,75,20).build();
 
         addDrawable(titleText);

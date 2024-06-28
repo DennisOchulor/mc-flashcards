@@ -21,6 +21,7 @@ public class ConfigurationScreen extends Screen {
     private ButtonWidget intervalButton;
     private ButtonWidget editButton;
     private ButtonWidget doneButton;
+    private ButtonWidget additionalConfigButton;
     private TextFieldWidget intervalTextField;
     private TextWidget titleText;
     private TextWidget intervalText;
@@ -54,8 +55,10 @@ public class ConfigurationScreen extends Screen {
 
         editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).dimensions(width/2 - 45,85,100,20).build();
 
+        additionalConfigButton = ButtonWidget.builder(Text.literal("Additional Config..."), button -> MinecraftClient.getInstance().setScreen(new AdditionalConfigScreen())).dimensions(width/2 - 45,120,100,20).build();
+
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
-            ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.categoryToggle());
+            ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands());
             if(newConfig.equals(config)) {
                 this.close();
                 return;
@@ -71,6 +74,7 @@ public class ConfigurationScreen extends Screen {
         addDrawableChild(intervalTextField);
         addDrawableChild(intervalButton);
         addDrawableChild(editButton);
+        addDrawableChild(additionalConfigButton);
         addDrawableChild(doneButton);
     }
 

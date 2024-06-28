@@ -3,7 +3,6 @@ package io.github.dennisochulor.flashcards.questions;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class QuestionScreen extends Screen {
