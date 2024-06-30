@@ -19,26 +19,26 @@ public class QuestionScreen extends Screen {
     private final Question question;
 
     //to make the MultilineTextWidget center the text proprely, oh dear...
-    public static final String offset = "\n                                                                ";
+    //public static final String offset = "\n                                                                ";
 
     @Override
     public void init() {
         titleText = new TextWidget(Text.literal("Answer this question"), MinecraftClient.getInstance().textRenderer);
-        titleText.setPosition(width/2 - 45, 15);
+        titleText.alignCenter().setDimensionsAndPosition(width,10,0,15);
 
-        questionText = new MultilineTextWidget(Text.literal(question.question() + offset), MinecraftClient.getInstance().textRenderer);
-        questionText.setPosition(width/2 - 120, 45);
+        questionText = new MultilineTextWidget(Text.literal(question.question()), MinecraftClient.getInstance().textRenderer);
+        questionText.setPosition(width/2 - Math.min(questionText.getWidth(), 250)/2, 45);
         questionText.setMaxWidth(250);
         questionText.setCentered(true);
 
         answerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,200,50,Text.literal("Write your answer here..."),Text.empty());
-        answerEditBox.setPosition(width/2 - 100, 120);
+        answerEditBox.setPosition(width/2 - answerEditBox.getWidth()/2, 120);
         answerEditBox.setMaxLength(100);
         answerEditBox.setChangeListener(answer -> submitButton.active = !answerEditBox.getText().isBlank());
 
         submitButton = ButtonWidget.builder(Text.literal("Submit"), button -> {
             MinecraftClient.getInstance().setScreen(new ResultScreen(question, answerEditBox.getText()));
-        }).dimensions(width/2 - 35,200,75,20).build();
+        }).dimensions(width/2 - 37,200,75,20).build();
         submitButton.active = false;
 
         addDrawable(titleText);

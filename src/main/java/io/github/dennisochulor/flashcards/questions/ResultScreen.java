@@ -44,19 +44,19 @@ class ResultScreen extends Screen {
         else resultText.setTextColor(16711680); //red
         resultText.setPosition(width/2 + 30, 15);
 
-        questionText = new MultilineTextWidget(Text.literal("Question:\n" + question.question() + QuestionScreen.offset), MinecraftClient.getInstance().textRenderer);
-        questionText.setPosition(width/2 - 120, 45);
+        questionText = new MultilineTextWidget(Text.literal("§n§lQuestion:§r\n" + question.question()), MinecraftClient.getInstance().textRenderer);
+        questionText.setPosition(width/2 - Math.min(questionText.getWidth(), 250)/2, 45);
         questionText.setMaxWidth(250);
         questionText.setCentered(true);
 
-        yourAnswerText = new MultilineTextWidget(Text.literal("Your answer:\n" + userAnswer + QuestionScreen.offset), MinecraftClient.getInstance().textRenderer);
-        yourAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 115);
+        yourAnswerText = new MultilineTextWidget(Text.literal("§n§lYour answer:§r\n" + userAnswer), MinecraftClient.getInstance().textRenderer);
+        yourAnswerText.setPosition(width/2 - Math.min(yourAnswerText.getWidth(), 250)/2, 115);
         yourAnswerText.setMaxWidth(250);
         yourAnswerText.setCentered(true);
 
         if(!isCorrect) {
-            correctAnswerText = new MultilineTextWidget(Text.literal("Correct answer:\n" + question.answer() + QuestionScreen.offset), MinecraftClient.getInstance().textRenderer);
-            correctAnswerText.setDimensionsAndPosition(250,50,width/2 - 120, 165);
+            correctAnswerText = new MultilineTextWidget(Text.literal("§n§lCorrect answer:§r\n" + question.answer()), MinecraftClient.getInstance().textRenderer);
+            correctAnswerText.setPosition(width/2 - Math.min(correctAnswerText.getWidth(), 250)/2, 165);
             correctAnswerText.setMaxWidth(250);
             correctAnswerText.setCentered(true);
             addDrawable(correctAnswerText);
@@ -76,7 +76,7 @@ class ResultScreen extends Screen {
                 if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
                 else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
             }
-        }).dimensions(width/2 - 35,220,75,20).build();
+        }).dimensions(width/2 - 37,220,75,20).build();
 
         addDrawable(titleText);
         addDrawable(resultText);

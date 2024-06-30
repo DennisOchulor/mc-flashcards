@@ -34,7 +34,7 @@ public class ConfigurationScreen extends Screen {
         ModConfig config = FileManager.getConfig();
 
         titleText = new TextWidget(Text.literal("Flashcards Mod Config"), MinecraftClient.getInstance().textRenderer);
-        titleText.setPosition(width/2 - 50, 15);
+        titleText.alignCenter().setDimensionsAndPosition(width,10,0,15);
         intervalText = new TextWidget(Text.literal("Prompt a question every          minutes"), MinecraftClient.getInstance().textRenderer);
         intervalText.setPosition(width/2 - 150, 50);
 
@@ -56,9 +56,9 @@ public class ConfigurationScreen extends Screen {
             }
         });
 
-        editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).dimensions(width/2 - 45,85,100,20).build();
+        editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).dimensions(width/2 - 50,85,100,20).build();
 
-        additionalConfigButton = ButtonWidget.builder(Text.literal("Additional Config..."), button -> MinecraftClient.getInstance().setScreen(new AdditionalConfigScreen())).dimensions(width/2 - 45,120,100,20).build();
+        additionalConfigButton = ButtonWidget.builder(Text.literal("Additional Config..."), button -> MinecraftClient.getInstance().setScreen(new AdditionalConfigScreen())).dimensions(width/2 - 50,120,100,20).build();
 
         statsButton = ButtonWidget.builder(Text.literal("Stats"), button -> {
             ModStats stats = FileManager.getStats();
@@ -74,7 +74,7 @@ public class ConfigurationScreen extends Screen {
             Text msg = Text.literal(String.format("Total questions answered: %d\nCorrect answers: %d (%.2f%%)\nWrong answers: %d (%.2f%%)",stats.totalQuestionsAnswered(),stats.correctAnswers(),correctPercentage,stats.wrongAnswers(),wrongPercentage));
             PopupScreen popup = new PopupScreen.Builder(this,Text.literal("Flashcards Mod Stats")).message(msg).button(Text.literal("Done"),PopupScreen::close).build();
             MinecraftClient.getInstance().setScreen(popup);
-        }).dimensions(width/2 - 45,155,100,20).build();
+        }).dimensions(width/2 - 50,155,100,20).build();
 
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands());
@@ -86,7 +86,7 @@ public class ConfigurationScreen extends Screen {
             FileManager.updateConfig(newConfig);
             QuestionScheduler.updateConfig(newConfig);
             this.close();
-        }).dimensions(width/2 - 35,200,75,20).build();
+        }).dimensions(width/2 - 37,200,75,20).build();
 
         addDrawable(titleText);
         addDrawable(intervalText);
