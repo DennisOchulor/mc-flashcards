@@ -38,15 +38,15 @@ class CategoryRenameScreen extends Screen {
 
     @Override
     public void init() {
-        title.alignCenter().setDimensionsAndPosition(200,30,width/2-90,10);
-        title2.alignCenter().setDimensionsAndPosition(100,15,width/2-40,50);
-        textField.setDimensionsAndPosition(100,20,width/2-42,70);
+        title.alignCenter().setDimensionsAndPosition(width,10,0,10);
+        title2.alignCenter().setDimensionsAndPosition(width,10,0,50);
+        textField.setDimensionsAndPosition(100,20,width/2-50,70);
         textField.setMaxLength(10);
         textField.setChangedListener(text -> doneButton.active = !text.isBlank());
-        doneButton.setDimensionsAndPosition(100,20,width/2-45,200);
+        doneButton.setDimensionsAndPosition(100,20,width/2-50,200);
         doneButton.active = false;
         warningText.setTextColor(Colors.RED);
-        warningText.setPosition(width/2-90,100);
+        warningText.setDimensionsAndPosition(width,10,0,100);
 
         addDrawable(title);
         addDrawable(title2);

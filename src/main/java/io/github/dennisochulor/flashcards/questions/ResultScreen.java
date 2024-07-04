@@ -69,12 +69,12 @@ class ResultScreen extends Screen {
 
             // run correct/wrong commands if applicable
             if(MinecraftClient.getInstance().isIntegratedServerRunning()) {
-                if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
-                else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
+                if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
             }
             else if(MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
-                if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
-                else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s run " + c));
+                if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
             }
         }).dimensions(width/2 - 37,220,75,20).build();
 

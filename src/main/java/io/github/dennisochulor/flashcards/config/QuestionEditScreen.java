@@ -35,16 +35,16 @@ class QuestionEditScreen extends Screen {
 
     @Override
     public void init() {
-        title.alignCenter().setDimensionsAndPosition(150,30,width/2-68,10);
-        title2.alignCenter().setDimensionsAndPosition(100,15,width/2-45,50);
-        title3.alignCenter().setDimensionsAndPosition(100,15,width/2-45,140);
-        questionEditBox.setDimensionsAndPosition(200,50,width/2-95,70);
+        title.alignCenter().setDimensionsAndPosition(width,10,0,10);
+        title2.alignCenter().setDimensionsAndPosition(width,10,0,50);
+        title3.alignCenter().setDimensionsAndPosition(width,10,0,140);
+        questionEditBox.setDimensionsAndPosition(200,50,width/2-100,70);
         questionEditBox.setMaxLength(200);
         questionEditBox.setChangeListener(text -> doneButton.active = !text.isBlank() && !answerEditBox.getText().isBlank());
-        answerEditBox.setDimensionsAndPosition(200,50,width/2-95,160);
+        answerEditBox.setDimensionsAndPosition(200,50,width/2-100,160);
         answerEditBox.setMaxLength(100);
         answerEditBox.setChangeListener(text -> doneButton.active = !text.isBlank() && !questionEditBox.getText().isBlank());
-        doneButton.setDimensionsAndPosition(100,20,width/2-47,230);
+        doneButton.setDimensionsAndPosition(100,20,width/2-50,230);
         doneButton.active = false;
 
         addDrawable(title);

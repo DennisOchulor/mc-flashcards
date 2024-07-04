@@ -12,8 +12,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 
 import java.io.*;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,6 +46,7 @@ public class FileManager {
             if(!statsFile.exists()) {
                 Files.copy(FileManager.class.getResourceAsStream("/flashcards/stats.json"),Path.of(dotMinecraftFolder + "/config/flashcards/stats.json"));
             }
+            Files.copy(FileManager.class.getResourceAsStream("/flashcards/flashcards-dp.zip"),Path.of(dotMinecraftFolder + "/config/flashcards/flashcards-dp.zip"), StandardCopyOption.REPLACE_EXISTING);
 
             importQuestions();
         }
