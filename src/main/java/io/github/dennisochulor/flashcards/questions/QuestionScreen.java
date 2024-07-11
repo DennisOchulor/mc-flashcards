@@ -1,9 +1,13 @@
 package io.github.dennisochulor.flashcards.questions;
 
+import io.github.dennisochulor.flashcards.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
+
+import javax.swing.JFileChooser;
+import java.io.File;
 
 public class QuestionScreen extends Screen {
 
@@ -17,9 +21,6 @@ public class QuestionScreen extends Screen {
     private ButtonWidget submitButton;
     private MultilineTextWidget questionText;
     private final Question question;
-
-    //to make the MultilineTextWidget center the text proprely, oh dear...
-    //public static final String offset = "\n                                                                ";
 
     @Override
     public void init() {

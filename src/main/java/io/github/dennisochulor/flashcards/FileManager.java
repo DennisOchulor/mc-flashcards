@@ -12,7 +12,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 
 import java.io.*;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -22,13 +21,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
-public class FileManager {
+public final class FileManager {
     private FileManager() {}
 
     private static final Path dotMinecraftFolder;
     private static final File configFile;
     private static final File statsFile;
     private static final File questionsFolder;
+    private static final File mediaFolder;
 
     static {
         try {
@@ -37,6 +37,7 @@ public class FileManager {
             configFile = new File(dotMinecraftFolder + "/config/flashcards/config.json");
             statsFile = new File(dotMinecraftFolder + "/config/flashcards/stats.json");
             questionsFolder = new File(dotMinecraftFolder + "/config/flashcards/questions/");
+            mediaFolder = new File(dotMinecraftFolder + "/config/flashcards/media/");
 
             if(!questionsFolder.exists()) {
                 questionsFolder.mkdirs();
@@ -45,6 +46,9 @@ public class FileManager {
             }
             if(!statsFile.exists()) {
                 Files.copy(FileManager.class.getResourceAsStream("/flashcards/stats.json"),Path.of(dotMinecraftFolder + "/config/flashcards/stats.json"));
+            }
+            if(!mediaFolder.exists()) {
+                mediaFolder.mkdirs();
             }
             Files.copy(FileManager.class.getResourceAsStream("/flashcards/flashcards-dp.zip"),Path.of(dotMinecraftFolder + "/config/flashcards/flashcards-dp.zip"), StandardCopyOption.REPLACE_EXISTING);
 
@@ -146,6 +150,36 @@ public class FileManager {
         }
     }
 
+    /**
+     * @param imageName Name of the image file in the mod's {@link FileManager#mediaFolder}
+     * @return The {@link File}
+     */
+    public static File getImage(String imageName) {
+        return new File(mediaFolder + "/" + imageName);
+    }
+
+    /**
+     * @return The amended filename if there was a duplicate file with the same name, otherwise returns the original filename.
+     */
+    public static String saveImage(Path image) {
+        try {
+            if(Arrays.stream(mediaFolder.list()).anyMatch(s -> s.equalsIgnoreCase(image.getFileName().toString()))) {
+                String filename = image.getFileName().toString();
+                int dotIndex = filename.lastIndexOf('.');
+                String amendedFilename = filename.substring(0,dotIndex) + " (1)." + filename.substring(dotIndex+1);
+                Files.copy(image,Path.of(mediaFolder + "/" + amendedFilename));
+                return amendedFilename;
+            }
+            else {
+                Files.copy(image,Path.of(mediaFolder + "/" + image.getFileName()));
+                return image.getFileName().toString();
+            }
+        }
+        catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     private static void importQuestions() {
         File[] files = questionsFolder.listFiles();
         List<File> list = Arrays.stream(files).filter(f -> !f.getName().endsWith(".json")).toList();
@@ -161,7 +195,7 @@ public class FileManager {
                 CSVReader reader =  new CSVReaderBuilder(new FileReader(f)).withSkipLines(2).withCSVParser(new CSVParserBuilder().withSeparator('\t').build()).build();
                 List<String[]> questions = reader.readAll();
                 reader.close();
-                questions.forEach(q -> importedQuestions.add(new Question(q[0],q[1])));
+                questions.forEach(q -> importedQuestions.add(new Question(q[0],null,q[1])));
 
                 String filename = "anki-" + ThreadLocalRandom.current().nextInt(0,99999);
                 FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");
@@ -185,7 +219,7 @@ public class FileManager {
                 CSVReader reader =  new CSVReader(new FileReader(f));
                 List<String[]> questions = reader.readAll();
                 reader.close();
-                questions.forEach(q -> importedQuestions.add(new Question(q[0],q[1])));
+                questions.forEach(q -> importedQuestions.add(new Question(q[0],null,q[1])));
 
                 String filename = "csv-" + ThreadLocalRandom.current().nextInt(0,99999);
                 FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");
@@ -209,7 +243,7 @@ public class FileManager {
                 CSVReader reader =  new CSVReaderBuilder(new FileReader(f)).withCSVParser(new CSVParserBuilder().withSeparator('\t').build()).build();
                 List<String[]> questions = reader.readAll();
                 reader.close();
-                questions.forEach(q -> importedQuestions.add(new Question(q[0],q[1])));
+                questions.forEach(q -> importedQuestions.add(new Question(q[0],null,q[1])));
 
                 String filename = "tsv-" + ThreadLocalRandom.current().nextInt(0,99999);
                 FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");

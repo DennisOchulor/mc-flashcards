@@ -26,6 +26,7 @@ public class ClientModInit implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        System.setProperty("java.awt.headless","false"); // needed for question image chooser to function
         LOGGER.info("Initializing flashcards client");
         FileManager.init();
         QuestionScheduler.reload();
