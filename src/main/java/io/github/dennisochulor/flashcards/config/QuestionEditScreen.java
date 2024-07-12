@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import javax.swing.*;
 import java.io.File;
@@ -26,8 +27,15 @@ class QuestionEditScreen extends Screen {
         File file = FileManager.getImage(entry.question.imageName());
         image = entry.question.imageName() != null ? file.toPath() : null;
         if(image != null) {
-            imageWidget = IconWidget.create(100,100,Utils.getImageId(file),100,100);
-            imageWidget.setTooltip(Tooltip.of(Text.literal(file.getName())));
+            Identifier id = Utils.getImageId(file);
+            if(id == null) {
+                imageWidget = IconWidget.create(100,100, Identifier.ofVanilla("textures/missing.png"),100,100);
+                imageWidget.setTooltip(Tooltip.of(Text.literal(file.getName() + " seems to be missing...")));
+            }
+            else {
+                imageWidget = IconWidget.create(100,100,id,100,100);
+                imageWidget.setTooltip(Tooltip.of(Text.literal(file.getName())));
+            }
             imageButton.setMessage(Text.literal("Change Image"));
         }
         else imageWidget = null;
