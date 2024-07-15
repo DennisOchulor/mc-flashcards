@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -21,6 +21,11 @@ import org.slf4j.LoggerFactory;
 @Environment(EnvType.CLIENT)
 public class ClientModInit implements ClientModInitializer {
 
+    /* todo fml
+    - import for image
+    - fix bug where image just randomly doesnt work on QuestionAdd/EditScreen + removeButton issue
+     */
+
     public static final String MOD_ID = "flashcards";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -30,8 +35,13 @@ public class ClientModInit implements ClientModInitializer {
         LOGGER.info("Initializing flashcards client");
         FileManager.init();
         QuestionScheduler.reload();
-        ServerWorldEvents.LOAD.register((server,world) -> QuestionScheduler.schedule());
-        ServerWorldEvents.UNLOAD.register((server,world) -> QuestionScheduler.stop());
+        ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler,sender,client) -> QuestionScheduler.schedule());
+        ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler,client) -> QuestionScheduler.stop());
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            // ServerLivingEntityEvents seem to only work on the server-side so yeah...
+            if(client.player == null) return;
+            if(client.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = client.world.getTime();
+        });
 
         KeyBinding keyBindingConfigMenu = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "Flashcards Config Menu",

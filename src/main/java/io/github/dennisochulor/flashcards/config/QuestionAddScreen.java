@@ -1,7 +1,7 @@
 package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.FileManager;
-import io.github.dennisochulor.flashcards.Utils;
+import io.github.dennisochulor.flashcards.ImageUtils;
 import io.github.dennisochulor.flashcards.questions.Question;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.PopupScreen;
@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import javax.swing.*;
 import java.io.File;
@@ -30,9 +31,12 @@ class QuestionAddScreen extends Screen {
     private final EditBoxWidget answerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,200,50,Text.empty(),Text.empty());
 
     private Path image = null;
+    private Identifier imageId = null;
     private IconWidget imageWidget = null;
     private final ButtonWidget removeButton = ButtonWidget.builder(Text.literal("Remove Image"),button -> {
         remove(imageWidget);
+        MinecraftClient.getInstance().getTextureManager().destroyTexture(imageId);
+        imageId = null;
         imageWidget = null;
         image = null;
         remove(button);
@@ -42,15 +46,15 @@ class QuestionAddScreen extends Screen {
         Thread.startVirtualThread(() -> { // don't hang the Render thread
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Choose an image file");
-            fileChooser.setFileFilter(Utils.FILE_NAME_EXTENSION_FILTER);
+            fileChooser.setFileFilter(ImageUtils.FILE_NAME_EXTENSION_FILTER);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setMultiSelectionEnabled(false);
             fileChooser.showOpenDialog(null);
             File file = fileChooser.getSelectedFile();
             if(file == null) return;
-            if(!Utils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
+            if(!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
                 MinecraftClient.getInstance().execute(() -> {
-                    PopupScreen popup = new PopupScreen.Builder(this,Text.literal("Encountered error with chosen file " + file.getName())).message(Text.literal("The chosen file must be one of the following file formats: " + Utils.FILE_NAME_EXTENSION_FILTER.getDescription())).button(Text.literal("Done"),PopupScreen::close).build();
+                    PopupScreen popup = new PopupScreen.Builder(this,Text.literal("Encountered error with chosen file " + file.getName())).message(Text.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription())).button(Text.literal("Done"),PopupScreen::close).build();
                     MinecraftClient.getInstance().setScreen(popup);
                 });
                 return;
@@ -58,9 +62,18 @@ class QuestionAddScreen extends Screen {
             if(MinecraftClient.getInstance().currentScreen != this) return;
 
             MinecraftClient.getInstance().execute(() -> {
+                if(image != null) {
+                    remove(imageWidget);
+                    MinecraftClient.getInstance().getTextureManager().destroyTexture(imageId);
+                }
+
+                ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(file);
+                int width = (int)(100 * imgPkg.widthScaler());
+                int height = (int)(100 * imgPkg.heightScaler());
                 image = file.toPath();
-                if(imageWidget != null) remove(imageWidget);
-                imageWidget = IconWidget.create(100,100,Utils.getImageId(file),100,100);
+                imageWidget = IconWidget.create(width,height,imgPkg.id(),width,height);
+                imageId = imgPkg.id();
+
                 imageWidget.setTooltip(Tooltip.of(Text.literal(file.getName())));
                 imageWidget.setPosition(button.getX() - 10, button.getY() + 25);
                 addDrawable(imageWidget);
@@ -116,6 +129,7 @@ class QuestionAddScreen extends Screen {
     @Override
     public void close() {
         MinecraftClient.getInstance().setScreen(parent);
+        if(imageId != null) MinecraftClient.getInstance().getTextureManager().destroyTexture(imageId);
     }
 
 }

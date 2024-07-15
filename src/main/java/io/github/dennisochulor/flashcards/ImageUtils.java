@@ -9,19 +9,20 @@ import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Path;
 
-public final class Utils {
-    private Utils() {}
+public final class ImageUtils {
+    private ImageUtils() {}
 
     public static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("JPG/JPEG/PNG image files","jpg","png","jpeg");
 
+    public record ImagePackage(Identifier id, int width, int height, float widthScaler, float heightScaler) {}
+
     /**
      * @param file The image file
-     * @return the {@link Identifier} of the image. This returns null if the image file does not exist or
-     * if the image file is using an unsupported filename extension according to {@link Utils#FILE_NAME_EXTENSION_FILTER}
+     * @return an {@link ImagePackage} for the image. This returns null if the image file does not exist or
+     * if the image file is using an unsupported filename extension according to {@link ImageUtils#FILE_NAME_EXTENSION_FILTER}
      */
-    public static Identifier getImageId(File file) {
+    public static ImagePackage getImageId(File file) {
         try {
             if(!file.exists()) return null;
             if(!FILE_NAME_EXTENSION_FILTER.accept(file)) return null;
@@ -46,7 +47,8 @@ public final class Utils {
             }
 
             NativeImageBackedTexture texture = new NativeImageBackedTexture(img);
-            return MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("flashcards",texture);
+            float greaterDimension = Math.max(img.getHeight(),img.getWidth());
+            return new ImagePackage(MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("flashcards",texture),img.getWidth(),img.getHeight(),img.getWidth()/greaterDimension,img.getHeight()/greaterDimension);
         }
         catch (IOException e) {
             throw new UncheckedIOException(e);

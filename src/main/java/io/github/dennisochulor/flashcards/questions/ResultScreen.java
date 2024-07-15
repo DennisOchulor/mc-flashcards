@@ -2,7 +2,7 @@ package io.github.dennisochulor.flashcards.questions;
 
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ModStats;
-import io.github.dennisochulor.flashcards.Utils;
+import io.github.dennisochulor.flashcards.ImageUtils;
 import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,6 +34,7 @@ class ResultScreen extends Screen {
     protected ResultScreen(Question question, String userAnswer) {
         super(Text.literal("Question Result"));
         isCorrect = question.answer().equalsIgnoreCase(userAnswer);
+        ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(FileManager.getImage(question.imageName()));
 
         resultText = new TextWidget(Text.literal(isCorrect ? "CORRECT" : "WRONG"), MinecraftClient.getInstance().textRenderer);
         if(isCorrect) resultText.setTextColor(Colors.GREEN);
@@ -48,6 +49,7 @@ class ResultScreen extends Screen {
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             QuestionScheduler.schedule();
             this.close();
+            if(imgPkg != null) MinecraftClient.getInstance().getTextureManager().destroyTexture(imgPkg.id());
             ModConfig config = FileManager.getConfig();
 
             // run correct/wrong commands if applicable
@@ -62,12 +64,15 @@ class ResultScreen extends Screen {
         }).build();
 
         if(question.imageName() != null) {
-            Identifier id = Utils.getImageId(FileManager.getImage(question.imageName()));
-            if(id == null) {
+            if(imgPkg == null) {
                 imageWidget = IconWidget.create(140,140,Identifier.ofVanilla("textures/missing.png"),140,140);
                 imageWidget.setTooltip(Tooltip.of(Text.literal(question.imageName() + " seems to be missing...")));
             }
-            else imageWidget = IconWidget.create(140,140,id,140,140);
+            else {
+                int width = (int)(140 * imgPkg.widthScaler());
+                int height = (int)(140 * imgPkg.heightScaler());
+                imageWidget = IconWidget.create(width,height,imgPkg.id(),width,height);
+            }
         }
         else imageWidget = null;
 

@@ -18,6 +18,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
@@ -163,17 +164,13 @@ public final class FileManager {
      */
     public static String saveImage(Path image) {
         try {
-            if(Arrays.stream(mediaFolder.list()).anyMatch(s -> s.equalsIgnoreCase(image.getFileName().toString()))) {
-                String filename = image.getFileName().toString();
-                int dotIndex = filename.lastIndexOf('.');
-                String amendedFilename = filename.substring(0,dotIndex) + " (1)." + filename.substring(dotIndex+1);
-                Files.copy(image,Path.of(mediaFolder + "/" + amendedFilename));
-                return amendedFilename;
+            final AtomicReference<String> amendedFilename = new AtomicReference<>(image.getFileName().toString());
+            while(Arrays.stream(mediaFolder.list()).anyMatch(s -> s.equalsIgnoreCase(amendedFilename.get()))) {
+                int dotIndex = amendedFilename.get().lastIndexOf('.');
+                amendedFilename.set(amendedFilename.get().substring(0,dotIndex) + " (1)." + amendedFilename.get().substring(dotIndex+1));
             }
-            else {
-                Files.copy(image,Path.of(mediaFolder + "/" + image.getFileName()));
-                return image.getFileName().toString();
-            }
+            Files.copy(image,Path.of(mediaFolder + "/" + amendedFilename.get()));
+            return amendedFilename.get();
         }
         catch (IOException e) {
             throw new UncheckedIOException(e);

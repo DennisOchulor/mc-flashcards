@@ -19,6 +19,7 @@ public class QuestionScheduler {
     private static final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private static ModConfig config = FileManager.getConfig();
     private static ScheduledFuture<?> future;
+    public static long playerLastHurtTime = 0L;
 
     public static void reload() {
         config = FileManager.getConfig();
@@ -34,7 +35,7 @@ public class QuestionScheduler {
         if(future != null) future.cancel(false);
 
         future = executor.schedule(() -> {
-            while(MinecraftClient.getInstance().currentScreen != null) {
+            while(MinecraftClient.getInstance().currentScreen != null || (MinecraftClient.getInstance().world.getTime() - playerLastHurtTime) < 200) {
                 try {
                     Thread.sleep(1000); //wait till no screens are open...
                 } catch (InterruptedException ignored) {
