@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
@@ -161,10 +163,13 @@ public final class FileManager {
 
     /**
      * @return The amended filename if there was a duplicate file with the same name, otherwise returns the original filename.
+     * If the image does not exist, the original filename is simply returned.
      */
     public static String saveImage(Path image) {
         try {
             final AtomicReference<String> amendedFilename = new AtomicReference<>(image.getFileName().toString());
+            if(!image.toFile().exists()) return amendedFilename.get();
+
             while(Arrays.stream(mediaFolder.list()).anyMatch(s -> s.equalsIgnoreCase(amendedFilename.get()))) {
                 int dotIndex = amendedFilename.get().lastIndexOf('.');
                 amendedFilename.set(amendedFilename.get().substring(0,dotIndex) + " (1)." + amendedFilename.get().substring(dotIndex+1));
@@ -186,13 +191,24 @@ public final class FileManager {
     }
 
     private static void importAnki(Stream<File> stream) {
+        Pattern imagePattern = Pattern.compile(".*(<img src=\"(.+)\">).*");
         stream.forEach(f -> {
             try {
                 List<Question> importedQuestions = new ArrayList<>();
                 CSVReader reader =  new CSVReaderBuilder(new FileReader(f)).withSkipLines(2).withCSVParser(new CSVParserBuilder().withSeparator('\t').build()).build();
                 List<String[]> questions = reader.readAll();
                 reader.close();
-                questions.forEach(q -> importedQuestions.add(new Question(q[0],null,q[1])));
+                questions.forEach(q -> {
+                    String question = q[0].replace("<br>","\n");
+                    String answer = q[1];
+                    Matcher matcher = imagePattern.matcher(q[0]);
+                    if(matcher.matches()) {
+                        question = question.replace(matcher.group(1),"");
+                        String imageName = matcher.group(2);
+                        importedQuestions.add(new Question(question,imageName,answer));
+                    }
+                    else importedQuestions.add(new Question(question,null,answer));
+                });
 
                 String filename = "anki-" + ThreadLocalRandom.current().nextInt(0,99999);
                 FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");
@@ -216,7 +232,10 @@ public final class FileManager {
                 CSVReader reader =  new CSVReader(new FileReader(f));
                 List<String[]> questions = reader.readAll();
                 reader.close();
-                questions.forEach(q -> importedQuestions.add(new Question(q[0],null,q[1])));
+                questions.forEach(q -> {
+                    if(q.length == 2) importedQuestions.add(new Question(q[0],null,q[1]));
+                    if(q.length >= 3) importedQuestions.add(new Question(q[0],q[2],q[1]));
+                });
 
                 String filename = "csv-" + ThreadLocalRandom.current().nextInt(0,99999);
                 FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");
@@ -240,7 +259,10 @@ public final class FileManager {
                 CSVReader reader =  new CSVReaderBuilder(new FileReader(f)).withCSVParser(new CSVParserBuilder().withSeparator('\t').build()).build();
                 List<String[]> questions = reader.readAll();
                 reader.close();
-                questions.forEach(q -> importedQuestions.add(new Question(q[0],null,q[1])));
+                questions.forEach(q -> {
+                    if(q.length == 2) importedQuestions.add(new Question(q[0],null,q[1]));
+                    if(q.length == 3) importedQuestions.add(new Question(q[0],q[2],q[1]));
+                });
 
                 String filename = "tsv-" + ThreadLocalRandom.current().nextInt(0,99999);
                 FileWriter writer = new FileWriter(questionsFolder.toPath() + "/" + filename + ".json");

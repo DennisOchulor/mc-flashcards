@@ -34,7 +34,7 @@ public class QuestionScreen extends Screen {
             if(imgPkg == null) {
                 imageWidget = IconWidget.create(140,140,Identifier.ofVanilla("textures/missing.png"),140,140);
                 imageWidget.setTooltip(Tooltip.of(Text.literal(question.imageName() + " seems to be missing...")));
-                enlargeImageOnClickWidget = null;
+                enlargeImageOnClickWidget = new EnlargeImageOnClickWidget(this,question.imageName() + " (missing)",new ImageUtils.ImagePackage(Identifier.ofVanilla("textures/missing.png"),1,1,1,1));
             }
             else {
                 int width = (int)(140 * imgPkg.widthScaler());
@@ -91,7 +91,7 @@ public class QuestionScreen extends Screen {
         private final ImageUtils.ImagePackage imgPkg;
 
         EnlargeImageOnClickWidget(Screen parent, String imageName, ImageUtils.ImagePackage imgPkg) {
-            super(0,0,imgPkg.width(),imgPkg.height(),null);
+            super(0,0,(int)(140 * imgPkg.widthScaler()),(int)(140 * imgPkg.heightScaler()),null);
             this.parent = parent;
             this.imageName = imageName;
             this.imgPkg = imgPkg;

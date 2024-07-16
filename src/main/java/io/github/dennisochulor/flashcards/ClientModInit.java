@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 public class ClientModInit implements ClientModInitializer {
 
     /* todo fml
-    - import for image
     - fix bug where image just randomly doesnt work on QuestionAdd/EditScreen + removeButton issue
      */
 
@@ -38,7 +37,6 @@ public class ClientModInit implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler,sender,client) -> QuestionScheduler.schedule());
         ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler,client) -> QuestionScheduler.stop());
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            // ServerLivingEntityEvents seem to only work on the server-side so yeah...
             if(client.player == null) return;
             if(client.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = client.world.getTime();
         });
