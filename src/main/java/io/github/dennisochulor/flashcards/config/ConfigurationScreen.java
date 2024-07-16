@@ -1,5 +1,6 @@
 package io.github.dennisochulor.flashcards.config;
 
+import io.github.dennisochulor.flashcards.ClientModInit;
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ModStats;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
@@ -8,10 +9,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.PopupScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 @Environment(EnvType.CLIENT)
 public class ConfigurationScreen extends Screen {
@@ -54,6 +60,15 @@ public class ConfigurationScreen extends Screen {
         MinecraftClient.getInstance().setScreen(popup);
     }).build();
 
+    private final ButtonWidget openFlashcardsFolderButton = ButtonWidget.builder(Text.literal("📂"),button -> {
+        try {
+            Desktop.getDesktop().open(new File(MinecraftClient.getInstance().runDirectory.toPath() + "/config/flashcards"));
+        }
+        catch (IOException e) {
+            ClientModInit.LOGGER.warn("Failed to open flashcards folder",e);
+        }
+    }).tooltip(Tooltip.of(Text.literal("Open Flashcards Mod Folder"))).build();
+
     public ConfigurationScreen() {
         super(Text.literal("Flashcards Config"));
         intervalTextField.setText(String.valueOf(config.interval()));
@@ -79,6 +94,7 @@ public class ConfigurationScreen extends Screen {
         additionalConfigButton.setDimensionsAndPosition(100,20,width/2 - 50,120);
         statsButton.setDimensionsAndPosition(100,20,width/2 - 50,155);
         doneButton.setDimensionsAndPosition(75,20,width/2 - 37,200);
+        openFlashcardsFolderButton.setDimensionsAndPosition(20,20,width/2 + 55,85);
 
         addDrawable(titleText);
         addDrawable(intervalText);
@@ -88,6 +104,9 @@ public class ConfigurationScreen extends Screen {
         addDrawableChild(additionalConfigButton);
         addDrawableChild(statsButton);
         addDrawableChild(doneButton);
+        if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+            addDrawableChild(openFlashcardsFolderButton);
+        }
     }
 
 }
