@@ -87,6 +87,7 @@ class QuestionEditScreen extends Screen {
             MinecraftClient.getInstance().execute(() -> {
                 if(image != null) {
                     remove(imageWidget);
+                    remove(removeButton);
                     MinecraftClient.getInstance().getTextureManager().destroyTexture(imageId);
                 }
 
@@ -124,10 +125,8 @@ class QuestionEditScreen extends Screen {
         title3.alignCenter().setDimensionsAndPosition(width,10,0,140);
         questionEditBox.setDimensionsAndPosition(200,50,width/2-100,70);
         questionEditBox.setMaxLength(200);
-        questionEditBox.setChangeListener(text -> doneButton.active = !text.isBlank() && !answerEditBox.getText().isBlank());
         answerEditBox.setDimensionsAndPosition(200,50,width/2-100,160);
         answerEditBox.setMaxLength(100);
-        answerEditBox.setChangeListener(text -> doneButton.active = !text.isBlank() && !questionEditBox.getText().isBlank());
         doneButton.setDimensionsAndPosition(100,20,width/2-50,230);
         doneButton.active = false;
         imageButton.setDimensionsAndPosition(80,20,width/2 + 140,80);
@@ -151,6 +150,11 @@ class QuestionEditScreen extends Screen {
     public void close() {
         MinecraftClient.getInstance().setScreen(parent);
         if(imageId != null) MinecraftClient.getInstance().getTextureManager().destroyTexture(imageId);
+    }
+
+    @Override
+    public void tick() {
+        doneButton.active = !questionEditBox.getText().isBlank() && !answerEditBox.getText().isBlank();
     }
 
 }

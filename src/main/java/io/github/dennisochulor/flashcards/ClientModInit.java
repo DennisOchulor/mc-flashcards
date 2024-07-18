@@ -21,10 +21,6 @@ import org.slf4j.LoggerFactory;
 @Environment(EnvType.CLIENT)
 public class ClientModInit implements ClientModInitializer {
 
-    /* todo fml
-    - fix bug where image just randomly doesnt work on QuestionAdd/EditScreen + removeButton issue
-     */
-
     public static final String MOD_ID = "flashcards";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
