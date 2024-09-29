@@ -22,7 +22,7 @@ import java.io.IOException;
 @Environment(EnvType.CLIENT)
 public class ConfigurationScreen extends Screen {
 
-    private final ModConfig config = FileManager.getConfig();
+    private ModConfig config = FileManager.getConfig();
     private final TextFieldWidget intervalTextField = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 30, 20,Text.empty());
     private final TextWidget titleText = new TextWidget(Text.literal("Flashcards Mod Config"), MinecraftClient.getInstance().textRenderer);
     private final TextWidget intervalText = new TextWidget(Text.literal("Prompt a question every          minutes"), MinecraftClient.getInstance().textRenderer);
@@ -33,7 +33,7 @@ public class ConfigurationScreen extends Screen {
     }).build();
     private final ButtonWidget editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).build();
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
-        ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands());
+        ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands());
         if(newConfig.equals(config)) {
             this.close();
             return;
@@ -43,6 +43,7 @@ public class ConfigurationScreen extends Screen {
         QuestionScheduler.updateConfig(newConfig);
         this.close();
     }).build();
+    private final ButtonWidget generalConfigButton = ButtonWidget.builder(Text.literal("General Config..."),button -> MinecraftClient.getInstance().setScreen(new GeneralConfigScreen())).build();
     private final ButtonWidget additionalConfigButton = ButtonWidget.builder(Text.literal("Additional Config..."), button -> MinecraftClient.getInstance().setScreen(new AdditionalConfigScreen())).build();
     private final ButtonWidget statsButton = ButtonWidget.builder(Text.literal("Stats"), button -> {
         ModStats stats = FileManager.getStats();
@@ -85,15 +86,17 @@ public class ConfigurationScreen extends Screen {
 
     @Override
     protected void init() {
+        config = FileManager.getConfig(); // avoid overriding config updates of nested screens
         titleText.alignCenter().setDimensionsAndPosition(width,10,0,15);
         intervalText.setPosition(width/2 - 150, 50);
         intervalButton.setDimensionsAndPosition(30,20,width/2 + 75, 40);
         intervalTextField.setPosition(width/2 - 20, 40);
 
         editButton.setDimensionsAndPosition(100,20,width/2 - 50,85);
-        additionalConfigButton.setDimensionsAndPosition(100,20,width/2 - 50,120);
-        statsButton.setDimensionsAndPosition(100,20,width/2 - 50,155);
-        doneButton.setDimensionsAndPosition(75,20,width/2 - 37,200);
+        generalConfigButton.setDimensionsAndPosition(100,20,width/2 - 50,115);
+        additionalConfigButton.setDimensionsAndPosition(100,20,width/2 - 50,145);
+        statsButton.setDimensionsAndPosition(100,20,width/2 - 50,175);
+        doneButton.setDimensionsAndPosition(75,20,width/2 - 37,235);
         openFlashcardsFolderButton.setDimensionsAndPosition(20,20,width/2 + 55,85);
 
         addDrawable(titleText);
@@ -101,6 +104,7 @@ public class ConfigurationScreen extends Screen {
         addDrawableChild(intervalTextField);
         addDrawableChild(intervalButton);
         addDrawableChild(editButton);
+        addDrawableChild(generalConfigButton);
         addDrawableChild(additionalConfigButton);
         addDrawableChild(statsButton);
         addDrawableChild(doneButton);

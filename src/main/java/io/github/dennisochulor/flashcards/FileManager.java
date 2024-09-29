@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +31,7 @@ public final class FileManager {
     private static final File statsFile;
     private static final File questionsFolder;
     private static final File mediaFolder;
+    private static ModConfig config;
 
     static {
         try {
@@ -65,23 +65,15 @@ public final class FileManager {
     public static void init() {} // run static initializer
 
     public static ModConfig getConfig() {
-        try {
-            // ensure questions and config are always in sync, otherwise kaboom
-            ModConfig config = new Gson().fromJson(Files.readString(configFile.toPath()),ModConfig.class);
-            AtomicBoolean changed = new AtomicBoolean(false);
-            getQuestions().forEach((category,questions) -> {
-                if(!config.categoryToggle().containsKey(category)) {
-                    config.categoryToggle().put(category,true);
-                    changed.set(true);
-                }
-            });
-            if(changed.get()) updateConfig(config);
-
-            return config;
+        if(config == null) {
+            try {
+                config = new Gson().fromJson(Files.readString(configFile.toPath()),ModConfig.class);
+            }
+            catch(IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
-        catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return config;
     }
 
     public static void updateConfig(ModConfig config) {
@@ -91,6 +83,7 @@ public final class FileManager {
             gson.toJson(config,ModConfig.class,writer);
             writer.flush();
             writer.close();
+            FileManager.config = config;
         }
         catch (IOException e) {
             throw new UncheckedIOException(e);

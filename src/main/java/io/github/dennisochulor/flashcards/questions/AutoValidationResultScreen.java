@@ -20,7 +20,7 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-class ResultScreen extends Screen {
+class AutoValidationResultScreen extends Screen {
 
     private final TextWidget titleText = new TextWidget(Text.literal("Your answer is "), MinecraftClient.getInstance().textRenderer);
     private final TextWidget resultText;
@@ -31,7 +31,7 @@ class ResultScreen extends Screen {
     private final IconWidget imageWidget;
     private final boolean isCorrect;
 
-    protected ResultScreen(Question question, String userAnswer) {
+    protected AutoValidationResultScreen(Question question, String userAnswer) {
         super(Text.literal("Question Result"));
         isCorrect = question.answer().equalsIgnoreCase(userAnswer);
         ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(FileManager.getImage(question.imageName()));
@@ -53,11 +53,7 @@ class ResultScreen extends Screen {
             ModConfig config = FileManager.getConfig();
 
             // run correct/wrong commands if applicable
-            if(MinecraftClient.getInstance().isIntegratedServerRunning()) {
-                if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
-                else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
-            }
-            else if(MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
+            if(MinecraftClient.getInstance().isIntegratedServerRunning() || MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
                 if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
                 else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
             }

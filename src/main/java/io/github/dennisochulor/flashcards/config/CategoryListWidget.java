@@ -15,7 +15,7 @@ class CategoryListWidget extends AlwaysSelectedEntryListWidget<CategoryListWidge
     CategoryListWidget(HashMap<String, List<Question>> map, HashMap<String,Boolean> categoryToggle) {
         super(MinecraftClient.getInstance(), 75, 100, 20, 11);
         map.keySet().forEach(category -> {
-            this.children().add(new Entry(category,categoryToggle.get(category)));
+            this.children().add(new Entry(category,categoryToggle.getOrDefault(category,true)));
         });
         this.setSelected(this.children().getFirst());
     }

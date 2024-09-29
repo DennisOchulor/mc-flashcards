@@ -25,7 +25,7 @@ public class QuestionScheduler {
         config = FileManager.getConfig();
         questions.clear();
         FileManager.getQuestions().forEach((category,list) -> {
-            if(config.categoryToggle().get(category)) questions.addAll(list);
+            if(config.categoryToggle().getOrDefault(category,true)) questions.addAll(list);
         });
         Collections.shuffle(questions);
     }
@@ -61,7 +61,8 @@ public class QuestionScheduler {
         if(questions.isEmpty()) return; // there are no questions... so just do nothing
         int rand = ThreadLocalRandom.current().nextInt(0,questions.size());
         Question question = questions.remove(rand);
-        MinecraftClient.getInstance().setScreen(new QuestionScreen(question));
+        if(config.validationToggle()) MinecraftClient.getInstance().setScreen(new AutoValidationQuestionScreen(question));
+        else MinecraftClient.getInstance().setScreen(new ManualValidationQuestionScreen(question));
     }
 
 }

@@ -29,7 +29,7 @@ class AdditionalConfigScreen extends Screen {
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"),button -> {
         List<String> correctAnswerCommands = Arrays.asList(correctAnswerEditBox.getText().split("\n"));
         List<String> wrongAnswerCommands = Arrays.asList(wrongAnswerEditBox.getText().split("\n"));
-        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.categoryToggle(),correctAnswerCommands,wrongAnswerCommands));
+        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),correctAnswerCommands,wrongAnswerCommands));
         this.close();
     }).build();
 

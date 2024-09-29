@@ -1,6 +1,7 @@
 {
   "interval": 3,
   "intervalToggle": true,
+  "validationToggle": true,
   "categoryToggle": {
     "default": true
   },
