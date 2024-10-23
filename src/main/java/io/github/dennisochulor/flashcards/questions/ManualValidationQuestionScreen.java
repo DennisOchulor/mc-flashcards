@@ -7,6 +7,7 @@ import net.minecraft.client.gui.widget.*;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 
 // NOTE: There is no ManualValidationResultScreen because everything is done in this class.
 public class ManualValidationQuestionScreen extends QuestionScreen {
@@ -19,7 +20,7 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
         super(question);
         correctAnswerText  = new MultilineTextWidget(Text.literal("§n§lCorrect answer:§r\n" + question.answer()), MinecraftClient.getInstance().textRenderer);
 
-        correctButton = ButtonWidget.builder(Text.literal("Correct"),button -> {
+        correctButton = ButtonWidget.builder(Text.literal("Correct").withColor(Colors.GREEN),button -> {
             MinecraftClient.getInstance().player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER,1,1);
             FileManager.updateStats(FileManager.getStats().incrementCorrect());
             QuestionScheduler.schedule();
@@ -31,7 +32,7 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
                 config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
             }
         }).build();
-        wrongButton = ButtonWidget.builder(Text.literal("Wrong"),button -> {
+        wrongButton = ButtonWidget.builder(Text.literal("Wrong").withColor(Colors.LIGHT_RED),button -> {
             MinecraftClient.getInstance().player.playSoundToPlayer(SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.MASTER,1,1);
             FileManager.updateStats(FileManager.getStats().incrementWrong());
             QuestionScheduler.schedule();

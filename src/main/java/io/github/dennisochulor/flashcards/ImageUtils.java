@@ -36,12 +36,8 @@ public final class ImageUtils {
                 img = new NativeImage(bufferedImage.getWidth(),bufferedImage.getHeight(),false);
                 for(int y=0;y<bufferedImage.getHeight();y++) {
                     for(int x=0;x<bufferedImage.getWidth();x++) {
-                        // convert ARGB to ABGR, thanks stackoverflow
                         int argb = bufferedImage.getRGB(x,y);
-                        int r = (argb >> 16) & 0xFF;
-                        int b = argb & 0xFF;
-                        int abgr = (argb & 0xFF00FF00) | (b << 16) | r;
-                        img.setColor(x,y,abgr);
+                        img.setColorArgb(x,y,argb);
                     }
                 }
             }

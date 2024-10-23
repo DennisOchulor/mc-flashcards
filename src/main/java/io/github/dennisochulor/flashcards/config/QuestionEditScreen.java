@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
@@ -67,12 +68,15 @@ class QuestionEditScreen extends Screen {
 
     private final ButtonWidget imageButton = ButtonWidget.builder(Text.literal("Add Image"),button -> {
         Thread.startVirtualThread(() -> { // don't hang the Render thread
+            JDialog wrapper = new JDialog((Dialog) null);
+            wrapper.setAlwaysOnTop(true);
+
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Choose an image file");
             fileChooser.setFileFilter(ImageUtils.FILE_NAME_EXTENSION_FILTER);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setMultiSelectionEnabled(false);
-            fileChooser.showOpenDialog(null);
+            fileChooser.showOpenDialog(wrapper);
             File file = fileChooser.getSelectedFile();
             if(file == null) return;
             if(!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
