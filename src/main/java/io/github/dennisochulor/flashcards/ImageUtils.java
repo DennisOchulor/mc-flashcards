@@ -44,7 +44,9 @@ public final class ImageUtils {
 
             NativeImageBackedTexture texture = new NativeImageBackedTexture(img);
             float greaterDimension = Math.max(img.getHeight(),img.getWidth());
-            return new ImagePackage(MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("flashcards",texture),img.getWidth(),img.getHeight(),img.getWidth()/greaterDimension,img.getHeight()/greaterDimension);
+            Identifier id = Identifier.of("flashcards", "theimage");
+            MinecraftClient.getInstance().getTextureManager().registerTexture(id,texture);
+            return new ImagePackage(id,img.getWidth(),img.getHeight(),img.getWidth()/greaterDimension,img.getHeight()/greaterDimension);
         }
         catch (IOException e) {
             throw new UncheckedIOException(e);
