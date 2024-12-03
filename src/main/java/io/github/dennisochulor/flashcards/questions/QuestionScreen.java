@@ -21,7 +21,7 @@ public class QuestionScreen extends Screen {
     public QuestionScreen(Question question) {
         super(Text.literal("Question Prompt"));
         imgPkg = ImageUtils.getImageId(FileManager.getImage(question.imageName()));
-        questionText = new MultilineTextWidget(Text.literal(question.question()), MinecraftClient.getInstance().textRenderer);
+        questionText = new ScalableMultilineTextWidget(Text.literal(question.question()), MinecraftClient.getInstance().textRenderer, 100);
 
         if(question.imageName() != null) {
             if(imgPkg == null) {

@@ -128,9 +128,9 @@ class QuestionEditScreen extends Screen {
         title2.alignCenter().setDimensionsAndPosition(width,10,0,50);
         title3.alignCenter().setDimensionsAndPosition(width,10,0,140);
         questionEditBox.setDimensionsAndPosition(200,50,width/2-100,70);
-        questionEditBox.setMaxLength(200);
+        questionEditBox.setMaxLength(500);
         answerEditBox.setDimensionsAndPosition(200,50,width/2-100,160);
-        answerEditBox.setMaxLength(100);
+        answerEditBox.setMaxLength(300);
         doneButton.setDimensionsAndPosition(100,20,width/2-50,230);
         doneButton.active = false;
         imageButton.setDimensionsAndPosition(80,20,width/2 + 140,80);

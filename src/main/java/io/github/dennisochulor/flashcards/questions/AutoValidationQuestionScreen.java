@@ -20,7 +20,7 @@ public class AutoValidationQuestionScreen extends QuestionScreen {
     public void init() {
         super.init();
         answerEditBox.setPosition(width/2 - answerEditBox.getWidth()/2, 175);
-        answerEditBox.setMaxLength(100);
+        answerEditBox.setMaxLength(300);
         answerEditBox.setChangeListener(answer -> submitButton.active = !answerEditBox.getText().isBlank());
 
         submitButton.setDimensionsAndPosition(75,20,width/2 - 37,235);

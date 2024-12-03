@@ -18,7 +18,7 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
 
     public ManualValidationQuestionScreen(Question question) {
         super(question);
-        correctAnswerText  = new MultilineTextWidget(Text.literal("§n§lCorrect answer:§r\n" + question.answer()), MinecraftClient.getInstance().textRenderer);
+        correctAnswerText = new ScalableMultilineTextWidget(Text.literal("§n§lCorrect answer:§r\n" + question.answer()), MinecraftClient.getInstance().textRenderer, 65);
 
         correctButton = ButtonWidget.builder(Text.literal("Correct").withColor(Colors.GREEN),button -> {
             MinecraftClient.getInstance().player.playSoundToPlayer(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER,1,1);

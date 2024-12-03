@@ -40,11 +40,11 @@ class AutoValidationResultScreen extends Screen {
         if(isCorrect) resultText.setTextColor(Colors.GREEN);
         else resultText.setTextColor(Colors.LIGHT_RED);
 
-        questionText = new MultilineTextWidget(Text.literal("§n§lQuestion:§r\n" + question.question()), MinecraftClient.getInstance().textRenderer);
+        questionText = new ScalableMultilineTextWidget(Text.literal("§n§lQuestion:§r\n" + question.question()), MinecraftClient.getInstance().textRenderer, 110);
 
-        yourAnswerText = new MultilineTextWidget(Text.literal("§n§lYour answer:§r\n" + userAnswer), MinecraftClient.getInstance().textRenderer);
+        yourAnswerText = new ScalableMultilineTextWidget(Text.literal("§n§lYour answer:§r\n" + userAnswer), MinecraftClient.getInstance().textRenderer, 75);
 
-        correctAnswerText  = new MultilineTextWidget(Text.literal("§n§lCorrect answer:§r\n" + question.answer()), MinecraftClient.getInstance().textRenderer);
+        correctAnswerText  = new ScalableMultilineTextWidget(Text.literal("§n§lCorrect answer:§r\n" + question.answer()), MinecraftClient.getInstance().textRenderer, 75);
 
         doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
             QuestionScheduler.schedule();
