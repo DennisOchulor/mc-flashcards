@@ -8,7 +8,9 @@
     "Ninjaking312"
   ],
   "contact": {
-    "repo": "https://github.com/DennisOchulor/mc-flashcards"
+    "sources": "https://github.com/DennisOchulor/mc-flashcards",
+    "issues": "https://gist.github.com/DennisOchulor/3882fbed8efcffcc61b60db49a2ecc4c",
+    "homepage": "https://modrinth.com/mod/flashcards"
   },
   "license": "MIT",
   "icon": "icon.png",

@@ -42,7 +42,7 @@ public final class ImageUtils {
                 }
             }
 
-            NativeImageBackedTexture texture = new NativeImageBackedTexture(img);
+            NativeImageBackedTexture texture = new NativeImageBackedTexture(file::getName, img);
             float greaterDimension = Math.max(img.getHeight(),img.getWidth());
             Identifier id = Identifier.of("flashcards", "theimage");
             MinecraftClient.getInstance().getTextureManager().registerTexture(id,texture);
