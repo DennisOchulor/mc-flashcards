@@ -6,5 +6,6 @@
     "default": true
   },
   "correctAnswerCommands": [],
-  "wrongAnswerCommands": []
+  "wrongAnswerCommands": [],
+  "commandSelectionStrategy": "EXECUTE_ALL"
 }
