@@ -29,7 +29,7 @@ class GeneralConfigScreen extends Screen {
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
         boolean validationToggle = validationToggleButton.getValue().equals("Automatic");
 
-        ModConfig newConfig = new ModConfig(config.interval(),config.intervalToggle(),validationToggle,config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands());
+        ModConfig newConfig = new ModConfig(config.interval(),config.intervalToggle(),validationToggle,config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
         FileManager.updateConfig(newConfig);
         QuestionScheduler.updateConfig(newConfig);
         this.close();

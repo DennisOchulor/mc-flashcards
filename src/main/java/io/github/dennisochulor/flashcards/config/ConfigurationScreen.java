@@ -33,7 +33,7 @@ public class ConfigurationScreen extends Screen {
     }).build();
     private final ButtonWidget editButton = ButtonWidget.builder(Text.literal("Edit Questions"), button -> MinecraftClient.getInstance().setScreen(new EditScreen())).build();
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"), button -> {
-        ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands());
+        ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getText()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
         if(newConfig.equals(config)) {
             this.close();
             return;

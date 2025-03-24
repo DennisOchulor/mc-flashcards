@@ -60,7 +60,7 @@ public class EditScreen extends Screen {
             categoryToggle.put(category.name,category.enabled);
         }
 
-        ModConfig newConfig = new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),categoryToggle,config.correctAnswerCommands(),config.wrongAnswerCommands());
+        ModConfig newConfig = new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),categoryToggle,config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
         FileManager.updateConfig(newConfig);
         QuestionScheduler.reload();
         QuestionScheduler.updateConfig(newConfig);

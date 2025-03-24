@@ -8,6 +8,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.math.random.Random;
 
 // NOTE: There is no ManualValidationResultScreen because everything is done in this class.
 public class ManualValidationQuestionScreen extends QuestionScreen {
@@ -29,7 +30,14 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
 
             // run correct commands if applicable
             if(MinecraftClient.getInstance().isIntegratedServerRunning() || MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
-                config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                switch(config.commandSelectionStrategy()) {
+                    case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                    case RANDOMISE_ONE -> {
+                        Random random = MinecraftClient.getInstance().player.getRandom();
+                        String command = config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size()));
+                        MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + command);
+                    }
+                }
             }
         }).build();
         wrongButton = ButtonWidget.builder(Text.literal("Wrong").withColor(Colors.LIGHT_RED),button -> {
@@ -41,7 +49,14 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
 
             // run wrong commands if applicable
             if(MinecraftClient.getInstance().isIntegratedServerRunning() || MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
-                config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                switch(config.commandSelectionStrategy()) {
+                    case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                    case RANDOMISE_ONE -> {
+                        Random random = MinecraftClient.getInstance().player.getRandom();
+                        String command = config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
+                        MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + command);
+                    }
+                }
             }
         }).build();
 

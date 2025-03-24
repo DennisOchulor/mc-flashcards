@@ -26,10 +26,17 @@ class AdditionalConfigScreen extends Screen {
     private final TextWidget title3 = new TextWidget(Text.literal("If answer is wrong, run these commands:"),MinecraftClient.getInstance().textRenderer);
     private final EditBoxWidget correctAnswerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,350,50,Text.literal("Write your commands on seperate lines here, without the /"),Text.empty());
     private final EditBoxWidget wrongAnswerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,350,50,Text.literal("Write your commands on seperate lines here, without the /"),Text.empty());
+
+    private final CyclingButtonWidget<String> commandSelectionButton = new CyclingButtonWidget.Builder<>(Text::literal)
+            .values(Arrays.stream(ModConfig.CommandSelectionStrategy.values()).map(commandSelectionStrategy -> commandSelectionStrategy.friendlyName).toList())
+            .initially(config.commandSelectionStrategy().friendlyName)
+            .tooltip(value -> ModConfig.CommandSelectionStrategy.fromFriendlyName(value).tooltip)
+            .build(0,0,0,0,Text.literal("Mode"));
+
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"),button -> {
         List<String> correctAnswerCommands = Arrays.asList(correctAnswerEditBox.getText().split("\n"));
         List<String> wrongAnswerCommands = Arrays.asList(wrongAnswerEditBox.getText().split("\n"));
-        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),correctAnswerCommands,wrongAnswerCommands));
+        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),correctAnswerCommands,wrongAnswerCommands, ModConfig.CommandSelectionStrategy.fromFriendlyName(commandSelectionButton.getValue())));
         this.close();
     }).build();
 
@@ -37,14 +44,16 @@ class AdditionalConfigScreen extends Screen {
     public void init() {
         title.alignCenter().setDimensionsAndPosition(width,10,0,10);
         titleTooltip.setDimensionsAndPosition(16,16,width/2 + 70,5);
-        title2.alignCenter().setDimensionsAndPosition(width,15,0,40);
-        title3.alignCenter().setDimensionsAndPosition(width,15,0,130);
-        correctAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,60);
-        wrongAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,150);
-        doneButton.setDimensionsAndPosition(100,20,width/2-47,230);
+        commandSelectionButton.setDimensionsAndPosition(130,20,width/2 - 65,25);
+        title2.alignCenter().setDimensionsAndPosition(width,15,0,50);
+        title3.alignCenter().setDimensionsAndPosition(width,15,0,140);
+        correctAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,70);
+        wrongAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,160);
+        doneButton.setDimensionsAndPosition(100,20,width/2-47,240);
 
         addDrawable(title);
         addDrawable(titleTooltip);
+        addDrawableChild(commandSelectionButton);
         addDrawable(title2);
         addDrawableChild(correctAnswerEditBox);
         addDrawable(title3);
