@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 
 public class AutoValidationQuestionScreen extends QuestionScreen {
 
-    private final EditBoxWidget answerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,200,50,Text.literal("Write your answer here..."),Text.empty());
+    private final EditBoxWidget answerEditBox = EditBoxWidget.builder().placeholder(Text.literal("Write your answer here...")).build(MinecraftClient.getInstance().textRenderer, 200, 50, Text.empty());
     private final ButtonWidget submitButton;
 
     public AutoValidationQuestionScreen(Question question) {

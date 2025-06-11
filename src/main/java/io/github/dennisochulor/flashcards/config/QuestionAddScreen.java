@@ -28,8 +28,8 @@ class QuestionAddScreen extends Screen {
     private final TextWidget title = new TextWidget(Text.literal("Add Question"), MinecraftClient.getInstance().textRenderer);
     private final TextWidget title2 = new TextWidget(Text.literal("Question:"),MinecraftClient.getInstance().textRenderer);
     private final TextWidget title3 = new TextWidget(Text.literal("Answer:"),MinecraftClient.getInstance().textRenderer);
-    private final EditBoxWidget questionEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,200,50,Text.empty(),Text.empty());
-    private final EditBoxWidget answerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,200,50,Text.empty(),Text.empty());
+    private final EditBoxWidget questionEditBox = EditBoxWidget.builder().build(MinecraftClient.getInstance().textRenderer, 200, 50, Text.empty());
+    private final EditBoxWidget answerEditBox = EditBoxWidget.builder().build(MinecraftClient.getInstance().textRenderer, 200, 50, Text.empty());
 
     private Path image = null;
     private Identifier imageId = null;

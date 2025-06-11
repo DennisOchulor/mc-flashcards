@@ -57,13 +57,13 @@ class AutoValidationResultScreen extends Screen {
             if(MinecraftClient.getInstance().isIntegratedServerRunning() || MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
                 switch(config.commandSelectionStrategy()) {
                     case EXECUTE_ALL -> {
-                        if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
-                        else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                        if(isCorrect) config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("execute as @s at @s run " + c));
+                        else config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("execute as @s at @s run " + c));
                     }
                     case RANDOMISE_ONE -> {
                         Random random = MinecraftClient.getInstance().player.getRandom();
                         String command = isCorrect ? config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size())) : config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
-                        MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + command);
+                        MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("execute as @s at @s run " + command);
                     }
                 }
             }

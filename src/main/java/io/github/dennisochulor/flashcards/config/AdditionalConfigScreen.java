@@ -24,8 +24,8 @@ class AdditionalConfigScreen extends Screen {
     private final TextWidget title = new TextWidget(Text.literal("Additional Configuration"), MinecraftClient.getInstance().textRenderer);
     private final TextWidget title2 = new TextWidget(Text.literal("If answer is correct, run these commands:"),MinecraftClient.getInstance().textRenderer);
     private final TextWidget title3 = new TextWidget(Text.literal("If answer is wrong, run these commands:"),MinecraftClient.getInstance().textRenderer);
-    private final EditBoxWidget correctAnswerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,350,50,Text.literal("Write your commands on seperate lines here, without the /"),Text.empty());
-    private final EditBoxWidget wrongAnswerEditBox = new EditBoxWidget(MinecraftClient.getInstance().textRenderer,0,0,350,50,Text.literal("Write your commands on seperate lines here, without the /"),Text.empty());
+    private final EditBoxWidget correctAnswerEditBox = EditBoxWidget.builder().placeholder(Text.literal("Write your commands on seperate lines here, without the /")).build(MinecraftClient.getInstance().textRenderer, 350, 50, Text.empty());
+    private final EditBoxWidget wrongAnswerEditBox = EditBoxWidget.builder().placeholder(Text.literal("Write your commands on seperate lines here, without the /")).build(MinecraftClient.getInstance().textRenderer, 350, 50, Text.empty());
 
     private final CyclingButtonWidget<String> commandSelectionButton = new CyclingButtonWidget.Builder<>(Text::literal)
             .values(Arrays.stream(ModConfig.CommandSelectionStrategy.values()).map(commandSelectionStrategy -> commandSelectionStrategy.friendlyName).toList())

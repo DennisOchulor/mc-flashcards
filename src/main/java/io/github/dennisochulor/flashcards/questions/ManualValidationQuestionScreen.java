@@ -31,11 +31,11 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
             // run correct commands if applicable
             if(MinecraftClient.getInstance().isIntegratedServerRunning() || MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
                 switch(config.commandSelectionStrategy()) {
-                    case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                    case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("execute as @s at @s run " + c));
                     case RANDOMISE_ONE -> {
                         Random random = MinecraftClient.getInstance().player.getRandom();
                         String command = config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size()));
-                        MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + command);
+                        MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("execute as @s at @s run " + command);
                     }
                 }
             }
@@ -50,11 +50,11 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
             // run wrong commands if applicable
             if(MinecraftClient.getInstance().isIntegratedServerRunning() || MinecraftClient.getInstance().player.hasPermissionLevel(2)) {
                 switch(config.commandSelectionStrategy()) {
-                    case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + c));
+                    case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("execute as @s at @s run " + c));
                     case RANDOMISE_ONE -> {
                         Random random = MinecraftClient.getInstance().player.getRandom();
                         String command = config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
-                        MinecraftClient.getInstance().getNetworkHandler().sendCommand("execute as @s at @s run " + command);
+                        MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("execute as @s at @s run " + command);
                     }
                 }
             }
