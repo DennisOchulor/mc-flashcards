@@ -46,7 +46,7 @@ class CategoryRenameScreen extends Screen {
         doneButton.setDimensionsAndPosition(100,20,width/2-50,200);
         doneButton.active = false;
         warningText.setTextColor(Colors.RED);
-        warningText.setDimensionsAndPosition(width,10,0,100);
+        warningText.setPosition(width/2 - warningText.getWidth()/2,100);
 
         addDrawable(title);
         addDrawable(title2);

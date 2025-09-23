@@ -72,11 +72,9 @@ public class EditScreen extends Screen {
         categoryTitle.setPosition(width/2-218,7);
         questionTitle.setPosition(width/2-20,7);
 
-        categoryList.setPosition(width/2 - 230, 20);
-        categoryList.setDimensions(75,100);
+        categoryList.position(75, 100, width/2 - 230, 20);
 
-        questionList.setPosition(width/2 - 140, 20);
-        questionList.setDimensions(275,210);
+        questionList.position(275, 210, width/2 - 140, 20);
 
         categoryRenameButton.setDimensionsAndPosition(60,20,width/2 - 223,135);
 
