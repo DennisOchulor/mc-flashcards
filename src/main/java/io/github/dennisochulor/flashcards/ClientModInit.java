@@ -14,6 +14,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,18 +47,20 @@ public class ClientModInit implements ClientModInitializer {
             if(client.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = client.world.getTime();
         });
 
+        KeyBinding.Category keyBindingCategory = new KeyBinding.Category(Identifier.of(MOD_ID, "Flashcards Mod"));
+
         KeyBinding keyBindingConfigMenu = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "Flashcards Config Menu",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_H,
-                "Flashcards Mod"
+                keyBindingCategory
         ));
 
         KeyBinding keyBindingPromptQuestion =  KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "Prompt a question",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_G,
-                "Flashcards Mod"
+                keyBindingCategory
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

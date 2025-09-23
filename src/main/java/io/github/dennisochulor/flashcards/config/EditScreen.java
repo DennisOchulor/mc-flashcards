@@ -19,10 +19,10 @@ public class EditScreen extends Screen {
     }
 
     private final Screen parent;
-    final HashMap<String,List<Question>> map = FileManager.getQuestions();
+    final HashMap<String,List<Question>> categoriesMap = FileManager.getQuestions();
     private final ModConfig config = FileManager.getConfig();
-    final CategoryListWidget categoryList = new CategoryListWidget(map,config.categoryToggle());
-    final QuestionListWidget questionList = new QuestionListWidget(map.get(categoryList.getSelectedOrNull().name));
+    final CategoryListWidget categoryList = new CategoryListWidget(categoriesMap,config.categoryToggle());
+    final QuestionListWidget questionList = new QuestionListWidget(categoriesMap.get(categoryList.getSelectedOrNull().name));
     private final TextWidget categoryTitle = new TextWidget(Text.literal("Categories"),MinecraftClient.getInstance().textRenderer);
     private final TextWidget questionTitle = new TextWidget(Text.literal("Questions"),MinecraftClient.getInstance().textRenderer);
 
@@ -33,10 +33,10 @@ public class EditScreen extends Screen {
     private final ButtonWidget categoryAddButton = ButtonWidget.builder(Text.literal("Add"), button -> MinecraftClient.getInstance().setScreen(new CategoryAddScreen())).build();
     private final ButtonWidget categoryDeleteButton = ButtonWidget.builder(Text.literal("Delete"), button -> {
         if(categoryList.getSelectedOrNull() == null) return;
-        map.remove(categoryList.getSelectedOrNull().name);
-        categoryList.children().remove(categoryList.getSelectedOrNull());
+        categoriesMap.remove(categoryList.getSelectedOrNull().name);
+        categoryList.remove(categoryList.getSelectedOrNull());
         categoryList.setSelected(null);
-        questionList.children().clear();
+        questionList.changeList(List.of()); // clear
         questionList.setSelected(null);
     }).build();
 
@@ -46,14 +46,14 @@ public class EditScreen extends Screen {
     }).build();
     private final ButtonWidget questionDeleteButton = ButtonWidget.builder(Text.literal("Delete"), button -> {
         if(questionList.getSelectedOrNull() == null) return;
-        map.get(categoryList.getSelectedOrNull().name).remove(questionList.getSelectedOrNull().index);
-        questionList.children().remove(questionList.getSelectedOrNull().index);
+        categoriesMap.get(categoryList.getSelectedOrNull().name).remove(questionList.getSelectedOrNull().question);
+        questionList.remove(questionList.getSelectedOrNull());
         questionList.setSelected(null);
     }).build();
     private final ButtonWidget questionAddButton = ButtonWidget.builder(Text.literal("Add"), button -> MinecraftClient.getInstance().setScreen(new QuestionAddScreen(categoryList.getSelectedOrNull().name))).build();
 
     private final ButtonWidget applyButton = ButtonWidget.builder(Text.literal("Apply Changes"), button -> {
-        FileManager.updateQuestions(map);
+        FileManager.updateQuestions(categoriesMap);
 
         HashMap<String,Boolean> categoryToggle = new HashMap<>();
         for(var category : categoryList.children()) {

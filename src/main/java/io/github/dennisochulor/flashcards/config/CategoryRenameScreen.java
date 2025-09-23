@@ -26,11 +26,11 @@ class CategoryRenameScreen extends Screen {
     private final TextWidget warningText = new TextWidget(Text.literal("A category with this name already exists!"),MinecraftClient.getInstance().textRenderer);
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"),button -> {
         String newName = textField.getText();
-        if(parent.map.containsKey(newName))  addDrawable(warningText);
+        if(parent.categoriesMap.containsKey(newName))  addDrawable(warningText);
         else {
-            List<Question> list = parent.map.get(oldName);
-            parent.map.remove(oldName);
-            parent.map.put(newName,list);
+            List<Question> list = parent.categoriesMap.get(oldName);
+            parent.categoriesMap.remove(oldName);
+            parent.categoriesMap.put(newName,list);
             parent.categoryList.getSelectedOrNull().name = newName;
             this.close();
         }

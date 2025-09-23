@@ -89,14 +89,14 @@ class QuestionAddScreen extends Screen {
     }).build();
 
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"),button -> {
-        List<Question> list = parent.map.get(category);
+        List<Question> list = parent.categoriesMap.get(category);
         String imageName = null;
         if(image != null) imageName = FileManager.saveImage(image);
 
         Question q = new Question(questionEditBox.getText(),imageName,answerEditBox.getText());
         list.add(q);
         QuestionListWidget.Entry e = new QuestionListWidget.Entry(q);
-        parent.questionList.children().add(e);
+        parent.questionList.add(e);
         parent.questionList.setSelected(e);
         this.close();
     }).build();

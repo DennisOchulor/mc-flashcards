@@ -3,6 +3,7 @@ package io.github.dennisochulor.flashcards.questions;
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ImageUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -93,7 +94,7 @@ public class QuestionScreen extends Screen {
         protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
         @Override
-        public void onClick(double mouseX, double mouseY) {
+        public void onClick(Click click, boolean bl) {
             MinecraftClient.getInstance().setScreen(new Screen(Text.literal("Enlarged Image Screen")) {
                 @Override
                 public void init() {

@@ -17,14 +17,20 @@ class QuestionListWidget extends AlwaysSelectedEntryListWidget<QuestionListWidge
     }
 
     void changeList(List<Question> questions) {
-        this.children().clear();
-        this.setSelected(null);
-        questions.forEach(q -> this.children().add(new Entry(q)));
+        this.clearEntries();
+        this.replaceEntries(questions.stream().map(Entry::new).toList());
+    }
+
+    public void add(QuestionListWidget.Entry entry) {
+        this.addEntry(entry);
+    }
+
+    public void remove(QuestionListWidget.Entry entry) {
+        this.removeEntry(entry);
     }
 
     static class Entry extends AlwaysSelectedEntryListWidget.Entry<Entry> {
         Question question;
-        int index;
 
         Entry(Question question) {
             this.question = question;
@@ -36,10 +42,9 @@ class QuestionListWidget extends AlwaysSelectedEntryListWidget<QuestionListWidge
         }
 
         @Override
-        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            this.index = index;
-            if(question.question().length() > 38) context.drawText(MinecraftClient.getInstance().textRenderer, question.question().substring(0,38) + "...", x, y, Colors.WHITE, false);
-            else context.drawText(MinecraftClient.getInstance().textRenderer, question.question(), x, y, Colors.WHITE, false);
+        public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+            if(question.question().length() > 38) context.drawText(MinecraftClient.getInstance().textRenderer, question.question().substring(0,38) + "...", getContentX(), getContentY(), Colors.WHITE, false);
+            else context.drawText(MinecraftClient.getInstance().textRenderer, question.question(), getContentX(), getContentY(), Colors.WHITE, false);
         }
     }
 

@@ -1,10 +1,12 @@
 package io.github.dennisochulor.flashcards.config;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.input.MouseInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 
@@ -22,14 +24,13 @@ class CategoryAddScreen extends Screen {
     private final TextWidget warningText = new TextWidget(Text.literal("A category with this name already exists!"),MinecraftClient.getInstance().textRenderer);
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"),button -> {
         String newName = textField.getText();
-        if(parent.map.containsKey(newName))  addDrawable(warningText);
+        if(parent.categoriesMap.containsKey(newName))  addDrawable(warningText);
         else {
-            parent.map.put(newName,new ArrayList<>());
+            parent.categoriesMap.put(newName,new ArrayList<>());
             CategoryListWidget.Entry e = new CategoryListWidget.Entry(newName,true);
-            parent.categoryList.children().add(e);
+            parent.categoryList.add(e);
             parent.questionList.setSelected(null);
             this.close();
-            e.mouseClicked(0,0,0);
             parent.categoryList.setSelected(e);
         }
     }).build();
