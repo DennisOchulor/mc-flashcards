@@ -69,26 +69,24 @@ public class EditScreen extends Screen {
 
     @Override
     protected void init() {
-        categoryTitle.setPosition(width/2-218,7);
-        questionTitle.setPosition(width/2-20,7);
+        categoryList.position(85, 100, width/4 - 100, 20);
+        questionList.position(width/2, height - 75, width/2 - width/4, 20);
 
-        categoryList.position(75, 100, width/2 - 230, 20);
+        categoryTitle.setPosition(categoryList.getWidth()/2 + categoryList.getX() - categoryTitle.getWidth()/2, categoryList.getY() - 15);
+        questionTitle.setPosition(questionList.getWidth()/2 + questionList.getX() - questionTitle.getWidth()/2, questionList.getY() - 15);
 
-        questionList.position(275, 210, width/2 - 140, 20);
+        int categoryButtonsX = categoryList.getX() + categoryList.getWidth()/2 - 30;
+        categoryRenameButton.setDimensionsAndPosition(60,20,categoryButtonsX,categoryList.getY() + categoryList.getHeight() + 20);
+        categoryAddButton.setDimensionsAndPosition(60,20,categoryButtonsX,categoryRenameButton.getY() + 30);
+        categoryDeleteButton.setDimensionsAndPosition(60,20,categoryButtonsX,categoryAddButton.getY() + 30);
 
-        categoryRenameButton.setDimensionsAndPosition(60,20,width/2 - 223,135);
+        int questionButtonsX = questionList.getX() + questionList.getWidth() + 20;
+        int questionButtonsMiddleY = questionList.getY() + questionList.getHeight()/2 - 10;
+        questionEditButton.setDimensionsAndPosition(60,20,questionButtonsX,questionButtonsMiddleY - 30);
+        questionAddButton.setDimensionsAndPosition(60,20,questionButtonsX,questionButtonsMiddleY);
+        questionDeleteButton.setDimensionsAndPosition(60,20,questionButtonsX,questionButtonsMiddleY + 30);
 
-        categoryAddButton.setDimensionsAndPosition(60,20,width/2 - 223,165);
-
-        categoryDeleteButton.setDimensionsAndPosition(60,20,width/2 - 223,195);
-
-        questionEditButton.setDimensionsAndPosition(60,20,width/2 + 160,90);
-
-        questionAddButton.setDimensionsAndPosition(60,20,width/2 + 160,120);
-
-        questionDeleteButton.setDimensionsAndPosition(60,20,width/2 + 160,150);
-
-        applyButton.setDimensionsAndPosition(120,20,width/2 - 60,235);
+        applyButton.setDimensionsAndPosition(120,20,width/2 - 60,height - 30);
 
         addDrawable(categoryTitle);
         addDrawable(questionTitle);

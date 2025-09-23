@@ -46,14 +46,14 @@ class CategoryListWidget extends AlwaysSelectedEntryListWidget<CategoryListWidge
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
             context.drawText(MinecraftClient.getInstance().textRenderer, name, getContentX()+75, getContentY(), Colors.WHITE, false);
-            if(enabled) context.drawText(MinecraftClient.getInstance().textRenderer, "✔", getContentX()+135, getContentY(), Colors.GREEN, false);
+            if(enabled) context.drawText(MinecraftClient.getInstance().textRenderer, "✔", getContentX()+140, getContentY(), Colors.GREEN, false);
         }
 
         @Override
         public boolean mouseClicked(Click click, boolean doubled) {
             EditScreen screen = (EditScreen) MinecraftClient.getInstance().currentScreen;
             screen.questionList.changeList(screen.categoriesMap.get(name));
-            if(click.button() == GLFW.GLFW_MOUSE_BUTTON_1 && click.x()>=screen.width/2.0 - 168) { // x is -61, then plus 135, minus a little
+            if(click.button() == GLFW.GLFW_MOUSE_BUTTON_1 && click.x()>=getContentX()+140) {
                 enabled = !enabled;
             }
             return true;

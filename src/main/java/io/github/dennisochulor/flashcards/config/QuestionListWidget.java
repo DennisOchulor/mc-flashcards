@@ -2,8 +2,10 @@ package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.questions.Question;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 
@@ -29,6 +31,12 @@ class QuestionListWidget extends AlwaysSelectedEntryListWidget<QuestionListWidge
         this.removeEntry(entry);
     }
 
+    @Override
+    public int getRowWidth() {
+        return width - 20;
+    }
+
+
     static class Entry extends AlwaysSelectedEntryListWidget.Entry<Entry> {
         Question question;
 
@@ -38,14 +46,18 @@ class QuestionListWidget extends AlwaysSelectedEntryListWidget<QuestionListWidge
 
         @Override
         public Text getNarration() {
-            return Text.translatable("narrator.select", "a question entry");
+            return Text.literal(question.question());
         }
 
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-            if(question.question().length() > 38) context.drawText(MinecraftClient.getInstance().textRenderer, question.question().substring(0,38) + "...", getContentX(), getContentY(), Colors.WHITE, false);
-            else context.drawText(MinecraftClient.getInstance().textRenderer, question.question(), getContentX(), getContentY(), Colors.WHITE, false);
+            TextWidget text = new TextWidget(Text.of(question.question()), MinecraftClient.getInstance().textRenderer);
+            text.setPosition(getContentX(),getContentY());
+            text.setMaxWidth(getContentWidth());
+            text.render(context, mouseX, mouseY, deltaTicks);
         }
+
+
     }
 
 }
