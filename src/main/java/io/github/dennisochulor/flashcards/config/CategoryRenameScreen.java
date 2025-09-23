@@ -43,7 +43,7 @@ class CategoryRenameScreen extends Screen {
         textField.setDimensionsAndPosition(100,20,width/2-50,70);
         textField.setMaxLength(10);
         textField.setChangedListener(text -> doneButton.active = !text.isBlank());
-        doneButton.setDimensionsAndPosition(100,20,width/2-50,200);
+        doneButton.setDimensionsAndPosition(100,20,width/2-50,height - 30);
         doneButton.active = false;
         warningText.setTextColor(Colors.RED);
         warningText.setPosition(width/2 - warningText.getWidth()/2,100);

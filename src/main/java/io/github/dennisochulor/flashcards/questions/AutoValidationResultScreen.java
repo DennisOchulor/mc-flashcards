@@ -111,7 +111,7 @@ class AutoValidationResultScreen extends Screen {
         correctAnswerText.setPosition(width/2 + width/4 - Math.min(correctAnswerText.getWidth(), 150)/2, 170);
         correctAnswerText.setCentered(true);
 
-        doneButton.setDimensionsAndPosition(75,20,width/2 - 37,220);
+        doneButton.setDimensionsAndPosition(75,20,width/2 - 37,height - 30);
 
         addDrawable(titleText);
         addDrawable(resultText);

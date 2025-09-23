@@ -110,7 +110,7 @@ class QuestionAddScreen extends Screen {
         questionEditBox.setMaxLength(500);
         answerEditBox.setDimensionsAndPosition(200,50,width/2-100,160);
         answerEditBox.setMaxLength(300);
-        doneButton.setDimensionsAndPosition(100,20,width/2-50,230);
+        doneButton.setDimensionsAndPosition(100,20,width/2-50,height - 30);
         doneButton.active = false;
         imageButton.setDimensionsAndPosition(80,20,width/2 + 140,80);
         removeButton.setDimensionsAndPosition(80,20,width/2 + 140,210);

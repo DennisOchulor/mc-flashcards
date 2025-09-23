@@ -19,11 +19,11 @@ public class AutoValidationQuestionScreen extends QuestionScreen {
     @Override
     public void init() {
         super.init();
-        answerEditBox.setPosition(width/2 - answerEditBox.getWidth()/2, 175);
+        answerEditBox.setPosition(width/2 - answerEditBox.getWidth()/2, height - 30 - answerEditBox.getHeight() - 20);
         answerEditBox.setMaxLength(300);
         answerEditBox.setChangeListener(answer -> submitButton.active = !answerEditBox.getText().isBlank());
 
-        submitButton.setDimensionsAndPosition(75,20,width/2 - 37,235);
+        submitButton.setDimensionsAndPosition(75,20,width/2 - 37,height - 30);
         submitButton.active = false;
 
         addDrawableChild(answerEditBox);

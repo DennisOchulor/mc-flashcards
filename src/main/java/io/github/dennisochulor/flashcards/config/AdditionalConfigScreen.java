@@ -45,11 +45,14 @@ class AdditionalConfigScreen extends Screen {
         title.setPosition(width/2 - title.getWidth()/2,10);
         titleTooltip.setDimensionsAndPosition(16,16,width/2 + 70,5);
         commandSelectionButton.setDimensionsAndPosition(130,20,width/2 - 65,25);
-        title2.setPosition(width/2 - title2.getWidth()/2,50);
-        title3.setPosition(width/2 - title3.getWidth()/2,140);
-        correctAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,70);
-        wrongAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,160);
-        doneButton.setDimensionsAndPosition(100,20,width/2-47,240);
+
+        title2.setPosition(width/2 - title2.getWidth()/2,70);
+        correctAnswerEditBox.setDimensionsAndPosition(350,height/5,width/2-175, title2.getBottom() + 10);
+
+        title3.setPosition(width/2 - title3.getWidth()/2, correctAnswerEditBox.getBottom() + 20);
+        wrongAnswerEditBox.setDimensionsAndPosition(350,height/5,width/2-175, title3.getBottom() + 10);
+
+        doneButton.setDimensionsAndPosition(100,20,width/2-47,height - 30);
 
         addDrawable(title);
         addDrawable(titleTooltip);

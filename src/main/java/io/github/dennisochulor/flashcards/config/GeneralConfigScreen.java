@@ -39,7 +39,7 @@ class GeneralConfigScreen extends Screen {
     protected void init() {
         titleText.setPosition(width/2 - titleText.getWidth()/2,15);
         validationToggleButton.setDimensionsAndPosition(200,20,width/2 - 100,50);
-        doneButton.setDimensionsAndPosition(100,20,width/2 - 50,220);
+        doneButton.setDimensionsAndPosition(100,20,width/2 - 50,height - 30);
 
         addDrawable(titleText);
         addDrawableChild(validationToggleButton);

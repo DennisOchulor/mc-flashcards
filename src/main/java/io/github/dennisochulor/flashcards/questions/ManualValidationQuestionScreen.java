@@ -76,9 +76,9 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
         correctAnswerText.setPosition(width/2 - Math.min(correctAnswerText.getWidth(), 175)/2, 150);
         correctAnswerText.setCentered(true);
 
-        showAnswerButton.setDimensionsAndPosition(75,20,width/2 - 37,215);
-        correctButton.setDimensionsAndPosition(100,20,width/2 - 150,215);
-        wrongButton.setDimensionsAndPosition(100,20,width/2 + 50,215);
+        showAnswerButton.setDimensionsAndPosition(75,20,width/2 - 37,height - 30);
+        correctButton.setDimensionsAndPosition(100,20,width/2 - 150,height - 30);
+        wrongButton.setDimensionsAndPosition(100,20,width/2 + 50,height - 30);
 
         addDrawableChild(showAnswerButton);
     }

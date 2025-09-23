@@ -2,12 +2,10 @@ package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.questions.Question;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 
 import java.util.List;
 

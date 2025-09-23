@@ -99,7 +99,7 @@ public class QuestionScreen extends Screen {
                 @Override
                 public void init() {
                     TextWidget title = new TextWidget(Text.literal(imageName),MinecraftClient.getInstance().textRenderer);
-                    title.setPosition(width/2 - title.getWidth()/2,0);
+                    title.setPosition(width/2 - title.getWidth()/2,5);
 
                     int width = (int)(215 * imgPkg.widthScaler());
                     int height = (int)(215 * imgPkg.heightScaler());

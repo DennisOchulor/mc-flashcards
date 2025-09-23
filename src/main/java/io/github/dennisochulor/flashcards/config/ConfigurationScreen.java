@@ -96,7 +96,7 @@ public class ConfigurationScreen extends Screen {
         generalConfigButton.setDimensionsAndPosition(100,20,width/2 - 50,115);
         additionalConfigButton.setDimensionsAndPosition(100,20,width/2 - 50,145);
         statsButton.setDimensionsAndPosition(100,20,width/2 - 50,175);
-        doneButton.setDimensionsAndPosition(75,20,width/2 - 37,235);
+        doneButton.setDimensionsAndPosition(75,20,width/2 - 37,height - 30);
         openFlashcardsFolderButton.setDimensionsAndPosition(20,20,width/2 + 55,85);
 
         addDrawable(titleText);
