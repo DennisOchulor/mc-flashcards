@@ -124,9 +124,9 @@ class QuestionEditScreen extends Screen {
 
     @Override
     public void init() {
-        title.alignCenter().setDimensionsAndPosition(width,10,0,10);
-        title2.alignCenter().setDimensionsAndPosition(width,10,0,50);
-        title3.alignCenter().setDimensionsAndPosition(width,10,0,140);
+        title.setPosition(width/2 - title.getWidth()/2,10);
+        title2.setPosition(width/2 - title2.getWidth()/2,50);
+        title3.setPosition(width/2 - title3.getWidth()/2,140);
         questionEditBox.setDimensionsAndPosition(200,50,width/2-100,70);
         questionEditBox.setMaxLength(500);
         answerEditBox.setDimensionsAndPosition(200,50,width/2-100,160);

@@ -42,11 +42,11 @@ class AdditionalConfigScreen extends Screen {
 
     @Override
     public void init() {
-        title.alignCenter().setDimensionsAndPosition(width,10,0,10);
+        title.setPosition(width/2 - title.getWidth()/2,10);
         titleTooltip.setDimensionsAndPosition(16,16,width/2 + 70,5);
         commandSelectionButton.setDimensionsAndPosition(130,20,width/2 - 65,25);
-        title2.alignCenter().setDimensionsAndPosition(width,15,0,50);
-        title3.alignCenter().setDimensionsAndPosition(width,15,0,140);
+        title2.setPosition(width/2 - title2.getWidth()/2,50);
+        title3.setPosition(width/2 - title3.getWidth()/2,140);
         correctAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,70);
         wrongAnswerEditBox.setDimensionsAndPosition(350,50,width/2-175,160);
         doneButton.setDimensionsAndPosition(100,20,width/2-47,240);

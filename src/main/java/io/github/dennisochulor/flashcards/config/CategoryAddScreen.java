@@ -1,12 +1,10 @@
 package io.github.dennisochulor.flashcards.config;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.input.MouseInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 
@@ -37,8 +35,8 @@ class CategoryAddScreen extends Screen {
 
     @Override
     public void init() {
-        title.alignCenter().setDimensionsAndPosition(width,10,0,10);
-        title2.alignCenter().setDimensionsAndPosition(width,10,0,50);
+        title.setPosition(width/2 - title.getWidth()/2,10);
+        title2.setPosition(width/2 - title2.getWidth()/2,50);
         textField.setDimensionsAndPosition(100,20,width/2-50,70);
         textField.setMaxLength(10);
         textField.setChangedListener(text -> doneButton.active = !text.isBlank());

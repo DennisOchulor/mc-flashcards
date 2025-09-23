@@ -7,6 +7,7 @@ import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.PopupScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -87,7 +88,7 @@ public class ConfigurationScreen extends Screen {
     @Override
     protected void init() {
         config = FileManager.getConfig(); // avoid overriding config updates of nested screens
-        titleText.alignCenter().setDimensionsAndPosition(width,10,0,15);
+        titleText.setPosition(width/2 - titleText.getWidth()/2,15);
         intervalText.setPosition(width/2 - 150, 50);
         intervalButton.setDimensionsAndPosition(30,20,width/2 + 75, 40);
         intervalTextField.setPosition(width/2 - 20, 40);

@@ -46,7 +46,7 @@ public class QuestionScreen extends Screen {
 
     @Override
     public void init() {
-        titleText.alignCenter().setDimensionsAndPosition(width,10,0,15);
+        titleText.setPosition(width/2 - titleText.getWidth()/2,15);
 
         questionText.setWidth(250);
         questionText.setMaxWidth(250);
@@ -99,8 +99,7 @@ public class QuestionScreen extends Screen {
                 @Override
                 public void init() {
                     TextWidget title = new TextWidget(Text.literal(imageName),MinecraftClient.getInstance().textRenderer);
-                    title.setDimensionsAndPosition(width,15,0,0);
-                    title.alignCenter();
+                    title.setPosition(width/2 - title.getWidth()/2,0);
 
                     int width = (int)(215 * imgPkg.widthScaler());
                     int height = (int)(215 * imgPkg.heightScaler());

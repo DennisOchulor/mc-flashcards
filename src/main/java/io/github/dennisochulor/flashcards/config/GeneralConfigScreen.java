@@ -37,7 +37,7 @@ class GeneralConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        titleText.alignCenter().setDimensionsAndPosition(width,10,0,15);
+        titleText.setPosition(width/2 - titleText.getWidth()/2,15);
         validationToggleButton.setDimensionsAndPosition(200,20,width/2 - 100,50);
         doneButton.setDimensionsAndPosition(100,20,width/2 - 50,220);
 

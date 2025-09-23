@@ -47,7 +47,7 @@ public class ClientModInit implements ClientModInitializer {
             if(client.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = client.world.getTime();
         });
 
-        KeyBinding.Category keyBindingCategory = new KeyBinding.Category(Identifier.of(MOD_ID, "Flashcards Mod"));
+        KeyBinding.Category keyBindingCategory = KeyBinding.Category.create(Identifier.of(MOD_ID, "main"));
 
         KeyBinding keyBindingConfigMenu = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "Flashcards Config Menu",

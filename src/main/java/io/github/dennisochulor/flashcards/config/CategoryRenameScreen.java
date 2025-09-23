@@ -38,8 +38,8 @@ class CategoryRenameScreen extends Screen {
 
     @Override
     public void init() {
-        title.alignCenter().setDimensionsAndPosition(width,10,0,10);
-        title2.alignCenter().setDimensionsAndPosition(width,10,0,50);
+        title.setPosition(width/2 - title.getWidth()/2,10);
+        title2.setPosition(width/2 - title2.getWidth()/2,50);
         textField.setDimensionsAndPosition(100,20,width/2-50,70);
         textField.setMaxLength(10);
         textField.setChangedListener(text -> doneButton.active = !text.isBlank());
