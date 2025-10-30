@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.PopupScreen;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import javax.swing.*;
@@ -19,23 +20,46 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
-class QuestionAddScreen extends Screen {
-    protected QuestionAddScreen(String category) {
-        super(Component.literal("Question Add Screen"));
+class QuestionEditScreen extends Screen {
+    protected QuestionEditScreen(QuestionListWidget.Entry entry, String category) {
+        super(Component.literal("Question Edit Screen"));
+        this.questionEditBox.setValue(entry.question.question());
+        this.answerEditBox.setValue(entry.question.answer());
         this.category = category;
+        this.entry = entry;
+
+        File file = FileManager.getImage(entry.question.imageName());
+        image = entry.question.imageName() != null ? file.toPath() : null;
+        if(image != null) {
+            ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(file);
+            if(imgPkg == null) {
+                imageWidget = ImageWidget.texture(100,100, ResourceLocation.withDefaultNamespace("textures/missing.png"),100,100);
+                imageWidget.setTooltip(Tooltip.create(Component.literal(file.getName() + " seems to be missing...")));
+            }
+            else {
+                imageId = imgPkg.id();
+                int width = (int)(100 * imgPkg.widthScaler());
+                int height = (int)(100 * imgPkg.heightScaler());
+                imageWidget = ImageWidget.texture(width,height,imgPkg.id(),width,height);
+                imageWidget.setTooltip(Tooltip.create(Component.literal(file.getName())));
+            }
+            imageButton.setMessage(Component.literal("Change Image"));
+        }
+        else imageWidget = null;
     }
 
     private String category;
+    private QuestionListWidget.Entry entry;
     private final EditScreen parent = (EditScreen) Minecraft.getInstance().screen;
-    private final StringWidget title = new StringWidget(Component.literal("Add Question"), Minecraft.getInstance().font);
+    private final StringWidget title = new StringWidget(Component.literal("Edit Question"), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("Question:"),Minecraft.getInstance().font);
     private final StringWidget title3 = new StringWidget(Component.literal("Answer:"),Minecraft.getInstance().font);
     private final MultiLineEditBox questionEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
     private final MultiLineEditBox answerEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
 
-    private Path image = null;
-    private ResourceLocation imageId = null;
-    private ImageWidget imageWidget = null;
+    private Path image;
+    private ImageWidget imageWidget;
+    private ResourceLocation imageId;
     private final Button removeButton = Button.builder(Component.literal("Remove Image"),button -> {
         removeWidget(imageWidget);
         Minecraft.getInstance().getTextureManager().release(imageId);
@@ -96,10 +120,8 @@ class QuestionAddScreen extends Screen {
         if(image != null) imageName = FileManager.saveImage(image);
 
         Question q = new Question(questionEditBox.getValue(),imageName,answerEditBox.getValue());
-        list.add(q);
-        QuestionListWidget.Entry e = new QuestionListWidget.Entry(q);
-        parent.questionList.add(e);
-        parent.questionList.setSelected(e);
+        list.set(list.indexOf(entry.question),q);
+        parent.questionList.getSelected().question = q;
         this.onClose();
     }).build();
 

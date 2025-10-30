@@ -3,6 +3,7 @@ package io.github.dennisochulor.flashcards.questions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.network.chat.Component;
 
 public class AutoValidationQuestionScreen extends QuestionScreen {
