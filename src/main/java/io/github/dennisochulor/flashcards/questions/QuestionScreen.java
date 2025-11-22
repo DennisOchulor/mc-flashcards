@@ -14,7 +14,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class QuestionScreen extends Screen {
     private final StringWidget titleText = new StringWidget(Component.literal("Answer this question"), Minecraft.getInstance().font);
@@ -30,9 +30,9 @@ public class QuestionScreen extends Screen {
 
         if(question.imageName() != null) {
             if(imgPkg == null) {
-                imageWidget = ImageWidget.texture(140,140, ResourceLocation.withDefaultNamespace("textures/missing.png"),140,140);
+                imageWidget = ImageWidget.texture(140,140, Identifier.withDefaultNamespace("textures/missing.png"),140,140);
                 imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
-                enlargeImageOnClickWidget = new EnlargeImageOnClickWidget(this,question.imageName() + " (missing)",new ImageUtils.ImagePackage(ResourceLocation.withDefaultNamespace("textures/missing.png"),1,1,1,1));
+                enlargeImageOnClickWidget = new EnlargeImageOnClickWidget(this,question.imageName() + " (missing)",new ImageUtils.ImagePackage(Identifier.withDefaultNamespace("textures/missing.png"),1,1,1,1));
             }
             else {
                 int width = (int)(140 * imgPkg.widthScaler());
