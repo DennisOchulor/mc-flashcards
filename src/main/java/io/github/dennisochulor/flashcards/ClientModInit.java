@@ -13,7 +13,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class ClientModInit implements ClientModInitializer {
             if(client.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = client.level.getGameTime();
         });
 
-        KeyMapping.Category keyBindingCategory = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "main"));
+        KeyMapping.Category keyBindingCategory = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 
         KeyMapping keyBindingConfigMenu = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "Flashcards Config Menu",

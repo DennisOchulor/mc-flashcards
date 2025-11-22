@@ -19,8 +19,8 @@ class GeneralConfigScreen extends Screen {
     private final ModConfig config = FileManager.getConfig();
     private final Screen parent;
     private final StringWidget titleText = new StringWidget(Component.literal("General Config"), Minecraft.getInstance().font);
-    private final CycleButton<String> validationToggleButton = new CycleButton.Builder<>(Component::literal)
-            .withValues("Automatic","Manual").withInitialValue(config.validationToggle() ? "Automatic" : "Manual")
+    private final CycleButton<String> validationToggleButton = new CycleButton.Builder<>(Component::literal, () -> config.validationToggle() ? "Automatic" : "Manual")
+            .withValues("Automatic", "Manual")
             .withTooltip(value -> switch(value) {
                 case "Automatic" -> Tooltip.create(Component.literal("Automatically validates your answers in a case insensitive manner."));
                 case "Manual" -> Tooltip.create(Component.literal("Manually validate your answers yourself, useful if your questions have multiple acceptable answers."));

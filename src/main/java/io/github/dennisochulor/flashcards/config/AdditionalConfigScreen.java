@@ -22,23 +22,24 @@ class AdditionalConfigScreen extends Screen {
 
     private final Screen parent;
     private final ModConfig config = FileManager.getConfig();
-    private final Button titleTooltip = Button.builder(Component.literal("ℹ"),b -> {}).tooltip(Tooltip.create(Component.literal("These additional configurations only work if you are playing on an integrated server (e.g. Singleplayer,LAN world) OR if you have a permission level of 2 or greater on an external server."))).build();
+    private final Button titleTooltip = Button.builder(Component.literal("ℹ"),b -> {}).tooltip(Tooltip.create(Component.literal("The specified commands will fail if your player has insufficient permissions."))).build();
     private final StringWidget title = new StringWidget(Component.literal("Additional Configuration"), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("If answer is correct, run these commands:"),Minecraft.getInstance().font);
     private final StringWidget title3 = new StringWidget(Component.literal("If answer is wrong, run these commands:"),Minecraft.getInstance().font);
     private final MultiLineEditBox correctAnswerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your commands on seperate lines here, without the /")).build(Minecraft.getInstance().font, 350, 50, Component.empty());
     private final MultiLineEditBox wrongAnswerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your commands on seperate lines here, without the /")).build(Minecraft.getInstance().font, 350, 50, Component.empty());
 
-    private final CycleButton<String> commandSelectionButton = new CycleButton.Builder<>(Component::literal)
-            .withValues(Arrays.stream(ModConfig.CommandSelectionStrategy.values()).map(commandSelectionStrategy -> commandSelectionStrategy.friendlyName).toList())
-            .withInitialValue(config.commandSelectionStrategy().friendlyName)
-            .withTooltip(value -> ModConfig.CommandSelectionStrategy.fromFriendlyName(value).tooltip)
+    private final CycleButton<ModConfig.CommandSelectionStrategy> commandSelectionButton =
+            new CycleButton.Builder<>(strat -> Component.literal(strat.friendlyName), config::commandSelectionStrategy)
+            .withValues(List.of(ModConfig.CommandSelectionStrategy.values()))
+            .withTooltip(strat -> strat.tooltip)
             .create(0,0,0,0,Component.literal("Mode"));
 
     private final Button doneButton = Button.builder(Component.literal("Done"),button -> {
         List<String> correctAnswerCommands = Arrays.asList(correctAnswerEditBox.getValue().split("\n"));
-        List<String> wrongAnswerCommands = Arrays.asList(wrongAnswerEditBox.getValue().split("\n"));
-        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),correctAnswerCommands,wrongAnswerCommands, ModConfig.CommandSelectionStrategy.fromFriendlyName(commandSelectionButton.getValue())));
+        List<String> wrongAnswerCommands = Arrays.asList(wrongAnswerEditBox.getValue().split("\n")); // withers i need you now!!!!
+        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),
+                correctAnswerCommands,wrongAnswerCommands, commandSelectionButton.getValue()));
         this.onClose();
     }).build();
 

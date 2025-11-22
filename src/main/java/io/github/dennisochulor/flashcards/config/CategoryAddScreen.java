@@ -19,7 +19,7 @@ class CategoryAddScreen extends Screen {
     private final StringWidget title = new StringWidget(Component.literal("Add New Category"), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("New Category Name:"),Minecraft.getInstance().font);
     private final EditBox textField = new EditBox(Minecraft.getInstance().font, 100,10,Component.empty());
-    private final StringWidget warningText = new StringWidget(Component.literal("A category with this name already exists!"),Minecraft.getInstance().font);
+    private final StringWidget warningText = new StringWidget(Component.literal("A category with this name already exists!").withColor(CommonColors.RED),Minecraft.getInstance().font);
     private final Button doneButton = Button.builder(Component.literal("Done"),button -> {
         String newName = textField.getValue();
         if(parent.categoriesMap.containsKey(newName))  addRenderableOnly(warningText);
@@ -43,7 +43,6 @@ class CategoryAddScreen extends Screen {
         textField.setResponder(text -> doneButton.active = !text.isBlank());
         doneButton.setRectangle(100,20,width/2-50,height - 30);
         doneButton.active = false;
-        warningText.setColor(CommonColors.RED);
         warningText.setPosition(width/2 - warningText.getWidth()/2,100);
 
         addRenderableOnly(title);

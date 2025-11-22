@@ -12,7 +12,7 @@ import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -34,7 +34,7 @@ class QuestionAddScreen extends Screen {
     private final MultiLineEditBox answerEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
 
     private Path image = null;
-    private ResourceLocation imageId = null;
+    private Identifier imageId = null;
     private ImageWidget imageWidget = null;
     private final Button removeButton = Button.builder(Component.literal("Remove Image"),button -> {
         removeWidget(imageWidget);

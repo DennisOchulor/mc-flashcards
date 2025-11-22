@@ -14,7 +14,8 @@ public record ModConfig(int interval, boolean intervalToggle, Boolean validation
 {
     public enum CommandSelectionStrategy {
         EXECUTE_ALL("Execute All", "Execute all listed commands in sequential order."),
-        RANDOMISE_ONE("Randomise One", "Randomly select one command.");
+        RANDOMISE_ONE("Randomise One", "Randomly select one command."),
+        OFF("OFF", "Don't execute commands.");
 
         public final String friendlyName;
         public final Tooltip tooltip;
@@ -28,6 +29,7 @@ public record ModConfig(int interval, boolean intervalToggle, Boolean validation
             return switch(str) {
                 case "Execute All" -> EXECUTE_ALL;
                 case "Randomise One" -> RANDOMISE_ONE;
+                case "OFF" -> OFF;
                 default -> throw new IllegalArgumentException("Unknown str: " + str);
             };
         }

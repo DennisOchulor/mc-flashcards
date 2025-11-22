@@ -4,7 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import com.mojang.blaze3d.platform.NativeImage;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -14,7 +14,7 @@ public final class ImageUtils {
 
     public static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("JPG/JPEG/PNG image files","jpg","png","jpeg");
 
-    public record ImagePackage(ResourceLocation id, int width, int height, float widthScaler, float heightScaler) {}
+    public record ImagePackage(Identifier id, int width, int height, float widthScaler, float heightScaler) {}
 
     /**
      * @param file The image file
@@ -43,7 +43,7 @@ public final class ImageUtils {
 
             DynamicTexture texture = new DynamicTexture(file::getName, img);
             float greaterDimension = Math.max(img.getHeight(),img.getWidth());
-            ResourceLocation id = ResourceLocation.fromNamespaceAndPath("flashcards", "theimage");
+            Identifier id = Identifier.fromNamespaceAndPath("flashcards", "theimage");
             Minecraft.getInstance().getTextureManager().register(id,texture);
             return new ImagePackage(id,img.getWidth(),img.getHeight(),img.getWidth()/greaterDimension,img.getHeight()/greaterDimension);
         }

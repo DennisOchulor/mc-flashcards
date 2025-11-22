@@ -12,7 +12,7 @@ import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -32,7 +32,7 @@ class QuestionEditScreen extends Screen {
         if(image != null) {
             ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(file);
             if(imgPkg == null) {
-                imageWidget = ImageWidget.texture(100,100, ResourceLocation.withDefaultNamespace("textures/missing.png"),100,100);
+                imageWidget = ImageWidget.texture(100,100, Identifier.withDefaultNamespace("textures/missing.png"),100,100);
                 imageWidget.setTooltip(Tooltip.create(Component.literal(file.getName() + " seems to be missing...")));
             }
             else {
@@ -58,7 +58,7 @@ class QuestionEditScreen extends Screen {
 
     private Path image;
     private ImageWidget imageWidget;
-    private ResourceLocation imageId;
+    private Identifier imageId;
     private final Button removeButton = Button.builder(Component.literal("Remove Image"),button -> {
         removeWidget(imageWidget);
         Minecraft.getInstance().getTextureManager().release(imageId);

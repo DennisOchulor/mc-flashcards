@@ -7,7 +7,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.RandomSource;
 
@@ -23,41 +22,39 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
         correctAnswerText = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 65);
 
         correctButton = Button.builder(Component.literal("Correct").withColor(CommonColors.GREEN),button -> {
-            Minecraft.getInstance().player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.MASTER,1,1);
+            Minecraft.getInstance().player.playSound(SoundEvents.PLAYER_LEVELUP);
             FileManager.updateStats(FileManager.getStats().incrementCorrect());
             QuestionScheduler.schedule();
             this.onClose();
             ModConfig config = FileManager.getConfig();
 
-            // run correct commands if applicable
-            if(Minecraft.getInstance().hasSingleplayerServer() || Minecraft.getInstance().player.hasPermissions(2)) {
-                switch(config.commandSelectionStrategy()) {
-                    case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
-                    case RANDOMISE_ONE -> {
-                        RandomSource random = Minecraft.getInstance().player.getRandom();
-                        String command = config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size()));
-                        Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
-                    }
+            // run correct commands
+            switch(config.commandSelectionStrategy()) {
+                case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
+                case RANDOMISE_ONE -> {
+                    RandomSource random = Minecraft.getInstance().player.getRandom();
+                    String command = config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size()));
+                    Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
                 }
+                case OFF -> {}
             }
         }).build();
         wrongButton = Button.builder(Component.literal("Wrong").withColor(CommonColors.SOFT_RED),button -> {
-            Minecraft.getInstance().player.playNotifySound(SoundEvents.ANVIL_LAND, SoundSource.MASTER,1,1);
+            Minecraft.getInstance().player.playSound(SoundEvents.ANVIL_LAND);
             FileManager.updateStats(FileManager.getStats().incrementWrong());
             QuestionScheduler.schedule();
             this.onClose();
             ModConfig config = FileManager.getConfig();
 
-            // run wrong commands if applicable
-            if(Minecraft.getInstance().hasSingleplayerServer() || Minecraft.getInstance().player.hasPermissions(2)) {
-                switch(config.commandSelectionStrategy()) {
-                    case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
-                    case RANDOMISE_ONE -> {
-                        RandomSource random = Minecraft.getInstance().player.getRandom();
-                        String command = config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
-                        Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
-                    }
+            // run wrong commands
+            switch(config.commandSelectionStrategy()) {
+                case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
+                case RANDOMISE_ONE -> {
+                    RandomSource random = Minecraft.getInstance().player.getRandom();
+                    String command = config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
+                    Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
                 }
+                case OFF -> {}
             }
         }).build();
 
