@@ -18,8 +18,7 @@ import net.minecraft.util.CommonColors;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
+import javax.swing.UIManager;
 
 @Environment(EnvType.CLIENT)
 public class ClientModInit implements ClientModInitializer {
@@ -40,8 +39,8 @@ public class ClientModInit implements ClientModInitializer {
         LOGGER.info("Initializing flashcards client");
         FileManager.init();
         QuestionScheduler.reload();
-        ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler,sender,client) -> QuestionScheduler.schedule());
-        ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler,client) -> QuestionScheduler.stop());
+        ClientPlayConnectionEvents.JOIN.register((_, _, _) -> QuestionScheduler.schedule());
+        ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> QuestionScheduler.stop());
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if(client.player == null) return;
             if(client.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = client.level.getGameTime();
@@ -76,7 +75,7 @@ public class ClientModInit implements ClientModInitializer {
             while(keyBindingConfigMenu.consumeClick()); //consume additional presses
         });
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        ClientTickEvents.END_CLIENT_TICK.register(_ -> {
             if(keyBindingPromptQuestion.consumeClick()) {
                 while(keyBindingPromptQuestion.consumeClick()); //consume additional presses
                 if(Minecraft.getInstance().level == null) return;
