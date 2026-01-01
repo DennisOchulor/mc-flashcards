@@ -13,11 +13,14 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 
 class QuestionAddScreen extends Screen {
     protected QuestionAddScreen(String category) {
@@ -26,15 +29,18 @@ class QuestionAddScreen extends Screen {
     }
 
     private String category;
-    private final EditScreen parent = (EditScreen) Minecraft.getInstance().screen;
+    private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().screen);
     private final StringWidget title = new StringWidget(Component.literal("Add Question"), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("Question:"),Minecraft.getInstance().font);
     private final StringWidget title3 = new StringWidget(Component.literal("Answer:"),Minecraft.getInstance().font);
     private final MultiLineEditBox questionEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
     private final MultiLineEditBox answerEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
 
+    @Nullable
     private Path image = null;
+    @Nullable
     private Identifier imageId = null;
+    @Nullable
     private ImageWidget imageWidget = null;
     private final Button removeButton = Button.builder(Component.literal("Remove Image"),button -> {
         removeWidget(imageWidget);
@@ -74,7 +80,7 @@ class QuestionAddScreen extends Screen {
                     Minecraft.getInstance().getTextureManager().release(imageId);
                 }
 
-                ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(file);
+                ImageUtils.ImagePackage imgPkg = Objects.requireNonNull(ImageUtils.getImagePackage(file));
                 int width = (int)(100 * imgPkg.widthScaler());
                 int height = (int)(100 * imgPkg.heightScaler());
                 image = file.toPath();
@@ -90,7 +96,7 @@ class QuestionAddScreen extends Screen {
         });
     }).build();
 
-    private final Button doneButton = Button.builder(Component.literal("Done"),button -> {
+    private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         List<Question> list = parent.categoriesMap.get(category);
         String imageName = null;
         if(image != null) imageName = FileManager.saveImage(image);

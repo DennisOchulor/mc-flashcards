@@ -5,10 +5,14 @@ import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.RandomSource;
+
+import java.util.Objects;
 
 // NOTE: There is no ManualValidationResultScreen because everything is done in this class.
 public class ManualValidationQuestionScreen extends QuestionScreen {
@@ -21,8 +25,11 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
         super(question);
         correctAnswerText = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 65);
 
-        correctButton = Button.builder(Component.literal("Correct").withColor(CommonColors.GREEN),button -> {
-            Minecraft.getInstance().player.playSound(SoundEvents.PLAYER_LEVELUP);
+        LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
+        ClientPacketListener packetListener = Objects.requireNonNull(Minecraft.getInstance().getConnection());
+
+        correctButton = Button.builder(Component.literal("Correct").withColor(CommonColors.GREEN),_ -> {
+            player.playSound(SoundEvents.PLAYER_LEVELUP);
             FileManager.updateStats(FileManager.getStats().incrementCorrect());
             QuestionScheduler.schedule();
             this.onClose();
@@ -30,17 +37,17 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
 
             // run correct commands
             switch(config.commandSelectionStrategy()) {
-                case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
+                case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
                 case RANDOMISE_ONE -> {
-                    RandomSource random = Minecraft.getInstance().player.getRandom();
+                    RandomSource random = player.getRandom();
                     String command = config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size()));
-                    Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
+                    packetListener.sendCommand("execute as @s at @s run " + command);
                 }
                 case OFF -> {}
             }
         }).build();
-        wrongButton = Button.builder(Component.literal("Wrong").withColor(CommonColors.SOFT_RED),button -> {
-            Minecraft.getInstance().player.playSound(SoundEvents.ANVIL_LAND);
+        wrongButton = Button.builder(Component.literal("Wrong").withColor(CommonColors.SOFT_RED),_ -> {
+            player.playSound(SoundEvents.ANVIL_LAND);
             FileManager.updateStats(FileManager.getStats().incrementWrong());
             QuestionScheduler.schedule();
             this.onClose();
@@ -48,11 +55,11 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
 
             // run wrong commands
             switch(config.commandSelectionStrategy()) {
-                case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
+                case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
                 case RANDOMISE_ONE -> {
-                    RandomSource random = Minecraft.getInstance().player.getRandom();
+                    RandomSource random = player.getRandom();
                     String command = config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
-                    Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
+                    packetListener.sendCommand("execute as @s at @s run " + command);
                 }
                 case OFF -> {}
             }

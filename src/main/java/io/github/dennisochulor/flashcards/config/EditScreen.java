@@ -10,29 +10,30 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class EditScreen extends Screen {
 
     protected EditScreen() {
         super(Component.literal("Edit screen"));
-        parent = Minecraft.getInstance().screen;
+        parent = Objects.requireNonNull(Minecraft.getInstance().screen);
     }
 
     private final Screen parent;
     final HashMap<String,List<Question>> categoriesMap = FileManager.getQuestions();
     private final ModConfig config = FileManager.getConfig();
     final CategoryListWidget categoryList = new CategoryListWidget(categoriesMap,config.categoryToggle());
-    final QuestionListWidget questionList = new QuestionListWidget(categoriesMap.get(categoryList.getSelected().name));
+    final QuestionListWidget questionList = new QuestionListWidget(categoriesMap.get(Objects.requireNonNull(categoryList.getSelected()).name));
     private final StringWidget categoryTitle = new StringWidget(Component.literal("Categories"),Minecraft.getInstance().font);
     private final StringWidget questionTitle = new StringWidget(Component.literal("Questions"),Minecraft.getInstance().font);
 
-    private final Button categoryRenameButton = Button.builder(Component.literal("Rename"),button -> {
-        if(categoryList.getSelected() == null) return;
+    private final Button categoryRenameButton = Button.builder(Component.literal("Rename"),_ -> {
+        Objects.requireNonNull(categoryList.getSelected());
         Minecraft.getInstance().setScreen(new CategoryRenameScreen(categoryList.getSelected().name));
     }).build();
-    private final Button categoryAddButton = Button.builder(Component.literal("Add"), button -> Minecraft.getInstance().setScreen(new CategoryAddScreen())).build();
-    private final Button categoryDeleteButton = Button.builder(Component.literal("Delete"), button -> {
-        if(categoryList.getSelected() == null) return;
+    private final Button categoryAddButton = Button.builder(Component.literal("Add"), _ -> Minecraft.getInstance().setScreen(new CategoryAddScreen())).build();
+    private final Button categoryDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
+        Objects.requireNonNull(categoryList.getSelected());
         categoriesMap.remove(categoryList.getSelected().name);
         categoryList.remove(categoryList.getSelected());
         categoryList.setSelected(null);
@@ -40,19 +41,24 @@ public class EditScreen extends Screen {
         questionList.setSelected(null);
     }).build();
 
-    private final Button questionEditButton = Button.builder(Component.literal("Edit"), button -> {
-        if(questionList.getSelected() == null) return;
+    private final Button questionEditButton = Button.builder(Component.literal("Edit"), _ -> {
+        Objects.requireNonNull(categoryList.getSelected());
+        Objects.requireNonNull(questionList.getSelected());
         Minecraft.getInstance().setScreen(new QuestionEditScreen(questionList.getSelected(),categoryList.getSelected().name));
     }).build();
-    private final Button questionDeleteButton = Button.builder(Component.literal("Delete"), button -> {
-        if(questionList.getSelected() == null) return;
+    private final Button questionDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
+        Objects.requireNonNull(questionList.getSelected());
+        Objects.requireNonNull(categoryList.getSelected());
         categoriesMap.get(categoryList.getSelected().name).remove(questionList.getSelected().question);
         questionList.remove(questionList.getSelected());
         questionList.setSelected(null);
     }).build();
-    private final Button questionAddButton = Button.builder(Component.literal("Add"), button -> Minecraft.getInstance().setScreen(new QuestionAddScreen(categoryList.getSelected().name))).build();
+    private final Button questionAddButton = Button.builder(Component.literal("Add"), _ -> {
+        Objects.requireNonNull(categoryList.getSelected());
+        Minecraft.getInstance().setScreen(new QuestionAddScreen(categoryList.getSelected().name));
+    }).build();
 
-    private final Button applyButton = Button.builder(Component.literal("Apply Changes"), button -> {
+    private final Button applyButton = Button.builder(Component.literal("Apply Changes"), _ -> {
         FileManager.updateQuestions(categoriesMap);
 
         HashMap<String,Boolean> categoryToggle = new HashMap<>();

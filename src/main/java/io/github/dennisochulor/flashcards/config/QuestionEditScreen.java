@@ -13,11 +13,14 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 
 class QuestionEditScreen extends Screen {
     protected QuestionEditScreen(QuestionListWidget.Entry entry, String category) {
@@ -27,10 +30,11 @@ class QuestionEditScreen extends Screen {
         this.category = category;
         this.entry = entry;
 
-        File file = FileManager.getImage(entry.question.imageName());
-        image = entry.question.imageName() != null ? file.toPath() : null;
-        if(image != null) {
-            ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(file);
+        if(entry.question.imageName() != null) {
+            File file = FileManager.getImageFile(entry.question.imageName());
+            image = file.toPath();
+            ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(file);
+
             if(imgPkg == null) {
                 imageWidget = ImageWidget.texture(100,100, Identifier.withDefaultNamespace("textures/missing.png"),100,100);
                 imageWidget.setTooltip(Tooltip.create(Component.literal(file.getName() + " seems to be missing...")));
@@ -44,20 +48,22 @@ class QuestionEditScreen extends Screen {
             }
             imageButton.setMessage(Component.literal("Change Image"));
         }
-        else imageWidget = null;
     }
 
     private String category;
     private QuestionListWidget.Entry entry;
-    private final EditScreen parent = (EditScreen) Minecraft.getInstance().screen;
+    private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().screen);
     private final StringWidget title = new StringWidget(Component.literal("Edit Question"), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("Question:"),Minecraft.getInstance().font);
     private final StringWidget title3 = new StringWidget(Component.literal("Answer:"),Minecraft.getInstance().font);
     private final MultiLineEditBox questionEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
     private final MultiLineEditBox answerEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
 
+    @Nullable
     private Path image;
+    @Nullable
     private ImageWidget imageWidget;
+    @Nullable
     private Identifier imageId;
     private final Button removeButton = Button.builder(Component.literal("Remove Image"),button -> {
         removeWidget(imageWidget);
@@ -97,7 +103,7 @@ class QuestionEditScreen extends Screen {
                     Minecraft.getInstance().getTextureManager().release(imageId);
                 }
 
-                ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(file);
+                ImageUtils.ImagePackage imgPkg = Objects.requireNonNull(ImageUtils.getImagePackage(file));
                 int width = (int)(100 * imgPkg.widthScaler());
                 int height = (int)(100 * imgPkg.heightScaler());
                 image = file.toPath();
@@ -113,14 +119,14 @@ class QuestionEditScreen extends Screen {
         });
     }).build();
 
-    private final Button doneButton = Button.builder(Component.literal("Done"),button -> {
+    private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         List<Question> list = parent.categoriesMap.get(category);
         String imageName = null;
         if(image != null) imageName = FileManager.saveImage(image);
 
         Question q = new Question(questionEditBox.getValue(),imageName,answerEditBox.getValue());
         list.set(list.indexOf(entry.question),q);
-        parent.questionList.getSelected().question = q;
+        Objects.requireNonNull(parent.questionList.getSelected()).question = q;
         this.onClose();
     }).build();
 

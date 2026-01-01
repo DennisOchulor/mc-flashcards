@@ -13,11 +13,16 @@ import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.RandomSource;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 class AutoValidationResultScreen extends Screen {
@@ -28,13 +33,13 @@ class AutoValidationResultScreen extends Screen {
     private final MultiLineTextWidget questionText;
     private final MultiLineTextWidget yourAnswerText;
     private final MultiLineTextWidget correctAnswerText;
+    @Nullable
     private final ImageWidget imageWidget;
     private final boolean isCorrect;
 
     protected AutoValidationResultScreen(Question question, String userAnswer) {
         super(Component.literal("Question Result"));
         isCorrect = question.answer().equalsIgnoreCase(userAnswer);
-        ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(FileManager.getImage(question.imageName()));
 
         resultText = new StringWidget(Component.literal(isCorrect ? "CORRECT" : "WRONG").withColor(isCorrect ? CommonColors.GREEN : CommonColors.SOFT_RED), Minecraft.getInstance().font);
 
@@ -44,20 +49,43 @@ class AutoValidationResultScreen extends Screen {
 
         correctAnswerText  = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 75);
 
-        doneButton = Button.builder(Component.literal("Done"), button -> {
+        Runnable releaseImgResource;
+        if(question.imageName() != null) {
+            ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
+            if(imgPkg == null) {
+                releaseImgResource = () -> {};
+                imageWidget = ImageWidget.texture(140,140,Identifier.withDefaultNamespace("textures/missing.png"),140,140);
+                imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
+            }
+            else {
+                releaseImgResource = () -> Minecraft.getInstance().getTextureManager().release(imgPkg.id());
+                int width = (int)(140 * imgPkg.widthScaler());
+                int height = (int)(140 * imgPkg.heightScaler());
+                imageWidget = ImageWidget.texture(width,height,imgPkg.id(),width,height);
+            }
+        }
+        else {
+            imageWidget = null;
+            releaseImgResource = () -> {};
+        }
+
+        doneButton = Button.builder(Component.literal("Done"), _ -> {
             QuestionScheduler.schedule();
             this.onClose();
-            if(imgPkg != null) Minecraft.getInstance().getTextureManager().release(imgPkg.id());
+            releaseImgResource.run();
             ModConfig config = FileManager.getConfig();
+
+            LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
+            ClientPacketListener packetListener = Objects.requireNonNull(Minecraft.getInstance().getConnection());
 
             // run correct/wrong commands
             switch(config.commandSelectionStrategy()) {
                 case EXECUTE_ALL -> {
-                    if(isCorrect) config.correctAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
-                    else config.wrongAnswerCommands().forEach(c -> Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + c));
+                    if(isCorrect) config.correctAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
+                    else config.wrongAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
                 }
                 case RANDOMISE_ONE -> {
-                    RandomSource random = Minecraft.getInstance().player.getRandom();
+                    RandomSource random = player.getRandom();
                     String command = isCorrect ? config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size())) : config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
                     Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
                 }
@@ -65,20 +93,7 @@ class AutoValidationResultScreen extends Screen {
             }
         }).build();
 
-        if(question.imageName() != null) {
-            if(imgPkg == null) {
-                imageWidget = ImageWidget.texture(140,140,Identifier.withDefaultNamespace("textures/missing.png"),140,140);
-                imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
-            }
-            else {
-                int width = (int)(140 * imgPkg.widthScaler());
-                int height = (int)(140 * imgPkg.heightScaler());
-                imageWidget = ImageWidget.texture(width,height,imgPkg.id(),width,height);
-            }
-        }
-        else imageWidget = null;
-
-        Minecraft.getInstance().player.playSound(isCorrect ? SoundEvents.PLAYER_LEVELUP : SoundEvents.ANVIL_LAND);
+        Objects.requireNonNull(Minecraft.getInstance().player).playSound(isCorrect ? SoundEvents.PLAYER_LEVELUP : SoundEvents.ANVIL_LAND);
         ModStats stats = FileManager.getStats();
         if(isCorrect) FileManager.updateStats(stats.incrementCorrect());
         else FileManager.updateStats(stats.incrementWrong());

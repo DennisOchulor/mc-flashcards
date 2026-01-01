@@ -10,10 +10,12 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.util.Objects;
+
 class GeneralConfigScreen extends Screen {
     protected GeneralConfigScreen() {
         super(Component.literal("General Config Screen"));
-        parent = Minecraft.getInstance().screen;
+        parent = Objects.requireNonNull(Minecraft.getInstance().screen);
     }
 
     private final ModConfig config = FileManager.getConfig();
@@ -26,7 +28,7 @@ class GeneralConfigScreen extends Screen {
                 case "Manual" -> Tooltip.create(Component.literal("Manually validate your answers yourself, useful if your questions have multiple acceptable answers."));
                 default -> throw new IllegalArgumentException("Invalid validationToggle button value");
             }).create(width/2 - 50,30,100,20,Component.literal("Answer Validation Mode"));
-    private final Button doneButton = Button.builder(Component.literal("Done"), button -> {
+    private final Button doneButton = Button.builder(Component.literal("Done"), _ -> {
         boolean validationToggle = validationToggleButton.getValue().equals("Automatic");
 
         ModConfig newConfig = new ModConfig(config.interval(),config.intervalToggle(),validationToggle,config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());

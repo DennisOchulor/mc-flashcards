@@ -7,10 +7,9 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -41,47 +40,51 @@ public class ClientModInit implements ClientModInitializer {
         QuestionScheduler.reload();
         ClientPlayConnectionEvents.JOIN.register((_, _, _) -> QuestionScheduler.schedule());
         ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> QuestionScheduler.stop());
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if(client.player == null) return;
-            if(client.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = client.level.getGameTime();
+        ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
+            if(minecraft.player == null || minecraft.level == null) return;
+            if(minecraft.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = minecraft.level.getGameTime();
         });
 
         KeyMapping.Category keyBindingCategory = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 
-        KeyMapping keyBindingConfigMenu = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        KeyMapping keyBindingConfigMenu = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "Flashcards Config Menu",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_H,
                 keyBindingCategory
         ));
 
-        KeyMapping keyBindingPromptQuestion =  KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        KeyMapping keyBindingPromptQuestion =  KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "Prompt a question",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_G,
                 keyBindingCategory
         ));
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
             if(keyBindingConfigMenu.consumeClick()) {
-                if(client.screen instanceof ConfigurationScreen) {
-                    client.screen.onClose();
+                //noinspection StatementWithEmptyBody
+                while(keyBindingConfigMenu.consumeClick()); //consume additional presses
+
+                if(minecraft.screen instanceof ConfigurationScreen) {
+                    minecraft.screen.onClose();
                 }
-                else if(client.screen == null) {
+                else if(minecraft.screen == null) {
                     ConfigurationScreen screen = new ConfigurationScreen();
-                    client.setScreen(screen);
+                    minecraft.setScreen(screen);
                 }
             }
-            while(keyBindingConfigMenu.consumeClick()); //consume additional presses
         });
 
-        ClientTickEvents.END_CLIENT_TICK.register(_ -> {
+        ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
             if(keyBindingPromptQuestion.consumeClick()) {
+                //noinspection StatementWithEmptyBody
                 while(keyBindingPromptQuestion.consumeClick()); //consume additional presses
-                if(Minecraft.getInstance().level == null) return;
+
+                if(minecraft.player == null || minecraft.level == null) return;
                 if(FileManager.getConfig().intervalToggle()) {
                     MutableComponent text = Component.literal("The interval toggle must be off for you to prompt a question on-demand.").withColor(CommonColors.SOFT_RED);
-                    Minecraft.getInstance().player.displayClientMessage(text,true);
+                    minecraft.player.displayClientMessage(text,true);
                     return;
                 }
                 QuestionScheduler.promptQuestion();

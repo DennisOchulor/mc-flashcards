@@ -15,20 +15,25 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Objects;
 
 public class QuestionScreen extends Screen {
     private final StringWidget titleText = new StringWidget(Component.literal("Answer this question"), Minecraft.getInstance().font);
     private final MultiLineTextWidget questionText;
+    @Nullable
     private final ImageWidget imageWidget;
+    @Nullable
     private final EnlargeImageOnClickWidget enlargeImageOnClickWidget;
-    private final ImageUtils.ImagePackage imgPkg;
+    private final ImageUtils.@Nullable ImagePackage imgPkg;
 
     public QuestionScreen(Question question) {
         super(Component.literal("Question Prompt"));
-        imgPkg = ImageUtils.getImageId(FileManager.getImage(question.imageName()));
         questionText = new ScalableMultilineTextWidget(Component.literal(question.question()), Minecraft.getInstance().font, 100);
 
         if(question.imageName() != null) {
+            imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
             if(imgPkg == null) {
                 imageWidget = ImageWidget.texture(140,140, Identifier.withDefaultNamespace("textures/missing.png"),140,140);
                 imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
@@ -44,6 +49,7 @@ public class QuestionScreen extends Screen {
         }
         else {
             imageWidget = null;
+            imgPkg = null;
             enlargeImageOnClickWidget = null;
         }
     }
@@ -61,7 +67,7 @@ public class QuestionScreen extends Screen {
         addRenderableOnly(questionText);
         if(imageWidget != null) {
             addRenderableOnly(imageWidget);
-            addWidget(enlargeImageOnClickWidget);
+            addWidget(Objects.requireNonNull(enlargeImageOnClickWidget));
             questionText.setPosition(width/2 - Math.min(questionText.getWidth(), 250)/2 + 100, 45);
             imageWidget.setPosition(width/4 - 75,25);
             enlargeImageOnClickWidget.setPosition(width/4 - 75,25);
@@ -86,7 +92,7 @@ public class QuestionScreen extends Screen {
         private final ImageUtils.ImagePackage imgPkg;
 
         EnlargeImageOnClickWidget(Screen parent, String imageName, ImageUtils.ImagePackage imgPkg) {
-            super(0,0,(int)(140 * imgPkg.widthScaler()),(int)(140 * imgPkg.heightScaler()),null);
+            super(0,0,(int)(140 * imgPkg.widthScaler()),(int)(140 * imgPkg.heightScaler()),Component.empty());
             this.parent = parent;
             this.imageName = imageName;
             this.imgPkg = imgPkg;
@@ -110,7 +116,7 @@ public class QuestionScreen extends Screen {
                     ImageWidget image = ImageWidget.texture(width,height,imgPkg.id(),width,height);
                     image.setPosition(this.width/2 - width/2,15);
 
-                    Button doneButton = Button.builder(Component.literal("Done"), button -> {
+                    Button doneButton = Button.builder(Component.literal("Done"), _ -> {
                         Minecraft.getInstance().setScreen(parent);
                     }).bounds(this.width/2 - 37,240,75,20).build();
 

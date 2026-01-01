@@ -2,6 +2,8 @@ package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.questions.Question;
 import java.util.List;
+import java.util.Objects;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -18,19 +20,19 @@ class CategoryRenameScreen extends Screen {
     }
 
     private String oldName;
-    private final EditScreen parent = (EditScreen) Minecraft.getInstance().screen;
+    private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().screen);
     private final StringWidget title = new StringWidget(Component.empty(), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("New Category Name:"),Minecraft.getInstance().font);
     private final EditBox textField = new EditBox(Minecraft.getInstance().font, 100,10,Component.empty());
     private final StringWidget warningText = new StringWidget(Component.literal("A category with this name already exists!").withColor(CommonColors.RED),Minecraft.getInstance().font);
-    private final Button doneButton = Button.builder(Component.literal("Done"),button -> {
+    private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         String newName = textField.getValue();
         if(parent.categoriesMap.containsKey(newName))  addRenderableOnly(warningText);
         else {
             List<Question> list = parent.categoriesMap.get(oldName);
             parent.categoriesMap.remove(oldName);
             parent.categoriesMap.put(newName,list);
-            parent.categoryList.getSelected().name = newName;
+            Objects.requireNonNull(parent.categoryList.getSelected()).name = newName;
             this.onClose();
         }
     }).build();

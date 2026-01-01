@@ -35,8 +35,10 @@ public record ModConfig(int interval, boolean intervalToggle, Boolean validation
         }
     }
 
+    @SuppressWarnings("ConstantValue")
     public ModConfig {
         if(interval < 1) throw new IllegalArgumentException("interval must be >= 1!");
+        // null checks needed for when Gson deserializes
         if(correctAnswerCommands == null) correctAnswerCommands = List.of();
         if(wrongAnswerCommands == null) wrongAnswerCommands = List.of();
         if(validationToggle == null) validationToggle = true;

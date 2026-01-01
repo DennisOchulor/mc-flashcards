@@ -30,8 +30,8 @@ public class ConfigurationScreen extends Screen {
         if (button.getMessage().getString().equals("ON")) button.setMessage(Component.literal("OFF"));
         else button.setMessage(Component.literal("ON"));
     }).build();
-    private final Button editButton = Button.builder(Component.literal("Edit Questions"), button -> Minecraft.getInstance().setScreen(new EditScreen())).build();
-    private final Button doneButton = Button.builder(Component.literal("Done"), button -> {
+    private final Button editButton = Button.builder(Component.literal("Edit Questions"), _ -> Minecraft.getInstance().setScreen(new EditScreen())).build();
+    private final Button doneButton = Button.builder(Component.literal("Done"), _ -> {
         ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getValue()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
         if(newConfig.equals(config)) {
             this.onClose();
@@ -42,9 +42,9 @@ public class ConfigurationScreen extends Screen {
         QuestionScheduler.updateConfig(newConfig);
         this.onClose();
     }).build();
-    private final Button generalConfigButton = Button.builder(Component.literal("General Config..."),button -> Minecraft.getInstance().setScreen(new GeneralConfigScreen())).build();
-    private final Button additionalConfigButton = Button.builder(Component.literal("Additional Config..."), button -> Minecraft.getInstance().setScreen(new AdditionalConfigScreen())).build();
-    private final Button statsButton = Button.builder(Component.literal("Stats"), button -> {
+    private final Button generalConfigButton = Button.builder(Component.literal("General Config..."),_ -> Minecraft.getInstance().setScreen(new GeneralConfigScreen())).build();
+    private final Button additionalConfigButton = Button.builder(Component.literal("Additional Config..."), _ -> Minecraft.getInstance().setScreen(new AdditionalConfigScreen())).build();
+    private final Button statsButton = Button.builder(Component.literal("Stats"), _ -> {
         ModStats stats = FileManager.getStats();
         float correctPercentage, wrongPercentage;
         if(stats.totalQuestionsAnswered() == 0) { // avoid DivideByZeroException
@@ -60,7 +60,7 @@ public class ConfigurationScreen extends Screen {
         Minecraft.getInstance().setScreen(popup);
     }).build();
 
-    private final Button openFlashcardsFolderButton = Button.builder(Component.literal("📂"),button -> {
+    private final Button openFlashcardsFolderButton = Button.builder(Component.literal("📂"),_ -> {
         try {
             Desktop.getDesktop().open(new File(Minecraft.getInstance().gameDirectory.toPath() + "/config/flashcards"));
         }

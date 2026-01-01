@@ -42,17 +42,21 @@ public final class FileManager {
             mediaFolder = new File(dotMinecraftFolder + "/config/flashcards/media/");
 
             if(!questionsFolder.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 questionsFolder.mkdirs();
-                Files.copy(FileManager.class.getResourceAsStream("/flashcards/config.json"),Path.of(dotMinecraftFolder + "/config/flashcards/config.json"));
-                Files.copy(FileManager.class.getResourceAsStream("/flashcards/questions/default.json"),Path.of(questionsFolder + "/default.json"));
+                Files.copy(Objects.requireNonNull(FileManager.class.getResourceAsStream("/flashcards/config.json")),Path.of(dotMinecraftFolder + "/config/flashcards/config.json"));
+                Files.copy(Objects.requireNonNull(FileManager.class.getResourceAsStream("/flashcards/questions/default.json")),Path.of(questionsFolder + "/default.json"));
             }
             if(!statsFile.exists()) {
-                Files.copy(FileManager.class.getResourceAsStream("/flashcards/stats.json"),Path.of(dotMinecraftFolder + "/config/flashcards/stats.json"));
+                Files.copy(Objects.requireNonNull(FileManager.class.getResourceAsStream("/flashcards/stats.json")),Path.of(dotMinecraftFolder + "/config/flashcards/stats.json"));
             }
             if(!mediaFolder.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 mediaFolder.mkdirs();
             }
-            Files.copy(FileManager.class.getResourceAsStream("/flashcards/flashcards-dp.zip"),Path.of(dotMinecraftFolder + "/config/flashcards/flashcards-dp.zip"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Objects.requireNonNull(FileManager.class.getResourceAsStream("/flashcards/flashcards-dp.zip")),Path.of(dotMinecraftFolder + "/config/flashcards/flashcards-dp.zip"), StandardCopyOption.REPLACE_EXISTING);
+
+            config = new Gson().fromJson(Files.readString(configFile.toPath()),ModConfig.class);
 
             importQuestions();
         }
@@ -64,14 +68,6 @@ public final class FileManager {
     public static void init() {} // run static initializer
 
     public static ModConfig getConfig() {
-        if(config == null) {
-            try {
-                config = new Gson().fromJson(Files.readString(configFile.toPath()),ModConfig.class);
-            }
-            catch(IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
         return config;
     }
 
@@ -92,7 +88,7 @@ public final class FileManager {
     public static HashMap<String,List<Question>> getQuestions() {
         Gson gson = new GsonBuilder().create();
         HashMap<String,List<Question>> map = new HashMap<>();
-        Arrays.stream(questionsFolder.listFiles()).filter(f -> f.getName().endsWith(".json")).forEachOrdered(f -> {
+        Arrays.stream(Objects.requireNonNull(questionsFolder.listFiles())).filter(f -> f.getName().endsWith(".json")).forEachOrdered(f -> {
             Question[] questions;
             try {
                 questions = gson.fromJson(Files.readString(f.toPath()), Question[].class);
@@ -107,7 +103,8 @@ public final class FileManager {
     public static void updateQuestions(HashMap<String,List<Question>> map) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
-            Arrays.stream(questionsFolder.listFiles()).filter(f -> f.getName().endsWith(".json")).forEach(File::delete);
+            //noinspection ResultOfMethodCallIgnored
+            Arrays.stream(Objects.requireNonNull(questionsFolder.listFiles())).filter(f -> f.getName().endsWith(".json")).forEach(File::delete);
 
             for (Map.Entry<String, List<Question>> entry : map.entrySet()) {
                 String filename = entry.getKey();
@@ -149,7 +146,7 @@ public final class FileManager {
      * @param imageName Name of the image file in the mod's {@link FileManager#mediaFolder}
      * @return The {@link File}
      */
-    public static File getImage(String imageName) {
+    public static File getImageFile(String imageName) {
         return new File(mediaFolder + "/" + imageName);
     }
 
@@ -162,7 +159,7 @@ public final class FileManager {
             final AtomicReference<String> amendedFilename = new AtomicReference<>(image.getFileName().toString());
             if(!image.toFile().exists()) return amendedFilename.get();
 
-            while(Arrays.stream(mediaFolder.list()).anyMatch(s -> s.equalsIgnoreCase(amendedFilename.get()))) {
+            while(Arrays.stream(Objects.requireNonNull(mediaFolder.list())).anyMatch(s -> s.equalsIgnoreCase(amendedFilename.get()))) {
                 int dotIndex = amendedFilename.get().lastIndexOf('.');
                 amendedFilename.set(amendedFilename.get().substring(0,dotIndex) + " (1)." + amendedFilename.get().substring(dotIndex+1));
             }
@@ -175,7 +172,7 @@ public final class FileManager {
     }
 
     private static void importQuestions() {
-        File[] files = questionsFolder.listFiles();
+        File[] files = Objects.requireNonNull(questionsFolder.listFiles());
         List<File> list = Arrays.stream(files).filter(f -> !f.getName().endsWith(".json")).toList();
         importAnki(list.stream().filter(f -> f.getName().contains("anki")));
         importCSV(list.stream().filter(f -> f.getName().endsWith(".csv")));
@@ -209,10 +206,11 @@ public final class FileManager {
                 writer.flush();
                 writer.close();
 
+                //noinspection ResultOfMethodCallIgnored
                 f.delete();
             }
             catch (Exception e) {
-                ClientModInit.LOGGER.warn(f.getName() + " encountered an error during import!", e);
+                ClientModInit.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
             }
         });
     }
@@ -236,10 +234,11 @@ public final class FileManager {
                 writer.flush();
                 writer.close();
 
+                //noinspection ResultOfMethodCallIgnored
                 f.delete();
             }
             catch (Exception e) {
-                ClientModInit.LOGGER.warn(f.getName() + " encountered an error during import!", e);
+                ClientModInit.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
             }
         });
     }
@@ -263,10 +262,11 @@ public final class FileManager {
                 writer.flush();
                 writer.close();
 
+                //noinspection ResultOfMethodCallIgnored
                 f.delete();
             }
             catch (Exception e) {
-                ClientModInit.LOGGER.warn(f.getName() + " encountered an error during import!", e);
+                ClientModInit.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
             }
         });
     }

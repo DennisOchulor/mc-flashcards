@@ -5,6 +5,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -51,7 +53,7 @@ class CategoryListWidget extends ObjectSelectionList<CategoryListWidget.Entry> {
 
         @Override
         public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
-            EditScreen screen = (EditScreen) Minecraft.getInstance().screen;
+            EditScreen screen = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().screen);
             screen.questionList.changeList(screen.categoriesMap.get(name));
             if(click.button() == GLFW.GLFW_MOUSE_BUTTON_1 && click.x()>=getContentX()+140) {
                 enabled = !enabled;

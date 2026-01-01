@@ -12,7 +12,7 @@ public class AutoValidationQuestionScreen extends QuestionScreen {
 
     public AutoValidationQuestionScreen(Question question) {
         super(question);
-        submitButton = Button.builder(Component.literal("Submit"), button -> {
+        submitButton = Button.builder(Component.literal("Submit"), _ -> {
             Minecraft.getInstance().setScreen(new AutoValidationResultScreen(question, answerEditBox.getValue()));
         }).build();
     }
@@ -22,7 +22,7 @@ public class AutoValidationQuestionScreen extends QuestionScreen {
         super.init();
         answerEditBox.setPosition(width/2 - answerEditBox.getWidth()/2, height - 30 - answerEditBox.getHeight() - 20);
         answerEditBox.setCharacterLimit(300);
-        answerEditBox.setValueListener(answer -> submitButton.active = !answerEditBox.getValue().isBlank());
+        answerEditBox.setValueListener(_ -> submitButton.active = !answerEditBox.getValue().isBlank());
 
         submitButton.setRectangle(75,20,width/2 - 37,height - 30);
         submitButton.active = false;

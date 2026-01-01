@@ -6,6 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
 import com.mojang.blaze3d.platform.NativeImage;
+import org.jspecify.annotations.Nullable;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -21,12 +23,13 @@ public final class ImageUtils {
      * @return an {@link ImagePackage} for the image. This returns null if the image file does not exist or
      * if the image file is using an unsupported filename extension according to {@link ImageUtils#FILE_NAME_EXTENSION_FILTER}
      */
-    public static ImagePackage getImageId(File file) {
+    @Nullable
+    public static ImagePackage getImagePackage(File file) {
         try {
             if(!file.exists()) return null;
             if(!FILE_NAME_EXTENSION_FILTER.accept(file)) return null;
 
-            NativeImage img = null;
+            NativeImage img;
             if(file.getName().endsWith(".png")) {
                 img = NativeImage.read(new FileInputStream(file));
             }
@@ -39,6 +42,9 @@ public final class ImageUtils {
                         img.setPixel(x,y,argb);
                     }
                 }
+            }
+            else {
+                throw new IllegalStateException("File bypassed extension filter: " + file.getPath());
             }
 
             DynamicTexture texture = new DynamicTexture(file::getName, img);
