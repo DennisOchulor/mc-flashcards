@@ -54,7 +54,7 @@ public class ClientModInit implements ClientModInitializer {
                 keyBindingCategory
         ));
 
-        KeyMapping keyBindingPromptQuestion =  KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        KeyMapping keyBindingPromptQuestion = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "Prompt a question",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_G,
