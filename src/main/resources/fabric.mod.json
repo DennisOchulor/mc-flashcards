@@ -18,7 +18,8 @@
   "entrypoints": {
     "client": [
       "io.github.dennisochulor.flashcards.ClientModInit"
-    ]
+    ],
+    "modmenu": ["io.github.dennisochulor.flashcards.compat.ModMenuCompat"]
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
