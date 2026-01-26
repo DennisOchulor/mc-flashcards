@@ -34,6 +34,7 @@ public class QuestionScheduler {
 
     public static void schedule() {
         if(!config.intervalToggle()) return;
+        if(Minecraft.getInstance().level == null) return;
         future.cancel(false);
         future = executor.schedule(QuestionScheduler::runTask,config.interval(),TimeUnit.MINUTES);
     }
