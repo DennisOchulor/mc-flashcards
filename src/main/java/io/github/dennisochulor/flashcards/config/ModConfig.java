@@ -37,19 +37,19 @@ public record ModConfig(int interval, boolean intervalToggle, Boolean validation
 
     @SuppressWarnings("ConstantValue")
     public ModConfig {
-        if(interval < 1) throw new IllegalArgumentException("interval must be >= 1!");
+        if (interval < 1) throw new IllegalArgumentException("interval must be >= 1!");
         // null checks needed for when Gson deserializes
-        if(correctAnswerCommands == null) correctAnswerCommands = List.of();
-        if(wrongAnswerCommands == null) wrongAnswerCommands = List.of();
-        if(validationToggle == null) validationToggle = true;
-        if(commandSelectionStrategy == null) commandSelectionStrategy = CommandSelectionStrategy.EXECUTE_ALL;
+        if (correctAnswerCommands == null) correctAnswerCommands = List.of();
+        if (wrongAnswerCommands == null) wrongAnswerCommands = List.of();
+        if (validationToggle == null) validationToggle = true;
+        if (commandSelectionStrategy == null) commandSelectionStrategy = CommandSelectionStrategy.EXECUTE_ALL;
 
         correctAnswerCommands = correctAnswerCommands.stream().filter(s -> !s.isBlank()).map(s -> {
-            if(s.startsWith("/")) s = s.substring(1);
+            if (s.startsWith("/")) s = s.substring(1);
             return s;
         }).toList();
         wrongAnswerCommands = wrongAnswerCommands.stream().filter(s -> !s.isBlank()).map(s -> {
-            if(s.startsWith("/")) s = s.substring(1);
+            if (s.startsWith("/")) s = s.substring(1);
             return s;
         }).toList();
     }

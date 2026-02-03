@@ -27,7 +27,7 @@ class CategoryRenameScreen extends Screen {
     private final StringWidget warningText = new StringWidget(Component.literal("A category with this name already exists!").withColor(CommonColors.RED),Minecraft.getInstance().font);
     private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         String newName = textField.getValue();
-        if(parent.categoriesMap.containsKey(newName))  addRenderableOnly(warningText);
+        if (parent.categoriesMap.containsKey(newName))  addRenderableOnly(warningText);
         else {
             List<Question> list = parent.categoriesMap.get(oldName);
             parent.categoriesMap.remove(oldName);

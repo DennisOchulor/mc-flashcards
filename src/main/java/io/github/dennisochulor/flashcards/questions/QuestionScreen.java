@@ -32,9 +32,9 @@ public class QuestionScreen extends Screen {
         super(Component.literal("Question Prompt"));
         questionText = new ScalableMultilineTextWidget(Component.literal(question.question()), Minecraft.getInstance().font, 100);
 
-        if(question.imageName() != null) {
+        if (question.imageName() != null) {
             imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
-            if(imgPkg == null) {
+            if (imgPkg == null) {
                 imageWidget = ImageWidget.texture(140,140, Identifier.withDefaultNamespace("textures/missing.png"),140,140);
                 imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
                 enlargeImageOnClickWidget = new EnlargeImageOnClickWidget(this,question.imageName() + " (missing)",new ImageUtils.ImagePackage(Identifier.withDefaultNamespace("textures/missing.png"),1,1,1,1));
@@ -65,7 +65,7 @@ public class QuestionScreen extends Screen {
 
         addRenderableOnly(titleText);
         addRenderableOnly(questionText);
-        if(imageWidget != null) {
+        if (imageWidget != null) {
             addRenderableOnly(imageWidget);
             addWidget(Objects.requireNonNull(enlargeImageOnClickWidget));
             questionText.setPosition(width/2 - Math.min(questionText.getWidth(), 250)/2 + 100, 45);
@@ -81,7 +81,7 @@ public class QuestionScreen extends Screen {
 
     @Override
     public void onClose() {
-        if(imgPkg != null) Minecraft.getInstance().getTextureManager().release(imgPkg.id());
+        if (imgPkg != null) Minecraft.getInstance().getTextureManager().release(imgPkg.id());
         super.onClose();
     }
 

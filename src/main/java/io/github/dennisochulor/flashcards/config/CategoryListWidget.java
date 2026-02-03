@@ -48,14 +48,14 @@ class CategoryListWidget extends ObjectSelectionList<CategoryListWidget.Entry> {
         @Override
         public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
             context.drawString(Minecraft.getInstance().font, name, getContentX()+75, getContentY(), CommonColors.WHITE, false);
-            if(enabled) context.drawString(Minecraft.getInstance().font, "✔", getContentX()+140, getContentY(), CommonColors.GREEN, false);
+            if (enabled) context.drawString(Minecraft.getInstance().font, "✔", getContentX()+140, getContentY(), CommonColors.GREEN, false);
         }
 
         @Override
         public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
             EditScreen screen = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().screen);
             screen.questionList.changeList(screen.categoriesMap.get(name));
-            if(click.button() == GLFW.GLFW_MOUSE_BUTTON_1 && click.x()>=getContentX()+140) {
+            if (click.button() == GLFW.GLFW_MOUSE_BUTTON_1 && click.x()>=getContentX()+140) {
                 enabled = !enabled;
             }
             return true;

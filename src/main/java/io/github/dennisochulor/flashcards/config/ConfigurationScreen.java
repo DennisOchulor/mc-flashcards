@@ -33,7 +33,7 @@ public class ConfigurationScreen extends Screen {
     private final Button editButton = Button.builder(Component.literal("Edit Questions"), _ -> Minecraft.getInstance().setScreen(new EditScreen())).build();
     private final Button doneButton = Button.builder(Component.literal("Done"), _ -> {
         ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getValue()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
-        if(newConfig.equals(config)) {
+        if (newConfig.equals(config)) {
             this.onClose();
             return;
         }
@@ -47,7 +47,7 @@ public class ConfigurationScreen extends Screen {
     private final Button statsButton = Button.builder(Component.literal("Stats"), _ -> {
         ModStats stats = FileManager.getStats();
         float correctPercentage, wrongPercentage;
-        if(stats.totalQuestionsAnswered() == 0) { // avoid DivideByZeroException
+        if (stats.totalQuestionsAnswered() == 0) { // avoid DivideByZeroException
             correctPercentage = 0;
             wrongPercentage = 0;
         }
@@ -74,7 +74,7 @@ public class ConfigurationScreen extends Screen {
         intervalTextField.setValue(String.valueOf(config.interval()));
         intervalTextField.setResponder(text -> {
             try {
-                if(Integer.parseInt(text) < 1) throw new IllegalArgumentException();
+                if (Integer.parseInt(text) < 1) throw new IllegalArgumentException();
                 else doneButton.active = true;
             }
             catch (IllegalArgumentException e) {
@@ -107,7 +107,7 @@ public class ConfigurationScreen extends Screen {
         addRenderableWidget(additionalConfigButton);
         addRenderableWidget(statsButton);
         addRenderableWidget(doneButton);
-        if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
             addRenderableWidget(openFlashcardsFolderButton);
         }
     }

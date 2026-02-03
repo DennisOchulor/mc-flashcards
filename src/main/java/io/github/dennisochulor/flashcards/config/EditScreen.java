@@ -62,7 +62,7 @@ public class EditScreen extends Screen {
         FileManager.updateQuestions(categoriesMap);
 
         HashMap<String,Boolean> categoryToggle = new HashMap<>();
-        for(var category : categoryList.children()) {
+        for (var category : categoryList.children()) {
             categoryToggle.put(category.name,category.enabled);
         }
 

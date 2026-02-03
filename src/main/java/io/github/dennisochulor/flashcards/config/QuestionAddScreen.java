@@ -63,18 +63,18 @@ class QuestionAddScreen extends Screen {
             fileChooser.setMultiSelectionEnabled(false);
             fileChooser.showOpenDialog(wrapper);
             File file = fileChooser.getSelectedFile();
-            if(file == null) return;
-            if(!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
+            if (file == null) return;
+            if (!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
                 Minecraft.getInstance().execute(() -> {
                     PopupScreen popup = new PopupScreen.Builder(this,Component.literal("Encountered error with chosen file " + file.getName())).setMessage(Component.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription())).addButton(Component.literal("Done"),PopupScreen::onClose).build();
                     Minecraft.getInstance().setScreen(popup);
                 });
                 return;
             }
-            if(Minecraft.getInstance().screen != this) return;
+            if (Minecraft.getInstance().screen != this) return;
 
             Minecraft.getInstance().execute(() -> {
-                if(image != null) {
+                if (image != null) {
                     removeWidget(imageWidget);
                     removeWidget(removeButton);
                     Minecraft.getInstance().getTextureManager().release(imageId);
@@ -99,7 +99,7 @@ class QuestionAddScreen extends Screen {
     private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         List<Question> list = parent.categoriesMap.get(category);
         String imageName = null;
-        if(image != null) imageName = FileManager.saveImage(image);
+        if (image != null) imageName = FileManager.saveImage(image);
 
         Question q = new Question(questionEditBox.getValue(),imageName,answerEditBox.getValue());
         list.add(q);
@@ -129,7 +129,7 @@ class QuestionAddScreen extends Screen {
         addRenderableOnly(title3);
         addRenderableWidget(answerEditBox);
         addRenderableWidget(imageButton);
-        if(imageWidget != null) {
+        if (imageWidget != null) {
             imageWidget.setPosition(imageButton.getX() - 10, imageButton.getY() + 25);
             addRenderableOnly(imageWidget);
             addRenderableWidget(removeButton);
@@ -140,7 +140,7 @@ class QuestionAddScreen extends Screen {
     @Override
     public void onClose() {
         Minecraft.getInstance().setScreen(parent);
-        if(imageId != null) Minecraft.getInstance().getTextureManager().release(imageId);
+        if (imageId != null) Minecraft.getInstance().getTextureManager().release(imageId);
     }
 
     @Override

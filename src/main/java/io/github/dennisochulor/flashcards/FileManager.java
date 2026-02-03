@@ -41,16 +41,16 @@ public final class FileManager {
             questionsFolder = new File(dotMinecraftFolder + "/config/flashcards/questions/");
             mediaFolder = new File(dotMinecraftFolder + "/config/flashcards/media/");
 
-            if(!questionsFolder.exists()) {
+            if (!questionsFolder.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 questionsFolder.mkdirs();
                 Files.copy(Objects.requireNonNull(FileManager.class.getResourceAsStream("/flashcards/config.json")),Path.of(dotMinecraftFolder + "/config/flashcards/config.json"));
                 Files.copy(Objects.requireNonNull(FileManager.class.getResourceAsStream("/flashcards/questions/default.json")),Path.of(questionsFolder + "/default.json"));
             }
-            if(!statsFile.exists()) {
+            if (!statsFile.exists()) {
                 Files.copy(Objects.requireNonNull(FileManager.class.getResourceAsStream("/flashcards/stats.json")),Path.of(dotMinecraftFolder + "/config/flashcards/stats.json"));
             }
-            if(!mediaFolder.exists()) {
+            if (!mediaFolder.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 mediaFolder.mkdirs();
             }
@@ -157,9 +157,9 @@ public final class FileManager {
     public static String saveImage(Path image) {
         try {
             final AtomicReference<String> amendedFilename = new AtomicReference<>(image.getFileName().toString());
-            if(!image.toFile().exists()) return amendedFilename.get();
+            if (!image.toFile().exists()) return amendedFilename.get();
 
-            while(Arrays.stream(Objects.requireNonNull(mediaFolder.list())).anyMatch(s -> s.equalsIgnoreCase(amendedFilename.get()))) {
+            while (Arrays.stream(Objects.requireNonNull(mediaFolder.list())).anyMatch(s -> s.equalsIgnoreCase(amendedFilename.get()))) {
                 int dotIndex = amendedFilename.get().lastIndexOf('.');
                 amendedFilename.set(amendedFilename.get().substring(0,dotIndex) + " (1)." + amendedFilename.get().substring(dotIndex+1));
             }
@@ -191,7 +191,7 @@ public final class FileManager {
                     String question = q[0].replace("<br>","\n");
                     String answer = q[1];
                     Matcher matcher = imagePattern.matcher(q[0]);
-                    if(matcher.matches()) {
+                    if (matcher.matches()) {
                         question = question.replace(matcher.group(1),"");
                         String imageName = matcher.group(2);
                         importedQuestions.add(new Question(question,imageName,answer));
@@ -223,8 +223,8 @@ public final class FileManager {
                 List<String[]> questions = reader.readAll();
                 reader.close();
                 questions.forEach(q -> {
-                    if(q.length == 2) importedQuestions.add(new Question(q[0],null,q[1]));
-                    if(q.length >= 3) importedQuestions.add(new Question(q[0],q[2],q[1]));
+                    if (q.length == 2) importedQuestions.add(new Question(q[0],null,q[1]));
+                    if (q.length >= 3) importedQuestions.add(new Question(q[0],q[2],q[1]));
                 });
 
                 String filename = "csv-" + ThreadLocalRandom.current().nextInt(0,99999);
@@ -251,8 +251,8 @@ public final class FileManager {
                 List<String[]> questions = reader.readAll();
                 reader.close();
                 questions.forEach(q -> {
-                    if(q.length == 2) importedQuestions.add(new Question(q[0],null,q[1]));
-                    if(q.length == 3) importedQuestions.add(new Question(q[0],q[2],q[1]));
+                    if (q.length == 2) importedQuestions.add(new Question(q[0],null,q[1]));
+                    if (q.length == 3) importedQuestions.add(new Question(q[0],q[2],q[1]));
                 });
 
                 String filename = "tsv-" + ThreadLocalRandom.current().nextInt(0,99999);

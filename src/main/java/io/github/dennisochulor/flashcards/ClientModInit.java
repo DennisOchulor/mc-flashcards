@@ -41,8 +41,8 @@ public class ClientModInit implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((_, _, _) -> QuestionScheduler.schedule());
         ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> QuestionScheduler.stop());
         ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
-            if(minecraft.player == null || minecraft.level == null) return;
-            if(minecraft.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = minecraft.level.getGameTime();
+            if (minecraft.player == null || minecraft.level == null) return;
+            if (minecraft.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = minecraft.level.getGameTime();
         });
 
         KeyMapping.Category keyBindingCategory = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
@@ -62,14 +62,14 @@ public class ClientModInit implements ClientModInitializer {
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
-            if(keyBindingConfigMenu.consumeClick()) {
+            if (keyBindingConfigMenu.consumeClick()) {
                 //noinspection StatementWithEmptyBody
-                while(keyBindingConfigMenu.consumeClick()); //consume additional presses
+                while (keyBindingConfigMenu.consumeClick()); //consume additional presses
 
-                if(minecraft.screen instanceof ConfigurationScreen) {
+                if (minecraft.screen instanceof ConfigurationScreen) {
                     minecraft.screen.onClose();
                 }
-                else if(minecraft.screen == null) {
+                else if (minecraft.screen == null) {
                     ConfigurationScreen screen = new ConfigurationScreen();
                     minecraft.setScreen(screen);
                 }
@@ -77,12 +77,12 @@ public class ClientModInit implements ClientModInitializer {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
-            if(keyBindingPromptQuestion.consumeClick()) {
+            if (keyBindingPromptQuestion.consumeClick()) {
                 //noinspection StatementWithEmptyBody
-                while(keyBindingPromptQuestion.consumeClick()); //consume additional presses
+                while (keyBindingPromptQuestion.consumeClick()); //consume additional presses
 
-                if(minecraft.player == null || minecraft.level == null) return;
-                if(FileManager.getConfig().intervalToggle()) {
+                if (minecraft.player == null || minecraft.level == null) return;
+                if (FileManager.getConfig().intervalToggle()) {
                     MutableComponent text = Component.literal("The interval toggle must be off for you to prompt a question on-demand.").withColor(CommonColors.SOFT_RED);
                     minecraft.player.displayClientMessage(text,true);
                     return;

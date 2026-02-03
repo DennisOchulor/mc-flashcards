@@ -50,9 +50,9 @@ class AutoValidationResultScreen extends Screen {
         correctAnswerText  = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 75);
 
         Runnable releaseImgResource;
-        if(question.imageName() != null) {
+        if (question.imageName() != null) {
             ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
-            if(imgPkg == null) {
+            if (imgPkg == null) {
                 releaseImgResource = () -> {};
                 imageWidget = ImageWidget.texture(140,140,Identifier.withDefaultNamespace("textures/missing.png"),140,140);
                 imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
@@ -81,7 +81,7 @@ class AutoValidationResultScreen extends Screen {
             // run correct/wrong commands
             switch(config.commandSelectionStrategy()) {
                 case EXECUTE_ALL -> {
-                    if(isCorrect) config.correctAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
+                    if (isCorrect) config.correctAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
                     else config.wrongAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
                 }
                 case RANDOMISE_ONE -> {
@@ -95,13 +95,13 @@ class AutoValidationResultScreen extends Screen {
 
         Objects.requireNonNull(Minecraft.getInstance().player).playSound(isCorrect ? SoundEvents.PLAYER_LEVELUP : SoundEvents.ANVIL_LAND);
         ModStats stats = FileManager.getStats();
-        if(isCorrect) FileManager.updateStats(stats.incrementCorrect());
+        if (isCorrect) FileManager.updateStats(stats.incrementCorrect());
         else FileManager.updateStats(stats.incrementWrong());
     }
 
     @Override
     public void init() {
-        if(isCorrect) titleText.setPosition(width/2 - 57, 15);
+        if (isCorrect) titleText.setPosition(width/2 - 57, 15);
         else titleText.setPosition(width/2 - 51, 15);
         resultText.setPosition(titleText.getX() + 80, titleText.getY());
 
@@ -128,7 +128,7 @@ class AutoValidationResultScreen extends Screen {
         addRenderableOnly(yourAnswerText);
         addRenderableOnly(correctAnswerText);
         addRenderableWidget(doneButton);
-        if(imageWidget != null) {
+        if (imageWidget != null) {
             addRenderableOnly(imageWidget);
             questionText.setPosition(width/2 - Math.min(questionText.getWidth(), 250)/2 + 100, 45);
             imageWidget.setPosition(width/4 - 75,25);

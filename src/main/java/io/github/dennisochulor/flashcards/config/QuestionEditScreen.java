@@ -30,12 +30,12 @@ class QuestionEditScreen extends Screen {
         this.category = category;
         this.entry = entry;
 
-        if(entry.question.imageName() != null) {
+        if (entry.question.imageName() != null) {
             File file = FileManager.getImageFile(entry.question.imageName());
             image = file.toPath();
             ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(file);
 
-            if(imgPkg == null) {
+            if (imgPkg == null) {
                 imageWidget = ImageWidget.texture(100,100, Identifier.withDefaultNamespace("textures/missing.png"),100,100);
                 imageWidget.setTooltip(Tooltip.create(Component.literal(file.getName() + " seems to be missing...")));
             }
@@ -86,18 +86,18 @@ class QuestionEditScreen extends Screen {
             fileChooser.setMultiSelectionEnabled(false);
             fileChooser.showOpenDialog(wrapper);
             File file = fileChooser.getSelectedFile();
-            if(file == null) return;
-            if(!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
+            if (file == null) return;
+            if (!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
                 Minecraft.getInstance().execute(() -> {
                     PopupScreen popup = new PopupScreen.Builder(this,Component.literal("Encountered error with chosen file " + file.getName())).setMessage(Component.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription())).addButton(Component.literal("Done"),PopupScreen::onClose).build();
                     Minecraft.getInstance().setScreen(popup);
                 });
                 return;
             }
-            if(Minecraft.getInstance().screen != this) return;
+            if (Minecraft.getInstance().screen != this) return;
 
             Minecraft.getInstance().execute(() -> {
-                if(image != null) {
+                if (image != null) {
                     removeWidget(imageWidget);
                     removeWidget(removeButton);
                     Minecraft.getInstance().getTextureManager().release(imageId);
@@ -122,7 +122,7 @@ class QuestionEditScreen extends Screen {
     private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         List<Question> list = parent.categoriesMap.get(category);
         String imageName = null;
-        if(image != null) imageName = FileManager.saveImage(image);
+        if (image != null) imageName = FileManager.saveImage(image);
 
         Question q = new Question(questionEditBox.getValue(),imageName,answerEditBox.getValue());
         list.set(list.indexOf(entry.question),q);
@@ -150,7 +150,7 @@ class QuestionEditScreen extends Screen {
         addRenderableOnly(title3);
         addRenderableWidget(answerEditBox);
         addRenderableWidget(imageButton);
-        if(imageWidget != null) {
+        if (imageWidget != null) {
             imageWidget.setPosition(imageButton.getX() - 10, imageButton.getY() + 25);
             addRenderableOnly(imageWidget);
             addRenderableWidget(removeButton);
@@ -161,7 +161,7 @@ class QuestionEditScreen extends Screen {
     @Override
     public void onClose() {
         Minecraft.getInstance().setScreen(parent);
-        if(imageId != null) Minecraft.getInstance().getTextureManager().release(imageId);
+        if (imageId != null) Minecraft.getInstance().getTextureManager().release(imageId);
     }
 
     @Override

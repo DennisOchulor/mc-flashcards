@@ -27,14 +27,14 @@ public class QuestionScheduler {
         config = FileManager.getConfig();
         questions.clear();
         FileManager.getQuestions().forEach((category,list) -> {
-            if(config.categoryToggle().getOrDefault(category,true)) questions.addAll(list);
+            if (config.categoryToggle().getOrDefault(category,true)) questions.addAll(list);
         });
         Collections.shuffle(questions);
     }
 
     public static void schedule() {
-        if(!config.intervalToggle()) return;
-        if(Minecraft.getInstance().level == null) return;
+        if (!config.intervalToggle()) return;
+        if (Minecraft.getInstance().level == null) return;
         future.cancel(false);
         future = executor.schedule(QuestionScheduler::runTask,config.interval(),TimeUnit.MINUTES);
     }
@@ -46,17 +46,17 @@ public class QuestionScheduler {
     public static void updateConfig(ModConfig newConfig) {
         config = newConfig;
         future.cancel(true);
-        if(newConfig.intervalToggle()) schedule();
+        if (newConfig.intervalToggle()) schedule();
     }
 
     public static void promptQuestion() {
         Objects.requireNonNull(Minecraft.getInstance().player); // sanity check to avoid questions outside a world
 
-        if(questions.isEmpty()) reload();
-        if(questions.isEmpty()) return; // there are no questions... so just do nothing
+        if (questions.isEmpty()) reload();
+        if (questions.isEmpty()) return; // there are no questions... so just do nothing
         int rand = ThreadLocalRandom.current().nextInt(0,questions.size());
         Question question = questions.remove(rand);
-        if(config.validationToggle()) Minecraft.getInstance().setScreen(new AutoValidationQuestionScreen(question));
+        if (config.validationToggle()) Minecraft.getInstance().setScreen(new AutoValidationQuestionScreen(question));
         else Minecraft.getInstance().setScreen(new ManualValidationQuestionScreen(question));
     }
 
@@ -68,7 +68,7 @@ public class QuestionScheduler {
             ClientLevel level = Objects.requireNonNull(minecraft.level);
             boolean isAnotherScreenOpen = minecraft.screen != null;
             boolean wasPlayerHurtRecently = (level.getGameTime() - playerLastHurtTime) < (level.tickRateManager().tickrate() * 10); // 10 seconds
-            if(isAnotherScreenOpen || wasPlayerHurtRecently) {
+            if (isAnotherScreenOpen || wasPlayerHurtRecently) {
                 executor.schedule(QuestionScheduler::runTask, 1, TimeUnit.SECONDS); // wait 1 second before trying again
             }
             else {

@@ -18,7 +18,7 @@ public class ScalableMultilineTextWidget extends MultiLineTextWidget {
 
     @Override
     public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        if(this.getHeight() > maxHeigth) {
+        if (this.getHeight() > maxHeigth) {
             // https://stackoverflow.com/questions/56824983/scaling-is-moving-the-object
             float scale = (float) maxHeigth / getHeight();
             context.pose().pushMatrix();
@@ -30,7 +30,7 @@ public class ScalableMultilineTextWidget extends MultiLineTextWidget {
             positionMatrix.set(transOriginToPos.mul(scalingMatrix).mul(transRefToOrigin));
         }
         super.renderWidget(context,mouseX,mouseY,delta);
-        if(this.getHeight() > maxHeigth) context.pose().popMatrix();
+        if (this.getHeight() > maxHeigth) context.pose().popMatrix();
     }
 
 }

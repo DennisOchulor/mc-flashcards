@@ -26,18 +26,18 @@ public final class ImageUtils {
     @Nullable
     public static ImagePackage getImagePackage(File file) {
         try {
-            if(!file.exists()) return null;
-            if(!FILE_NAME_EXTENSION_FILTER.accept(file)) return null;
+            if (!file.exists()) return null;
+            if (!FILE_NAME_EXTENSION_FILTER.accept(file)) return null;
 
             NativeImage img;
-            if(file.getName().endsWith(".png")) {
+            if (file.getName().endsWith(".png")) {
                 img = NativeImage.read(new FileInputStream(file));
             }
-            else if(file.getName().endsWith(".jpeg") || file.getName().endsWith(".jpg")) {
+            else if (file.getName().endsWith(".jpeg") || file.getName().endsWith(".jpg")) {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 img = new NativeImage(bufferedImage.getWidth(),bufferedImage.getHeight(),false);
-                for(int y=0;y<bufferedImage.getHeight();y++) {
-                    for(int x=0;x<bufferedImage.getWidth();x++) {
+                for (int y=0;y<bufferedImage.getHeight();y++) {
+                    for (int x=0;x<bufferedImage.getWidth();x++) {
                         int argb = bufferedImage.getRGB(x,y);
                         img.setPixel(x,y,argb);
                     }
