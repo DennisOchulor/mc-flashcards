@@ -66,7 +66,9 @@ class QuestionAddScreen extends Screen {
             if (file == null) return;
             if (!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
                 Minecraft.getInstance().execute(() -> {
-                    PopupScreen popup = new PopupScreen.Builder(this,Component.literal("Encountered error with chosen file " + file.getName())).setMessage(Component.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription())).addButton(Component.literal("Done"),PopupScreen::onClose).build();
+                    PopupScreen popup = new PopupScreen.Builder(this,Component.literal("Encountered error with chosen file " + file.getName()))
+                            .addMessage(Component.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription()))
+                            .addButton(Component.literal("Done"),PopupScreen::onClose).build();
                     Minecraft.getInstance().setScreen(popup);
                 });
                 return;

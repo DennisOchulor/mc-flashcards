@@ -56,7 +56,8 @@ public class ConfigurationScreen extends Screen {
             wrongPercentage = (float) stats.wrongAnswers() / stats.totalQuestionsAnswered() * 100;
         }
         Component msg = Component.literal(String.format("Total questions answered: %d\nCorrect answers: %d (%.2f%%)\nWrong answers: %d (%.2f%%)",stats.totalQuestionsAnswered(),stats.correctAnswers(),correctPercentage,stats.wrongAnswers(),wrongPercentage));
-        PopupScreen popup = new PopupScreen.Builder(this,Component.literal("Flashcards Mod Stats")).setMessage(msg).addButton(Component.literal("Done"),PopupScreen::onClose).build();
+        PopupScreen popup = new PopupScreen.Builder(this,Component.literal("Flashcards Mod Stats"))
+                .addMessage(msg).addButton(Component.literal("Done"),PopupScreen::onClose).build();
         Minecraft.getInstance().setScreen(popup);
     }).build();
 
