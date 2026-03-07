@@ -84,7 +84,7 @@ public class ClientModInit implements ClientModInitializer {
                 if (minecraft.player == null || minecraft.level == null) return;
                 if (FileManager.getConfig().intervalToggle()) {
                     MutableComponent text = Component.literal("The interval toggle must be off for you to prompt a question on-demand.").withColor(CommonColors.SOFT_RED);
-                    minecraft.player.displayClientMessage(text,true);
+                    minecraft.player.sendOverlayMessage(text);
                     return;
                 }
                 QuestionScheduler.promptQuestion();
