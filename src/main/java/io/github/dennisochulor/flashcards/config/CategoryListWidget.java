@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -46,9 +46,9 @@ class CategoryListWidget extends ObjectSelectionList<CategoryListWidget.Entry> {
         }
 
         @Override
-        public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
-            context.drawString(Minecraft.getInstance().font, name, getContentX()+75, getContentY(), CommonColors.WHITE, false);
-            if (enabled) context.drawString(Minecraft.getInstance().font, "✔", getContentX()+140, getContentY(), CommonColors.GREEN, false);
+        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+            context.text(Minecraft.getInstance().font, name, getContentX()+75, getContentY(), CommonColors.WHITE, false);
+            if (enabled) context.text(Minecraft.getInstance().font, "✔", getContentX()+140, getContentY(), CommonColors.GREEN, false);
         }
 
         @Override

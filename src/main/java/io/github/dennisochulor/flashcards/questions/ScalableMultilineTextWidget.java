@@ -1,7 +1,7 @@
 package io.github.dennisochulor.flashcards.questions;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.network.chat.Component;
 import org.joml.Matrix3x2f;
@@ -17,7 +17,7 @@ public class ScalableMultilineTextWidget extends MultiLineTextWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         if (this.getHeight() > maxHeigth) {
             // https://stackoverflow.com/questions/56824983/scaling-is-moving-the-object
             float scale = (float) maxHeigth / getHeight();
@@ -29,7 +29,7 @@ public class ScalableMultilineTextWidget extends MultiLineTextWidget {
             Matrix3x2f transOriginToPos = new Matrix3x2f().translate(getX() + widthDiff, getY());
             positionMatrix.set(transOriginToPos.mul(scalingMatrix).mul(transRefToOrigin));
         }
-        super.renderWidget(context,mouseX,mouseY,delta);
+        super.extractWidgetRenderState(context,mouseX,mouseY,delta);
         if (this.getHeight() > maxHeigth) context.pose().popMatrix();
     }
 

@@ -3,7 +3,7 @@ package io.github.dennisochulor.flashcards.config;
 import io.github.dennisochulor.flashcards.questions.Question;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.network.chat.Component;
@@ -47,11 +47,11 @@ class QuestionListWidget extends ObjectSelectionList<QuestionListWidget.Entry> {
         }
 
         @Override
-        public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
             StringWidget text = new StringWidget(Component.nullToEmpty(question.question()), Minecraft.getInstance().font);
             text.setPosition(getContentX(),getContentY());
             text.setMaxWidth(getContentWidth());
-            text.render(context, mouseX, mouseY, deltaTicks);
+            text.extractRenderState(context, mouseX, mouseY, deltaTicks);
         }
 
 

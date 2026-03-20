@@ -3,7 +3,7 @@ package io.github.dennisochulor.flashcards.questions;
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ImageUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageWidget;
@@ -99,7 +99,7 @@ public class QuestionScreen extends Screen {
         }
 
         @Override
-        protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {}
+        protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
         @Override
         protected void updateWidgetNarration(NarrationElementOutput builder) {}
 
