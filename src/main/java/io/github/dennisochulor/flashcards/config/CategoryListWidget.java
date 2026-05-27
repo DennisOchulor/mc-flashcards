@@ -18,20 +18,20 @@ class CategoryListWidget extends ObjectSelectionList<CategoryListWidget.Entry> {
     CategoryListWidget(HashMap<String, List<Question>> map, HashMap<String,Boolean> categoryToggle) {
         super(Minecraft.getInstance(), 75, 100, 20, 11);
         map.keySet().forEach(category -> {
-            this.add(new io.github.dennisochulor.flashcards.config.CategoryListWidget.Entry(category,categoryToggle.getOrDefault(category,true)));
+            this.add(new CategoryListWidget.Entry(category,categoryToggle.getOrDefault(category,true)));
         });
         this.setSelected(this.children().getFirst());
     }
 
-    public void add(io.github.dennisochulor.flashcards.config.CategoryListWidget.Entry entry) {
+    public void add(CategoryListWidget.Entry entry) {
         this.addEntry(entry);
     }
 
-    public void remove(io.github.dennisochulor.flashcards.config.CategoryListWidget.Entry entry) {
+    public void remove(CategoryListWidget.Entry entry) {
         this.removeEntry(entry);
     }
 
-    static class Entry extends ObjectSelectionList.Entry<io.github.dennisochulor.flashcards.config.CategoryListWidget.Entry> {
+    static class Entry extends ObjectSelectionList.Entry<CategoryListWidget.Entry> {
         String name;
         boolean enabled;
 
@@ -42,7 +42,7 @@ class CategoryListWidget extends ObjectSelectionList<CategoryListWidget.Entry> {
 
         @Override
         public Component getNarration() {
-            return Component.translatable("narrator.select", "a category entry");
+            return Component.translatable("narrator.select", "Category entry " + name);
         }
 
         @Override

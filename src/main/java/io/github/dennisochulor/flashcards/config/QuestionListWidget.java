@@ -17,7 +17,7 @@ class QuestionListWidget extends ObjectSelectionList<QuestionListWidget.Entry> {
 
     void changeList(List<Question> questions) {
         this.clearEntries();
-        this.replaceEntries(questions.stream().map(io.github.dennisochulor.flashcards.config.QuestionListWidget.Entry::new).toList());
+        this.replaceEntries(questions.stream().map(QuestionListWidget.Entry::new).toList());
     }
 
     public void add(QuestionListWidget.Entry entry) {
@@ -34,7 +34,7 @@ class QuestionListWidget extends ObjectSelectionList<QuestionListWidget.Entry> {
     }
 
 
-    static class Entry extends ObjectSelectionList.Entry<io.github.dennisochulor.flashcards.config.QuestionListWidget.Entry> {
+    static class Entry extends ObjectSelectionList.Entry<QuestionListWidget.Entry> {
         Question question;
 
         Entry(Question question) {
