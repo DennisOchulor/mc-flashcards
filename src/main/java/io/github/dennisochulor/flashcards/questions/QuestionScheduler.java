@@ -56,8 +56,8 @@ public class QuestionScheduler {
         if (questions.isEmpty()) return; // there are no questions... so just do nothing
         int rand = ThreadLocalRandom.current().nextInt(0,questions.size());
         Question question = questions.remove(rand);
-        if (config.validationToggle()) Minecraft.getInstance().setScreen(new AutoValidationQuestionScreen(question));
-        else Minecraft.getInstance().setScreen(new ManualValidationQuestionScreen(question));
+        if (config.validationToggle()) Minecraft.getInstance().gui.setScreen(new AutoValidationQuestionScreen(question));
+        else Minecraft.getInstance().gui.setScreen(new ManualValidationQuestionScreen(question));
     }
 
 
@@ -66,7 +66,7 @@ public class QuestionScheduler {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.execute(() -> {
             ClientLevel level = Objects.requireNonNull(minecraft.level);
-            boolean isAnotherScreenOpen = minecraft.screen != null;
+            boolean isAnotherScreenOpen = minecraft.gui.screen() != null;
             boolean wasPlayerHurtRecently = (level.getGameTime() - playerLastHurtTime) < (level.tickRateManager().tickrate() * 10); // 10 seconds
             if (isAnotherScreenOpen || wasPlayerHurtRecently) {
                 executor.schedule(QuestionScheduler::runTask, 1, TimeUnit.SECONDS); // wait 1 second before trying again

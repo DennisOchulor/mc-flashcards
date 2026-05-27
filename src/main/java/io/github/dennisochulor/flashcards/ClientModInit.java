@@ -66,12 +66,12 @@ public class ClientModInit implements ClientModInitializer {
                 //noinspection StatementWithEmptyBody
                 while (keyBindingConfigMenu.consumeClick()); //consume additional presses
 
-                if (minecraft.screen instanceof ConfigurationScreen) {
-                    minecraft.screen.onClose();
+                if (minecraft.gui.screen() instanceof ConfigurationScreen) {
+                    minecraft.gui.screen().onClose();
                 }
-                else if (minecraft.screen == null) {
+                else if (minecraft.gui.screen() == null) {
                     ConfigurationScreen screen = new ConfigurationScreen();
-                    minecraft.setScreen(screen);
+                    minecraft.gui.setScreen(screen);
                 }
             }
         });

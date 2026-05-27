@@ -15,7 +15,7 @@ import java.util.Objects;
 class GeneralConfigScreen extends Screen {
     protected GeneralConfigScreen() {
         super(Component.literal("General Config Screen"));
-        parent = Objects.requireNonNull(Minecraft.getInstance().screen);
+        parent = Objects.requireNonNull(Minecraft.getInstance().gui.screen());
     }
 
     private final ModConfig config = FileManager.getConfig();
@@ -50,6 +50,6 @@ class GeneralConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 }

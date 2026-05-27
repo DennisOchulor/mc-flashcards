@@ -105,7 +105,7 @@ public class QuestionScreen extends Screen {
 
         @Override
         public void onClick(MouseButtonEvent click, boolean bl) {
-            Minecraft.getInstance().setScreen(new Screen(Component.literal("Enlarged Image Screen")) {
+            Minecraft.getInstance().gui.setScreen(new Screen(Component.literal("Enlarged Image Screen")) {
                 @Override
                 public void init() {
                     StringWidget title = new StringWidget(Component.literal(imageName),Minecraft.getInstance().font);
@@ -117,7 +117,7 @@ public class QuestionScreen extends Screen {
                     image.setPosition(this.width/2 - width/2,15);
 
                     Button doneButton = Button.builder(Component.literal("Done"), _ -> {
-                        Minecraft.getInstance().setScreen(parent);
+                        Minecraft.getInstance().gui.setScreen(parent);
                     }).bounds(this.width/2 - 37,240,75,20).build();
 
                     addRenderableOnly(title);
@@ -127,7 +127,7 @@ public class QuestionScreen extends Screen {
 
                 @Override
                 public void onClose() {
-                    Minecraft.getInstance().setScreen(parent);
+                    Minecraft.getInstance().gui.setScreen(parent);
                 }
             });
         }

@@ -16,7 +16,7 @@ import java.util.Objects;
 class AdditionalConfigScreen extends Screen {
     protected AdditionalConfigScreen() {
         super(Component.literal("Additional Config Screen"));
-        parent = Objects.requireNonNull(Minecraft.getInstance().screen); // must be the ConfigurationScreen
+        parent = Objects.requireNonNull(Minecraft.getInstance().gui.screen()); // must be the ConfigurationScreen
         correctAnswerEditBox.setValue(config.correctAnswerCommands().stream().reduce((c1,c2) -> c1 + "\n" + c2).orElse(""));
         wrongAnswerEditBox.setValue(config.wrongAnswerCommands().stream().reduce((c1,c2) -> c1 + "\n" + c2).orElse(""));
     }
@@ -70,7 +70,7 @@ class AdditionalConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 
 }

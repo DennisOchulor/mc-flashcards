@@ -13,7 +13,7 @@ public class AutoValidationQuestionScreen extends QuestionScreen {
     public AutoValidationQuestionScreen(Question question) {
         super(question);
         submitButton = Button.builder(Component.literal("Submit"), _ -> {
-            Minecraft.getInstance().setScreen(new AutoValidationResultScreen(question, answerEditBox.getValue()));
+            Minecraft.getInstance().gui.setScreen(new AutoValidationResultScreen(question, answerEditBox.getValue()));
         }).build();
     }
 

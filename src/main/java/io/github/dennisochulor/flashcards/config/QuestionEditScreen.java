@@ -52,7 +52,7 @@ class QuestionEditScreen extends Screen {
 
     private String category;
     private QuestionListWidget.Entry entry;
-    private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().screen);
+    private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().gui.screen());
     private final StringWidget title = new StringWidget(Component.literal("Edit Question"), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("Question:"),Minecraft.getInstance().font);
     private final StringWidget title3 = new StringWidget(Component.literal("Answer:"),Minecraft.getInstance().font);
@@ -92,11 +92,11 @@ class QuestionEditScreen extends Screen {
                     PopupScreen popup = new PopupScreen.Builder(this,Component.literal("Encountered error with chosen file " + file.getName()))
                             .addMessage(Component.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription()))
                             .addButton(Component.literal("Done"),PopupScreen::onClose).build();
-                    Minecraft.getInstance().setScreen(popup);
+                    Minecraft.getInstance().gui.setScreen(popup);
                 });
                 return;
             }
-            if (Minecraft.getInstance().screen != this) return;
+            if (Minecraft.getInstance().gui.screen() != this) return;
 
             Minecraft.getInstance().execute(() -> {
                 if (image != null) {
@@ -162,7 +162,7 @@ class QuestionEditScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
         if (imageId != null) Minecraft.getInstance().getTextureManager().release(imageId);
     }
 

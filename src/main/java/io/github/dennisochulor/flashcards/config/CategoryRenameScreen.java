@@ -20,7 +20,7 @@ class CategoryRenameScreen extends Screen {
     }
 
     private String oldName;
-    private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().screen);
+    private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().gui.screen());
     private final StringWidget title = new StringWidget(Component.empty(), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("New Category Name:"),Minecraft.getInstance().font);
     private final EditBox textField = new EditBox(Minecraft.getInstance().font, 100,10,Component.empty());
@@ -56,7 +56,7 @@ class CategoryRenameScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 
 }

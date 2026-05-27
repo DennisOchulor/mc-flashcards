@@ -16,7 +16,7 @@ public class EditScreen extends Screen {
 
     protected EditScreen() {
         super(Component.literal("Edit screen"));
-        parent = Objects.requireNonNull(Minecraft.getInstance().screen);
+        parent = Objects.requireNonNull(Minecraft.getInstance().gui.screen());
     }
 
     private final Screen parent;
@@ -29,9 +29,9 @@ public class EditScreen extends Screen {
 
     private final Button categoryRenameButton = Button.builder(Component.literal("Rename"),_ -> {
         Objects.requireNonNull(categoryList.getSelected());
-        Minecraft.getInstance().setScreen(new CategoryRenameScreen(categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(new CategoryRenameScreen(categoryList.getSelected().name));
     }).build();
-    private final Button categoryAddButton = Button.builder(Component.literal("Add"), _ -> Minecraft.getInstance().setScreen(new CategoryAddScreen())).build();
+    private final Button categoryAddButton = Button.builder(Component.literal("Add"), _ -> Minecraft.getInstance().gui.setScreen(new CategoryAddScreen())).build();
     private final Button categoryDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
         categoriesMap.remove(categoryList.getSelected().name);
@@ -44,7 +44,7 @@ public class EditScreen extends Screen {
     private final Button questionEditButton = Button.builder(Component.literal("Edit"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
         Objects.requireNonNull(questionList.getSelected());
-        Minecraft.getInstance().setScreen(new QuestionEditScreen(questionList.getSelected(),categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(new QuestionEditScreen(questionList.getSelected(),categoryList.getSelected().name));
     }).build();
     private final Button questionDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
         Objects.requireNonNull(questionList.getSelected());
@@ -55,7 +55,7 @@ public class EditScreen extends Screen {
     }).build();
     private final Button questionAddButton = Button.builder(Component.literal("Add"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
-        Minecraft.getInstance().setScreen(new QuestionAddScreen(categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(new QuestionAddScreen(categoryList.getSelected().name));
     }).build();
 
     private final Button applyButton = Button.builder(Component.literal("Apply Changes"), _ -> {
@@ -114,7 +114,7 @@ public class EditScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 
     @Override
