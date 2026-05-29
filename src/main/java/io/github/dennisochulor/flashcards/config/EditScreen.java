@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class EditScreen extends Screen {
@@ -20,7 +21,7 @@ public class EditScreen extends Screen {
     }
 
     private final Screen parent;
-    final HashMap<String,List<Question>> categoriesMap = FileManager.getQuestions();
+    final Map<String,List<Question>> categoriesMap = FileManager.getQuestions();
     private final ModConfig config = FileManager.getConfig();
     final CategoryListWidget categoryList = new CategoryListWidget(categoriesMap,config.categoryToggle());
     final QuestionListWidget questionList = new QuestionListWidget(categoriesMap.get(Objects.requireNonNull(categoryList.getSelected()).name));

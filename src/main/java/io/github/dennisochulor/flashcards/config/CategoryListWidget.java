@@ -3,8 +3,8 @@ package io.github.dennisochulor.flashcards.config;
 import io.github.dennisochulor.flashcards.questions.Question;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
 
 class CategoryListWidget extends ObjectSelectionList<CategoryListWidget.Entry> {
-    CategoryListWidget(HashMap<String, List<Question>> map, HashMap<String,Boolean> categoryToggle) {
+    CategoryListWidget(Map<String, List<Question>> map, Map<String,Boolean> categoryToggle) {
         super(Minecraft.getInstance(), 75, 100, 20, 11);
         map.keySet().forEach(category -> {
             this.add(new CategoryListWidget.Entry(category,categoryToggle.getOrDefault(category,true)));

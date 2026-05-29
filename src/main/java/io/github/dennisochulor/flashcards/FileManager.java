@@ -85,9 +85,9 @@ public final class FileManager {
         }
     }
 
-    public static HashMap<String,List<Question>> getQuestions() {
+    public static Map<String,List<Question>> getQuestions() {
         Gson gson = new GsonBuilder().create();
-        HashMap<String,List<Question>> map = new HashMap<>();
+        Map<String,List<Question>> map = new TreeMap<>(); // TreeMap for auto category sorting by name
         Arrays.stream(Objects.requireNonNull(questionsFolder.listFiles())).filter(f -> f.getName().endsWith(".json")).forEachOrdered(f -> {
             Question[] questions;
             try {
@@ -100,7 +100,7 @@ public final class FileManager {
         return map;
     }
 
-    public static void updateQuestions(HashMap<String,List<Question>> map) {
+    public static void updateQuestions(Map<String,List<Question>> map) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
             //noinspection ResultOfMethodCallIgnored
