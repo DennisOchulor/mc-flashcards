@@ -6,6 +6,7 @@ import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -40,10 +41,12 @@ public class ClientModInit implements ClientModInitializer {
         QuestionScheduler.reload();
         ClientPlayConnectionEvents.JOIN.register((_, _, _) -> QuestionScheduler.schedule());
         ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> QuestionScheduler.stop());
+
         ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
             if (minecraft.player == null || minecraft.level == null) return;
             if (minecraft.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = minecraft.level.getGameTime();
         });
+        ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> QuestionScheduler.close());
 
         KeyMapping.Category keyBindingCategory = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 

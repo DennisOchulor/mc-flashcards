@@ -43,6 +43,11 @@ public class QuestionScheduler {
         future.cancel(false);
     }
 
+    public static void close() {
+        stop();
+        executor.close();
+    }
+
     public static void updateConfig(ModConfig newConfig) {
         config = newConfig;
         future.cancel(true);
