@@ -46,13 +46,8 @@ class AdditionalConfigScreen extends Screen {
             .withTooltip(strat -> strat.tooltip)
             .create(0,0,130,20,Component.literal("Mode"));
 
-    private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
-        List<String> correctAnswerCommands = Arrays.asList(correctAnswerEditBox.getValue().split("\n"));
-        List<String> wrongAnswerCommands = Arrays.asList(wrongAnswerEditBox.getValue().split("\n")); // withers i need you now!!!!
-        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),
-                correctAnswerCommands,wrongAnswerCommands, commandSelectionButton.getValue()));
-        this.onClose();
-    }).size(100, 20).build();
+    private final Button doneButton = Button.builder(Component.literal("Done"),_ -> this.onClose())
+            .size(100, 20).build();
 
     @Override
     public void init() {
@@ -85,6 +80,11 @@ class AdditionalConfigScreen extends Screen {
 
     @Override
     public void onClose() {
+        List<String> correctAnswerCommands = Arrays.asList(correctAnswerEditBox.getValue().split("\n"));
+        List<String> wrongAnswerCommands = Arrays.asList(wrongAnswerEditBox.getValue().split("\n")); // withers i need you now!!!!
+        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),
+                correctAnswerCommands,wrongAnswerCommands, commandSelectionButton.getValue()));
+
         Minecraft.getInstance().gui.setScreen(parent);
     }
 
