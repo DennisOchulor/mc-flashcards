@@ -7,6 +7,10 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.layouts.FrameLayout;
+import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import java.util.Arrays;
@@ -23,18 +27,25 @@ class AdditionalConfigScreen extends Screen {
 
     private final Screen parent;
     private final ModConfig config = FileManager.getConfig();
-    private final Button titleTooltip = Button.builder(Component.literal("ℹ"),_ -> {}).tooltip(Tooltip.create(Component.literal("The specified commands will fail if your player has insufficient permissions."))).build();
+
+    private final Button titleTooltip = Button.builder(Component.literal("ℹ"),_ -> {})
+            .tooltip(Tooltip.create(Component.literal("The specified commands will fail if your player has insufficient permissions.")))
+            .size(16, 16).build();
+
     private final StringWidget title = new StringWidget(Component.literal("Additional Configuration"), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("If answer is correct, run these commands:"),Minecraft.getInstance().font);
     private final StringWidget title3 = new StringWidget(Component.literal("If answer is wrong, run these commands:"),Minecraft.getInstance().font);
-    private final MultiLineEditBox correctAnswerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your commands on seperate lines here, without the /")).build(Minecraft.getInstance().font, 350, 50, Component.empty());
-    private final MultiLineEditBox wrongAnswerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your commands on seperate lines here, without the /")).build(Minecraft.getInstance().font, 350, 50, Component.empty());
+
+    private final MultiLineEditBox correctAnswerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your commands on seperate lines here, without the /"))
+            .build(Minecraft.getInstance().font, 350, 50, Component.empty());
+    private final MultiLineEditBox wrongAnswerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your commands on seperate lines here, without the /"))
+            .build(Minecraft.getInstance().font, 350, 50, Component.empty());
 
     private final CycleButton<ModConfig.CommandSelectionStrategy> commandSelectionButton =
             new CycleButton.Builder<>(strat -> Component.literal(strat.friendlyName), config::commandSelectionStrategy)
             .withValues(List.of(ModConfig.CommandSelectionStrategy.values()))
             .withTooltip(strat -> strat.tooltip)
-            .create(0,0,0,0,Component.literal("Mode"));
+            .create(0,0,130,20,Component.literal("Mode"));
 
     private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         List<String> correctAnswerCommands = Arrays.asList(correctAnswerEditBox.getValue().split("\n"));
@@ -42,30 +53,35 @@ class AdditionalConfigScreen extends Screen {
         FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),
                 correctAnswerCommands,wrongAnswerCommands, commandSelectionButton.getValue()));
         this.onClose();
-    }).build();
+    }).size(100, 20).build();
 
     @Override
     public void init() {
-        title.setPosition(width/2 - title.getWidth()/2,10);
-        titleTooltip.setRectangle(16,16,width/2 + 70,5);
-        commandSelectionButton.setRectangle(130,20,width/2 - 65,25);
+        LinearLayout titleLayout = LinearLayout.horizontal().spacing(10);
+        titleLayout.defaultCellSetting().alignHorizontallyCenter().alignVerticallyMiddle();
+        titleLayout.addChild(title);
+        titleLayout.addChild(titleTooltip);
 
-        title2.setPosition(width/2 - title2.getWidth()/2,70);
-        correctAnswerEditBox.setRectangle(350,height/5,width/2-175, title2.getBottom() + 10);
+        int editBoxHeight = Math.max(50, (int) (this.height * 0.2));
+        correctAnswerEditBox.setHeight(editBoxHeight);
+        wrongAnswerEditBox.setHeight(editBoxHeight);
 
-        title3.setPosition(width/2 - title3.getWidth()/2, correctAnswerEditBox.getBottom() + 20);
-        wrongAnswerEditBox.setRectangle(350,height/5,width/2-175, title3.getBottom() + 10);
+        LinearLayout contentLayout = LinearLayout.vertical().spacing(5);
+        contentLayout.defaultCellSetting().alignHorizontallyCenter();
+        contentLayout.addChild(commandSelectionButton, contentLayout.newCellSettings().paddingBottom(5));
+        contentLayout.addChild(title2);
+        contentLayout.addChild(correctAnswerEditBox, contentLayout.newCellSettings().paddingBottom(5));
+        contentLayout.addChild(title3);
+        contentLayout.addChild(wrongAnswerEditBox);
 
-        doneButton.setRectangle(100,20,width/2-47,height - 30);
+        HeaderAndFooterLayout root = new HeaderAndFooterLayout(this, 25, 40);
+        root.addToHeader(titleLayout);
+        root.addToContents(contentLayout);
+        root.addToFooter(doneButton);
 
-        addRenderableOnly(title);
-        addRenderableOnly(titleTooltip);
-        addRenderableWidget(commandSelectionButton);
-        addRenderableOnly(title2);
-        addRenderableWidget(correctAnswerEditBox);
-        addRenderableOnly(title3);
-        addRenderableWidget(wrongAnswerEditBox);
-        addRenderableWidget(doneButton);
+        root.arrangeElements();
+        FrameLayout.alignInRectangle(root, 0, 0, this.width, this.height, 0.5F, 0.1F);
+        root.visitWidgets(this::addRenderableWidget);
     }
 
     @Override
