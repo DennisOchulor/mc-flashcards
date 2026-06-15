@@ -7,8 +7,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import io.github.dennisochulor.flashcards.config.ModConfig;
 import io.github.dennisochulor.flashcards.questions.Question;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import java.io.*;
 import java.nio.file.Files;
@@ -21,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-@Environment(EnvType.CLIENT)
 public final class FileManager {
     private FileManager() {}
 

@@ -1,13 +1,10 @@
 package io.github.dennisochulor.flashcards.config;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import java.util.HashMap;
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
 public record ModConfig(int interval, boolean intervalToggle, Boolean validationToggle,
                         HashMap<String,Boolean> categoryToggle, List<String> correctAnswerCommands,
                         List<String> wrongAnswerCommands, CommandSelectionStrategy commandSelectionStrategy)

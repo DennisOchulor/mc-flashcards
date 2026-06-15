@@ -4,8 +4,6 @@ import io.github.dennisochulor.flashcards.ClientModInit;
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ModStats;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -18,7 +16,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-@Environment(EnvType.CLIENT)
 public class ConfigurationScreen extends Screen {
 
     private ModConfig config = FileManager.getConfig();

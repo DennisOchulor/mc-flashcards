@@ -4,8 +4,6 @@ import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ModStats;
 import io.github.dennisochulor.flashcards.ImageUtils;
 import io.github.dennisochulor.flashcards.config.ModConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageWidget;
@@ -24,7 +22,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
-@Environment(EnvType.CLIENT)
 class AutoValidationResultScreen extends Screen {
 
     private final StringWidget titleText = new StringWidget(Component.literal("Your answer is "), Minecraft.getInstance().font);
