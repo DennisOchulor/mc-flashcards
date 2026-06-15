@@ -58,7 +58,9 @@ class AdditionalConfigScreen extends Screen {
 
         int editBoxHeight = Math.max(50, (int) (this.height * 0.2));
         correctAnswerEditBox.setHeight(editBoxHeight);
+        correctAnswerEditBox.refreshScrollAmount(); // prevent weird scrollbar overflow
         wrongAnswerEditBox.setHeight(editBoxHeight);
+        wrongAnswerEditBox.refreshScrollAmount(); // prevent weird scrollbar overflow
 
         LinearLayout contentLayout = LinearLayout.vertical().spacing(5);
         contentLayout.defaultCellSetting().alignHorizontallyCenter();
