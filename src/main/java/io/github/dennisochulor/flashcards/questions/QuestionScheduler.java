@@ -2,8 +2,6 @@ package io.github.dennisochulor.flashcards.questions;
 
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.config.ModConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 
@@ -13,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
 
-@Environment(EnvType.CLIENT)
 public class QuestionScheduler {
     private QuestionScheduler() {}
 

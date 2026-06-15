@@ -4,8 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.dennisochulor.flashcards.config.*;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -20,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.UIManager;
 
-@Environment(EnvType.CLIENT)
 public class ClientModInit implements ClientModInitializer {
 
     public static final String MOD_ID = "flashcards";
