@@ -8,6 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.layouts.FrameLayout;
+import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
@@ -23,11 +26,11 @@ class CategoryRenameScreen extends Screen {
     private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().gui.screen());
     private final StringWidget title = new StringWidget(Component.empty(), Minecraft.getInstance().font);
     private final StringWidget title2 = new StringWidget(Component.literal("New Category Name:"),Minecraft.getInstance().font);
-    private final EditBox textField = new EditBox(Minecraft.getInstance().font, 100,10,Component.empty());
+    private final EditBox textField = new EditBox(Minecraft.getInstance().font, 100,20,Component.empty());
     private final StringWidget warningText = new StringWidget(Component.literal("A category with this name already exists!").withColor(CommonColors.RED),Minecraft.getInstance().font);
     private final Button doneButton = Button.builder(Component.literal("Done"),_ -> {
         String newName = textField.getValue();
-        if (parent.categoriesMap.containsKey(newName))  addRenderableOnly(warningText);
+        if (parent.categoriesMap.containsKey(newName)) warningText.visible = true;
         else {
             List<Question> list = parent.categoriesMap.get(oldName);
             parent.categoriesMap.remove(oldName);
@@ -39,19 +42,25 @@ class CategoryRenameScreen extends Screen {
 
     @Override
     public void init() {
-        title.setPosition(width/2 - title.getWidth()/2,10);
-        title2.setPosition(width/2 - title2.getWidth()/2,50);
-        textField.setRectangle(100,20,width/2-50,70);
         textField.setMaxLength(10);
         textField.setResponder(text -> doneButton.active = !text.isBlank());
-        doneButton.setRectangle(100,20,width/2-50,height - 30);
-        doneButton.active = false;
-        warningText.setPosition(width/2 - warningText.getWidth()/2,100);
+        warningText.visible = false;
+        doneButton.active = !textField.getValue().isBlank();
 
-        addRenderableOnly(title);
-        addRenderableOnly(title2);
-        addRenderableWidget(textField);
-        addRenderableWidget(doneButton);
+        LinearLayout contents = LinearLayout.vertical().spacing(10);
+        contents.defaultCellSetting().alignHorizontallyCenter();
+        contents.addChild(title2);
+        contents.addChild(textField);
+        contents.addChild(warningText);
+
+        HeaderAndFooterLayout root = new HeaderAndFooterLayout(this, 20, 40);
+        root.addToHeader(title);
+        root.addToContents(contents);
+        root.addToFooter(doneButton);
+
+        root.arrangeElements();
+        FrameLayout.alignInRectangle(root, 0, 0, this.width, this.height, 0.5F, 0.1F);
+        root.visitWidgets(this::addRenderableWidget);
     }
 
     @Override
