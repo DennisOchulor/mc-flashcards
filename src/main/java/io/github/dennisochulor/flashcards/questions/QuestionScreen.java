@@ -39,7 +39,6 @@ public class QuestionScreen extends Screen {
         if (question.imageName() != null) {
             questionLayout.addChild(new EnlargeableImageWidget(this, question.imageName(),
                     ImageUtils.getImageWidget(question.imageName(), partHeight)));
-
         }
         questionLayout.addChild(questionText);
 

@@ -7,7 +7,8 @@ import net.minecraft.network.chat.Component;
 
 public class AutoValidationQuestionScreen extends QuestionScreen {
 
-    private final MultiLineEditBox answerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your answer here...")).build(Minecraft.getInstance().font, 200, 50, Component.empty());
+    private final MultiLineEditBox answerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your answer here..."))
+            .build(Minecraft.getInstance().font, 200, 50, Component.empty());
     private final Button submitButton;
 
     public AutoValidationQuestionScreen(Question question) {
@@ -25,7 +26,7 @@ public class AutoValidationQuestionScreen extends QuestionScreen {
         answerEditBox.setValueListener(_ -> submitButton.active = !answerEditBox.getValue().isBlank());
 
         submitButton.setRectangle(75,20,width/2 - 37,height - 30);
-        submitButton.active = false;
+        submitButton.active = !answerEditBox.getValue().isBlank();
 
         addRenderableWidget(answerEditBox);
         addRenderableWidget(submitButton);

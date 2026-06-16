@@ -16,7 +16,7 @@ import java.util.Objects;
 
 // NOTE: There is no ManualValidationResultScreen because everything is done in this class.
 public class ManualValidationQuestionScreen extends QuestionScreen {
-    private final MultiLineTextWidget correctAnswerText;
+    private final ScalableMultilineTextWidget correctAnswerText;
     private final Button showAnswerButton;
     private final Button correctButton;
     private final Button wrongButton;
@@ -24,6 +24,7 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
     public ManualValidationQuestionScreen(Question question) {
         super(question);
         correctAnswerText = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 65);
+        correctAnswerText.setCentered(true).setMaxWidth(175);
 
         LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
         ClientPacketListener packetListener = Objects.requireNonNull(Minecraft.getInstance().getConnection());
@@ -76,10 +77,8 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
     @Override
     public void init() {
         super.init();
-        correctAnswerText.setWidth(175);
-        correctAnswerText.setMaxWidth(175);
-        correctAnswerText.setPosition(width/2 - Math.min(correctAnswerText.getWidth(), 175)/2, 150);
-        correctAnswerText.setCentered(true);
+        correctAnswerText.setMaxHeigth((int) (height * 0.25));
+        correctAnswerText.setPosition(width/2 - correctAnswerText.getWidth()/2, (int) (height * 0.6));
 
         showAnswerButton.setRectangle(75,20,width/2 - 37,height - 30);
         correctButton.setRectangle(100,20,width/2 - 150,height - 30);
