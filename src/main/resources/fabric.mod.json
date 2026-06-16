@@ -15,6 +15,7 @@
   "license": "MIT",
   "icon": "icon.png",
   "environment": "client",
+  "accessWidener": "flashcards.classtweaker",
   "entrypoints": {
     "client": [
       "io.github.dennisochulor.flashcards.ClientModInit"
