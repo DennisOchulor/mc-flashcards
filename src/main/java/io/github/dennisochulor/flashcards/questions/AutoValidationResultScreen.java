@@ -7,9 +7,11 @@ import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageWidget;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.layouts.FrameLayout;
+import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
@@ -24,45 +26,42 @@ import java.util.Objects;
 
 class AutoValidationResultScreen extends Screen {
 
+    private static final int QUESTION_TEXT_WIDTH = 250;
+    private static final int ANSWER_TEXT_WIDTH = 175;
+
     private final StringWidget titleText = new StringWidget(Component.literal("Your answer is "), Minecraft.getInstance().font);
     private final StringWidget resultText;
     private final Button doneButton;
-    private final MultiLineTextWidget questionText;
-    private final MultiLineTextWidget yourAnswerText;
-    private final MultiLineTextWidget correctAnswerText;
+    private final ScalableMultilineTextWidget questionText;
+    private final ScalableMultilineTextWidget yourAnswerText;
+    private final ScalableMultilineTextWidget correctAnswerText;
     @Nullable
-    private final ImageWidget imageWidget;
+    private ImageWidget imageWidget = null;
     private final boolean isCorrect;
+    private final Question question;
 
     protected AutoValidationResultScreen(Question question, String userAnswer) {
         super(Component.literal("Question Result"));
         isCorrect = question.answer().equalsIgnoreCase(userAnswer);
+        this.question = question;
 
         resultText = new StringWidget(Component.literal(isCorrect ? "CORRECT" : "WRONG").withColor(isCorrect ? CommonColors.GREEN : CommonColors.SOFT_RED), Minecraft.getInstance().font);
 
         questionText = new ScalableMultilineTextWidget(Component.literal("§n§lQuestion:§r\n" + question.question()), Minecraft.getInstance().font, 110);
+        questionText.setMaxWidth(QUESTION_TEXT_WIDTH).setCentered(true);
 
         yourAnswerText = new ScalableMultilineTextWidget(Component.literal("§n§lYour answer:§r\n" + userAnswer), Minecraft.getInstance().font, 75);
+        yourAnswerText.setMaxWidth(ANSWER_TEXT_WIDTH).setCentered(true);
 
-        correctAnswerText  = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 75);
+        correctAnswerText = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 75);
+        correctAnswerText.setMaxWidth(ANSWER_TEXT_WIDTH).setCentered(true);
 
         Runnable releaseImgResource;
         if (question.imageName() != null) {
             ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
-            if (imgPkg == null) {
-                releaseImgResource = () -> {};
-                imageWidget = ImageWidget.texture(140,140,Identifier.withDefaultNamespace("textures/missing.png"),140,140);
-                imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
-            }
-            else {
-                releaseImgResource = () -> Minecraft.getInstance().getTextureManager().release(imgPkg.id());
-                int width = (int)(140 * imgPkg.widthScaler());
-                int height = (int)(140 * imgPkg.heightScaler());
-                imageWidget = ImageWidget.texture(width,height,imgPkg.id(),width,height);
-            }
+            releaseImgResource = imgPkg != null ? () -> Minecraft.getInstance().getTextureManager().release(imgPkg.id()) : () -> {};
         }
         else {
-            imageWidget = null;
             releaseImgResource = () -> {};
         }
 
@@ -88,7 +87,7 @@ class AutoValidationResultScreen extends Screen {
                 }
                 case OFF -> {}
             }
-        }).build();
+        }).size(75, 20).build();
 
         Objects.requireNonNull(Minecraft.getInstance().player).playSound(isCorrect ? SoundEvents.PLAYER_LEVELUP : SoundEvents.ANVIL_LAND);
         ModStats stats = FileManager.getStats();
@@ -98,43 +97,63 @@ class AutoValidationResultScreen extends Screen {
 
     @Override
     public void init() {
-        if (isCorrect) titleText.setPosition(width/2 - 57, 15);
-        else titleText.setPosition(width/2 - 51, 15);
-        resultText.setPosition(titleText.getX() + 80, titleText.getY());
+        int partHeight = (int) (0.3 * this.height);
 
-        questionText.setWidth(250);
-        questionText.setMaxWidth(250);
-        questionText.setPosition(width/2 - Math.min(questionText.getWidth(), 250)/2, 45);
-        questionText.setCentered(true);
+        LinearLayout titleLayout = LinearLayout.horizontal();
+        titleLayout.defaultCellSetting().alignHorizontallyCenter();
+        titleLayout.addChild(titleText);
+        titleLayout.addChild(resultText);
 
-        yourAnswerText.setWidth(175);
-        yourAnswerText.setMaxWidth(175);
-        yourAnswerText.setPosition(width/4 - Math.min(yourAnswerText.getWidth(), 150)/2, 170);
-        yourAnswerText.setCentered(true);
-
-        correctAnswerText.setWidth(175);
-        correctAnswerText.setMaxWidth(175);
-        correctAnswerText.setPosition(width/2 + width/4 - Math.min(correctAnswerText.getWidth(), 150)/2, 170);
-        correctAnswerText.setCentered(true);
-
-        doneButton.setRectangle(75,20,width/2 - 37,height - 30);
-
-        addRenderableOnly(titleText);
-        addRenderableOnly(resultText);
-        addRenderableOnly(questionText);
-        addRenderableOnly(yourAnswerText);
-        addRenderableOnly(correctAnswerText);
-        addRenderableWidget(doneButton);
+        LinearLayout questionLayout = LinearLayout.horizontal().spacing(20);
+        questionLayout.defaultCellSetting().alignHorizontallyCenter();
+        setImageWidget(partHeight);
         if (imageWidget != null) {
-            addRenderableOnly(imageWidget);
-            questionText.setPosition(width/2 - Math.min(questionText.getWidth(), 250)/2 + 100, 45);
-            imageWidget.setPosition(width/4 - 75,25);
+            questionLayout.addChild(imageWidget);
         }
+        questionText.setMaxHeigth(partHeight);
+        questionLayout.addChild(questionText);
+
+        LinearLayout answerLayout = LinearLayout.horizontal().spacing(50);
+        answerLayout.defaultCellSetting().alignHorizontallyCenter();
+        yourAnswerText.setMaxHeigth(partHeight);
+        answerLayout.addChild(yourAnswerText, answerLayout.newCellSettings().paddingHorizontal((ANSWER_TEXT_WIDTH - yourAnswerText.getWidth()) / 2));
+        correctAnswerText.setMaxHeigth(partHeight);
+        answerLayout.addChild(correctAnswerText, answerLayout.newCellSettings().paddingHorizontal((ANSWER_TEXT_WIDTH - correctAnswerText.getWidth()) / 2));
+
+        LinearLayout contentLayout = LinearLayout.vertical().spacing(25);
+        contentLayout.defaultCellSetting().alignHorizontallyCenter();
+        contentLayout.addChild(questionLayout);
+        contentLayout.addChild(answerLayout);
+
+        HeaderAndFooterLayout root = new HeaderAndFooterLayout(this, 20, 40);
+        root.addToHeader(titleLayout);
+        root.addToContents(contentLayout);
+        root.addToFooter(doneButton);
+
+        root.arrangeElements();
+        FrameLayout.alignInRectangle(root, 0, 0, this.width, this.height, 0.5F, 0.1F);
+        root.visitWidgets(this::addRenderableWidget);
     }
 
     @Override
     public boolean shouldCloseOnEsc() {
         return false;
+    }
+
+    private void setImageWidget(int size) {
+        if (question.imageName() == null) return;
+
+        ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
+
+        if (imgPkg == null) {
+            imageWidget = ImageWidget.texture(size, size, Identifier.withDefaultNamespace("textures/missing.png"), size, size);
+            imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
+        }
+        else {
+            int width = (int)(size * imgPkg.widthScaler());
+            int height = (int)(size * imgPkg.heightScaler());
+            imageWidget = ImageWidget.texture(width, height, imgPkg.id(), width, height);
+        }
     }
 
 }
