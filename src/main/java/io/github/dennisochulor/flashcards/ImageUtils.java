@@ -2,14 +2,19 @@ package io.github.dennisochulor.flashcards;
 
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.ImageWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import com.mojang.blaze3d.platform.NativeImage;
 import org.jspecify.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Objects;
 
 public final class ImageUtils {
     private ImageUtils() {}
@@ -56,6 +61,25 @@ public final class ImageUtils {
         catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public static ImageWidget getImageWidget(String imageName, int size) {
+        Objects.requireNonNull(imageName, "imageName cannot be null!");
+
+        ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(imageName));
+        ImageWidget imageWidget;
+
+        if (imgPkg == null) {
+            imageWidget = ImageWidget.texture(size, size, Identifier.withDefaultNamespace("textures/missing.png"), size, size);
+            imageWidget.setTooltip(Tooltip.create(Component.literal(imageName + " seems to be missing...")));
+        }
+        else {
+            int width = (int)(size * imgPkg.widthScaler());
+            int height = (int)(size * imgPkg.heightScaler());
+            imageWidget = ImageWidget.texture(width, height, imgPkg.id(), width, height);
+        }
+
+        return imageWidget;
     }
 }
 

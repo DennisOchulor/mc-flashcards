@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageWidget;
 import net.minecraft.client.gui.components.StringWidget;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -16,11 +15,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.RandomSource;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -35,8 +32,6 @@ class AutoValidationResultScreen extends Screen {
     private final ScalableMultilineTextWidget questionText;
     private final ScalableMultilineTextWidget yourAnswerText;
     private final ScalableMultilineTextWidget correctAnswerText;
-    @Nullable
-    private ImageWidget imageWidget = null;
     private final boolean isCorrect;
     private final Question question;
 
@@ -106,8 +101,8 @@ class AutoValidationResultScreen extends Screen {
 
         LinearLayout questionLayout = LinearLayout.horizontal().spacing(20);
         questionLayout.defaultCellSetting().alignHorizontallyCenter();
-        setImageWidget(partHeight);
-        if (imageWidget != null) {
+        if (question.imageName() != null) {
+            ImageWidget imageWidget = ImageUtils.getImageWidget(question.imageName(), partHeight);
             questionLayout.addChild(imageWidget);
         }
         questionText.setMaxHeigth(partHeight);
@@ -138,22 +133,6 @@ class AutoValidationResultScreen extends Screen {
     @Override
     public boolean shouldCloseOnEsc() {
         return false;
-    }
-
-    private void setImageWidget(int size) {
-        if (question.imageName() == null) return;
-
-        ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
-
-        if (imgPkg == null) {
-            imageWidget = ImageWidget.texture(size, size, Identifier.withDefaultNamespace("textures/missing.png"), size, size);
-            imageWidget.setTooltip(Tooltip.create(Component.literal(question.imageName() + " seems to be missing...")));
-        }
-        else {
-            int width = (int)(size * imgPkg.widthScaler());
-            int height = (int)(size * imgPkg.heightScaler());
-            imageWidget = ImageWidget.texture(width, height, imgPkg.id(), width, height);
-        }
     }
 
 }
