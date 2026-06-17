@@ -35,7 +35,7 @@ class QuestionEditScreen extends Screen {
 
     @Nullable private File imageFile = null;
     @Nullable private Identifier imageId = null;
-    private ImageWidget imageWidget;
+    private ImageWidget imageWidget; // ignore null warning, it is initialized during init()
 
     private final Button removeButton = SpriteIconButton.builder(Component.literal("Remove Image"), _ -> {
         Minecraft.getInstance().getTextureManager().release(imageId);
