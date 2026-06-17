@@ -1,3 +1,4 @@
 classTweaker  v1  official
 accessible method net/minecraft/client/gui/components/ImageWidget <init> (IIII)V
 accessible method net/minecraft/client/gui/components/AbstractWidget extractWidgetRenderState (Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V
+accessible field net/minecraft/client/gui/components/AbstractWidget tooltip Lnet/minecraft/client/gui/components/WidgetTooltipHolder;

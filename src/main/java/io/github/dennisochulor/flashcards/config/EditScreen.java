@@ -45,7 +45,7 @@ public class EditScreen extends Screen {
     private final Button questionEditButton = Button.builder(Component.literal("Edit"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
         Objects.requireNonNull(questionList.getSelected());
-        Minecraft.getInstance().gui.setScreen(new QuestionEditScreen(questionList.getSelected(),categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(QuestionEditScreen.fromExistingQuestion(categoryList.getSelected().name, questionList.getSelected()));
     }).build();
     private final Button questionDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
         Objects.requireNonNull(questionList.getSelected());
@@ -56,7 +56,7 @@ public class EditScreen extends Screen {
     }).build();
     private final Button questionAddButton = Button.builder(Component.literal("Add"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
-        Minecraft.getInstance().gui.setScreen(new QuestionAddScreen(categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(QuestionEditScreen.newQuestion(categoryList.getSelected().name));
     }).build();
 
     private final Button applyButton = Button.builder(Component.literal("Apply Changes"), _ -> {

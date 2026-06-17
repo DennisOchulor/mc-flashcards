@@ -54,7 +54,7 @@ class AutoValidationResultScreen extends Screen {
         Runnable releaseImgResource;
         if (question.imageName() != null) {
             ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
-            releaseImgResource = imgPkg != null ? () -> Minecraft.getInstance().getTextureManager().release(imgPkg.id()) : () -> {};
+            releaseImgResource = imgPkg != ImageUtils.MISSING_TEXTURE ? () -> Minecraft.getInstance().getTextureManager().release(imgPkg.id()) : () -> {};
         }
         else {
             releaseImgResource = () -> {};
@@ -102,7 +102,7 @@ class AutoValidationResultScreen extends Screen {
         LinearLayout questionLayout = LinearLayout.horizontal().spacing(20);
         questionLayout.defaultCellSetting().alignHorizontallyCenter();
         if (question.imageName() != null) {
-            ImageWidget imageWidget = ImageUtils.getImageWidget(question.imageName(), partHeight);
+            ImageWidget imageWidget = ImageUtils.getImageWidget(FileManager.getImageFile(question.imageName()), partHeight);
             questionLayout.addChild(imageWidget);
         }
         questionText.setMaxHeigth(partHeight);

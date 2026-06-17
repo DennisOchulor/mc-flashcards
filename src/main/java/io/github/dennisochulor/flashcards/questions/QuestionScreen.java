@@ -1,8 +1,9 @@
 package io.github.dennisochulor.flashcards.questions;
 
+import io.github.dennisochulor.flashcards.ClickableImageWidget;
+import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ImageUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageWidget;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
@@ -14,18 +15,21 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
+
+import java.io.File;
+import java.util.Objects;
 
 public class QuestionScreen extends Screen {
     private static final int QUESTION_TEXT_WIDTH = 250;
 
     private final StringWidget titleText = new StringWidget(Component.literal("Answer this question"), Minecraft.getInstance().font);
     private final MultiLineTextWidget questionText;
-    private final Question question;
+    @Nullable private final File imageFile;
 
     public QuestionScreen(Question question) {
         super(Component.literal("Question Prompt"));
-        this.question = question;
+        this.imageFile = question.imageName() != null ? FileManager.getImageFile(question.imageName()) : null;
         questionText = new ScalableMultilineTextWidget(Component.literal(question.question()), Minecraft.getInstance().font, 100);
         questionText.setCentered(true).setMaxWidth(QUESTION_TEXT_WIDTH);
     }
@@ -36,9 +40,11 @@ public class QuestionScreen extends Screen {
 
         LinearLayout questionLayout = LinearLayout.horizontal().spacing(20);
         questionLayout.defaultCellSetting().alignHorizontallyCenter();
-        if (question.imageName() != null) {
-            questionLayout.addChild(new EnlargeableImageWidget(this, question.imageName(),
-                    ImageUtils.getImageWidget(question.imageName(), partHeight)));
+        if (imageFile != null) {
+            ClickableImageWidget imageWidget = new ClickableImageWidget(
+                    ImageUtils.getImageWidget(imageFile, partHeight), this::openLargeImageScreen);
+            imageWidget.setTooltip(Tooltip.create(Component.literal("Click to enlarge")));
+            questionLayout.addChild(imageWidget);
         }
         questionLayout.addChild(questionText);
 
@@ -58,76 +64,34 @@ public class QuestionScreen extends Screen {
         return false;
     }
 
-    static class EnlargeableImageWidget extends ImageWidget {
-        // this is needed because the onClick() behaviour of an ImageWidget cannot be modified at all...
-        private final Screen parent;
-        private final String imageName;
-        private final ImageWidget wrapped;
+    private void openLargeImageScreen(MouseButtonEvent event, boolean doubleClick) {
+        Objects.requireNonNull(imageFile);
 
-        EnlargeableImageWidget(Screen parent, String imageName, ImageWidget wrapped) {
-            super(wrapped.getX(), wrapped.getY(), wrapped.getWidth(), wrapped.getHeight());
+        Minecraft.getInstance().gui.setScreen(new Screen(Component.literal("Enlarged Image Screen")) {
+            @Override
+            public void init() {
+                HeaderAndFooterLayout root = new HeaderAndFooterLayout(this, 20, 40);
 
-            this.parent = parent;
-            this.imageName = imageName;
-            this.wrapped = wrapped;
+                StringWidget title = new StringWidget(Component.literal(imageFile.getName()),Minecraft.getInstance().font);
+                root.addToHeader(title);
 
-            setTooltip(Tooltip.create(Component.literal("Click to enlarge")));
-        }
+                ImageWidget imageWidget = ImageUtils.getImageWidget(imageFile, (int) (this.height * 0.75));
+                imageWidget.setTooltip(null);
+                root.addToContents(imageWidget);
 
-        @Override
-        public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-            wrapped.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
-        }
+                Button doneButton = Button.builder(Component.literal("Done"), _ -> this.onClose())
+                        .size(75, 20).build();
+                root.addToFooter(doneButton);
 
-        @Override
-        public void updateResource(Identifier identifier) {
-            wrapped.updateResource(identifier);
-        }
+                root.arrangeElements();
+                FrameLayout.alignInRectangle(root, 0, 0, this.width, this.height, 0.5F, 0.1F);
+                root.visitWidgets(this::addRenderableWidget);
+            }
 
-        @Override
-        public boolean isActive() {
-            return true;
-        }
-
-        @Override
-        public void setX(int x) {
-            super.setX(x);
-            wrapped.setX(x);
-        }
-
-        @Override
-        public void setY(int y) {
-            super.setY(y);
-            wrapped.setY(y);
-        }
-
-        @Override
-        public void onClick(MouseButtonEvent click, boolean bl) {
-            Minecraft.getInstance().gui.setScreen(new Screen(Component.literal("Enlarged Image Screen")) {
-                @Override
-                public void init() {
-                    HeaderAndFooterLayout root = new HeaderAndFooterLayout(this, 20, 40);
-
-                    StringWidget title = new StringWidget(Component.literal(imageName),Minecraft.getInstance().font);
-                    root.addToHeader(title);
-
-                    ImageWidget imageWidget = ImageUtils.getImageWidget(imageName, (int) (this.height * 0.75));
-                    root.addToContents(imageWidget);
-
-                    Button doneButton = Button.builder(Component.literal("Done"), _ -> this.onClose())
-                            .size(75, 20).build();
-                    root.addToFooter(doneButton);
-
-                    root.arrangeElements();
-                    FrameLayout.alignInRectangle(root, 0, 0, this.width, this.height, 0.5F, 0.1F);
-                    root.visitWidgets(this::addRenderableWidget);
-                }
-
-                @Override
-                public void onClose() {
-                    Minecraft.getInstance().gui.setScreen(parent);
-                }
-            });
-        }
+            @Override
+            public void onClose() {
+                Minecraft.getInstance().gui.setScreen(QuestionScreen.this);
+            }
+        });
     }
 }
