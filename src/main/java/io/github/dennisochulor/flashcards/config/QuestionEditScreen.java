@@ -151,6 +151,7 @@ class QuestionEditScreen extends Screen {
 
             File file = fileChooser.getSelectedFile();
             if (file != null) tryAttachImage(file);
+            wrapper.dispose();
         });
     }
 
