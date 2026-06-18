@@ -1,6 +1,7 @@
 package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.FileManager;
+import io.github.dennisochulor.flashcards.ImageUtils;
 import io.github.dennisochulor.flashcards.questions.Question;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.minecraft.client.Minecraft;
@@ -38,6 +39,13 @@ public class EditScreen extends Screen {
         categoriesMap.remove(categoryList.getSelected().name);
         categoryList.remove(categoryList.getSelected());
         categoryList.setSelected(null);
+
+        questionList.children().forEach(entry -> {
+            if (entry.question.imageName() != null) {
+                ImageUtils.release(FileManager.getImageFile(entry.question.imageName()));
+            }
+        });
+
         questionList.changeList(List.of()); // clear
         questionList.setSelected(null);
     }).build();
@@ -50,7 +58,13 @@ public class EditScreen extends Screen {
     private final Button questionDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
         Objects.requireNonNull(questionList.getSelected());
         Objects.requireNonNull(categoryList.getSelected());
-        categoriesMap.get(categoryList.getSelected().name).remove(questionList.getSelected().question);
+
+        Question question = questionList.getSelected().question;
+        if (question.imageName() != null) {
+            ImageUtils.release(FileManager.getImageFile(question.imageName()));
+        }
+
+        categoriesMap.get(categoryList.getSelected().name).remove(question);
         questionList.remove(questionList.getSelected());
         questionList.setSelected(null);
     }).build();

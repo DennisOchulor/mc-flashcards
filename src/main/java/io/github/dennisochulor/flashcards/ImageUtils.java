@@ -13,7 +13,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ImageUtils {
     private ImageUtils() {}
@@ -22,16 +23,31 @@ public final class ImageUtils {
     public static final Identifier MISSING_TEXTURE_ID = Identifier.withDefaultNamespace("textures/missing.png");
     public static final ImagePackage MISSING_TEXTURE = new ImagePackage(MISSING_TEXTURE_ID, "Missing Image File", 1, 1);
 
+    // LRU map
+    // String key is "filename_filesize", filesize included to avoid newly attached image with same name from using cached image
+    private static final SequencedMap<String, ImagePackage> REGISTERED_IMAGES = new LinkedHashMap<>(16, 0.75F, true);
+    private static final AtomicInteger IMAGE_ID_COUNTER = new AtomicInteger();
+    private static final long ONE_HUNDRED_MiB = 100 * 1024 * 1024;
+    private static long currentTotalImageBytes = 0;
+
     public record ImagePackage(Identifier id, String name, float widthScaler, float heightScaler) {}
 
     /**
      * @param file The image file
-     * @return an {@link ImagePackage} for the image. This returns {@link ImageUtils#MISSING_TEXTURE_ID} if the image file does not exist or
+     * @return an {@link ImagePackage} for the image. This returns {@link ImageUtils#MISSING_TEXTURE} if the image file does not exist or
      * if the image file is using an unsupported filename extension according to {@link ImageUtils#FILE_NAME_EXTENSION_FILTER}
      */
     public static ImagePackage getImagePackage(File file) {
         try {
             if (!file.exists() || !FILE_NAME_EXTENSION_FILTER.accept(file)) return MISSING_TEXTURE;
+
+            long fileLength = file.length();
+            String key = file.getName() + "_" + fileLength;
+            ImagePackage cachedImg = REGISTERED_IMAGES.get(key);
+            if (cachedImg != null) {
+                ClientModInit.LOGGER.debug("from the cache {}", cachedImg.id);
+                return cachedImg;
+            }
 
             NativeImage img;
             if (file.getName().endsWith(".png")) {
@@ -52,10 +68,20 @@ public final class ImageUtils {
             }
 
             DynamicTexture texture = new DynamicTexture(file::getName, img);
-            float greaterDimension = Math.max(img.getHeight(),img.getWidth());
-            Identifier id = Identifier.fromNamespaceAndPath("flashcards", "theimage");
-            Minecraft.getInstance().getTextureManager().register(id,texture);
-            return new ImagePackage(id, file.getName(), img.getWidth()/greaterDimension, img.getHeight()/greaterDimension);
+            float greaterDimension = Math.max(img.getHeight(), img.getWidth());
+            Identifier id = Identifier.fromNamespaceAndPath("flashcards", "image_" + IMAGE_ID_COUNTER.getAndIncrement());
+            ImagePackage imgPkg = new ImagePackage(id, file.getName(), img.getWidth()/greaterDimension, img.getHeight()/greaterDimension);
+
+            // Max 100 MiB worth of images cached, if over release in LRU order
+            currentTotalImageBytes += fileLength;
+            while (currentTotalImageBytes > ONE_HUNDRED_MiB) {
+                release(FileManager.getImageFile(REGISTERED_IMAGES.firstEntry().getValue().name()));
+            }
+
+            REGISTERED_IMAGES.put(key, imgPkg);
+            Minecraft.getInstance().getTextureManager().register(id, texture);
+            ClientModInit.LOGGER.debug("new one {}", imgPkg.id);
+            return imgPkg;
         }
         catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -110,6 +136,18 @@ public final class ImageUtils {
         }
 
         return imageWidget;
+    }
+
+    public static void release(File file) {
+        long length = file.length();
+        String key = file.getName() + "_" + length;
+        ImagePackage imgPkg = REGISTERED_IMAGES.remove(key);
+
+        if (imgPkg != null) {
+            Minecraft.getInstance().getTextureManager().release(imgPkg.id());
+            currentTotalImageBytes -= length;
+            ClientModInit.LOGGER.debug("RELEASE {} / Left with {}", imgPkg.id, currentTotalImageBytes);
+        }
     }
 }
 

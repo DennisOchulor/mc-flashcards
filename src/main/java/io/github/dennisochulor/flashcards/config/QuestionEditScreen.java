@@ -34,12 +34,12 @@ class QuestionEditScreen extends Screen {
     private final Button applyButton;
 
     @Nullable private File imageFile = null;
-    @Nullable private Identifier imageId = null;
     private ImageWidget imageWidget; // ignore null warning, it is initialized during init()
+    private boolean applyButtonPressed = false;
+    private boolean hasChangedImage = false;
 
     private final Button removeButton = SpriteIconButton.builder(Component.literal("Remove Image"), _ -> {
-        Minecraft.getInstance().getTextureManager().release(imageId);
-        imageId = null;
+        ImageUtils.release(imageFile);
         imageFile = null;
         setImageWidget(true);
     }, true).withTootip().sprite(new WidgetSprites(Identifier.withDefaultNamespace("widget/cross_button"),
@@ -52,7 +52,8 @@ class QuestionEditScreen extends Screen {
 
         this.title = new StringWidget(titleText, Minecraft.getInstance().font);
         this.applyButton = Button.builder(Component.literal("Apply"), _ -> {
-            doneButtonAction.onDoneButtonPressed(parent, questionEditBox.getValue(), answerEditBox.getValue(), imageFile);
+            applyButtonPressed = true;
+            doneButtonAction.onDoneButtonPressed(parent, questionEditBox.getValue(), answerEditBox.getValue(), imageFile, hasChangedImage);
             this.onClose();
         }).size(100, 20).build();
 
@@ -62,14 +63,6 @@ class QuestionEditScreen extends Screen {
 
             if (question.imageName() != null) {
                 imageFile = FileManager.getImageFile(question.imageName());
-                ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(imageFile);
-
-                if (imgPkg == ImageUtils.MISSING_TEXTURE) {
-                    imageFile = null;
-                }
-                else {
-                    imageId = imgPkg.id();
-                }
             }
         }
 
@@ -121,7 +114,7 @@ class QuestionEditScreen extends Screen {
     @Override
     public void onClose() {
         Minecraft.getInstance().gui.setScreen(parent);
-        if (imageId != null) Minecraft.getInstance().getTextureManager().release(imageId);
+        if (imageFile != null && hasChangedImage && !applyButtonPressed) ImageUtils.release(imageFile);
     }
 
     @Override
@@ -168,13 +161,12 @@ class QuestionEditScreen extends Screen {
         if (Minecraft.getInstance().gui.screen() != this) return;
 
         Minecraft.getInstance().execute(() -> {
-            if (imageId != null) {
-                Minecraft.getInstance().getTextureManager().release(imageId);
+            if (imageFile != null) {
+                ImageUtils.release(imageFile);
             }
 
-            ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(file);
             this.imageFile = file;
-            imageId = imgPkg.id();
+            hasChangedImage = true;
             setImageWidget(true);
         });
     }
@@ -195,11 +187,11 @@ class QuestionEditScreen extends Screen {
 
     @FunctionalInterface
     private interface DoneButtonAction {
-        void onDoneButtonPressed(EditScreen parent, String question, String answer, @Nullable File imageFile);
+        void onDoneButtonPressed(EditScreen parent, String question, String answer, @Nullable File imageFile, boolean hasChangedImage);
     }
 
     public static QuestionEditScreen newQuestion(String category) {
-        return new QuestionEditScreen(null, (parent, question, answer, imageFile) -> {
+        return new QuestionEditScreen(null, (parent, question, answer, imageFile, _) -> {
             List<Question> list = parent.categoriesMap.get(category);
             String imageName = null;
             if (imageFile != null) imageName = FileManager.saveImage(imageFile.toPath());
@@ -213,10 +205,15 @@ class QuestionEditScreen extends Screen {
     }
 
     public static QuestionEditScreen fromExistingQuestion(String category, QuestionListWidget.Entry entry) {
-        return new QuestionEditScreen(entry.question, (parent, question, answer, imageFile) -> {
+        return new QuestionEditScreen(entry.question, (parent, question, answer, imageFile, hasChangedImage) -> {
             List<Question> list = parent.categoriesMap.get(category);
             String imageName = null;
-            if (imageFile != null) imageName = FileManager.saveImage(imageFile.toPath());
+            if (imageFile != null) {
+                imageName = hasChangedImage ? FileManager.saveImage(imageFile.toPath()) : imageFile.getName();
+
+                // release image from original filename
+                if (!imageName.equals(imageFile.getName())) ImageUtils.release(imageFile);
+            }
 
             Question q = new Question(question, imageName, answer);
             list.set(list.indexOf(entry.question), q);

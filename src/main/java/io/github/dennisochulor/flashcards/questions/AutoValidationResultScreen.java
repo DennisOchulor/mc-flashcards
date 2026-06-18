@@ -51,19 +51,9 @@ class AutoValidationResultScreen extends Screen {
         correctAnswerText = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 75);
         correctAnswerText.setMaxWidth(ANSWER_TEXT_WIDTH).setCentered(true);
 
-        Runnable releaseImgResource;
-        if (question.imageName() != null) {
-            ImageUtils.ImagePackage imgPkg = ImageUtils.getImagePackage(FileManager.getImageFile(question.imageName()));
-            releaseImgResource = imgPkg != ImageUtils.MISSING_TEXTURE ? () -> Minecraft.getInstance().getTextureManager().release(imgPkg.id()) : () -> {};
-        }
-        else {
-            releaseImgResource = () -> {};
-        }
-
         doneButton = Button.builder(Component.literal("Done"), _ -> {
             QuestionScheduler.schedule();
             this.onClose();
-            releaseImgResource.run();
             ModConfig config = FileManager.getConfig();
 
             LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
