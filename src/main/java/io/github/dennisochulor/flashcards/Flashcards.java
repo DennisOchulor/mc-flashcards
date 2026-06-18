@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.UIManager;
 
-public class ClientModInit implements ClientModInitializer {
+public class Flashcards implements ClientModInitializer {
 
     public static final String MOD_ID = "flashcards";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

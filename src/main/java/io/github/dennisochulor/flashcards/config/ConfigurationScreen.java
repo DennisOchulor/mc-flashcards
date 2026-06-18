@@ -1,6 +1,6 @@
 package io.github.dennisochulor.flashcards.config;
 
-import io.github.dennisochulor.flashcards.ClientModInit;
+import io.github.dennisochulor.flashcards.Flashcards;
 import io.github.dennisochulor.flashcards.FileManager;
 import io.github.dennisochulor.flashcards.ModStats;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
@@ -53,7 +53,7 @@ public class ConfigurationScreen extends Screen {
             Desktop.getDesktop().open(new File(Minecraft.getInstance().gameDirectory.toPath() + "/config/flashcards"));
         }
         catch (IOException e) {
-            ClientModInit.LOGGER.warn("Failed to open flashcards folder",e);
+            Flashcards.LOGGER.warn("Failed to open flashcards folder",e);
         }
     }).tooltip(Tooltip.create(Component.literal("Open Flashcards Mod Folder"))).build();
 

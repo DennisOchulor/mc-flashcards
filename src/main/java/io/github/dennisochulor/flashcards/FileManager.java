@@ -212,7 +212,7 @@ public final class FileManager {
                 f.delete();
             }
             catch (Exception e) {
-                ClientModInit.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
+                Flashcards.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
             }
         });
     }
@@ -240,7 +240,7 @@ public final class FileManager {
                 f.delete();
             }
             catch (Exception e) {
-                ClientModInit.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
+                Flashcards.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
             }
         });
     }
@@ -268,7 +268,7 @@ public final class FileManager {
                 f.delete();
             }
             catch (Exception e) {
-                ClientModInit.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
+                Flashcards.LOGGER.warn("{} encountered an error during import!", f.getName(), e);
             }
         });
     }

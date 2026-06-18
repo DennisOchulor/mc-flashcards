@@ -18,7 +18,7 @@
   "accessWidener": "flashcards.classtweaker",
   "entrypoints": {
     "client": [
-      "io.github.dennisochulor.flashcards.ClientModInit"
+      "io.github.dennisochulor.flashcards.Flashcards"
     ],
     "modmenu": ["io.github.dennisochulor.flashcards.compat.ModMenuCompat"]
   },

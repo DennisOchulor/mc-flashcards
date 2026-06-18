@@ -45,7 +45,7 @@ public final class ImageUtils {
             String key = file.getName() + "_" + fileLength;
             ImagePackage cachedImg = REGISTERED_IMAGES.get(key);
             if (cachedImg != null) {
-                ClientModInit.LOGGER.debug("from the cache {}", cachedImg.id);
+                Flashcards.LOGGER.debug("from the cache {}", cachedImg.id);
                 return cachedImg;
             }
 
@@ -80,7 +80,7 @@ public final class ImageUtils {
 
             REGISTERED_IMAGES.put(key, imgPkg);
             Minecraft.getInstance().getTextureManager().register(id, texture);
-            ClientModInit.LOGGER.debug("new one {}", imgPkg.id);
+            Flashcards.LOGGER.debug("new one {}", imgPkg.id);
             return imgPkg;
         }
         catch (IOException e) {
@@ -146,7 +146,7 @@ public final class ImageUtils {
         if (imgPkg != null) {
             Minecraft.getInstance().getTextureManager().release(imgPkg.id());
             currentTotalImageBytes -= length;
-            ClientModInit.LOGGER.debug("RELEASE {} / Left with {}", imgPkg.id, currentTotalImageBytes);
+            Flashcards.LOGGER.debug("RELEASE {} / Left with {}", imgPkg.id, currentTotalImageBytes);
         }
     }
 }
