@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 public final class FileManager {
     private FileManager() {}
 
+    public static final ImageUtils.ImagePackage ADD_IMAGE_IMAGE;
+
     private static final Path dotMinecraftFolder;
     private static final File configFile;
     private static final File statsFile;
@@ -56,6 +58,9 @@ public final class FileManager {
             config = new Gson().fromJson(Files.readString(configFile.toPath()),ModConfig.class);
 
             importQuestions();
+
+
+            ADD_IMAGE_IMAGE = ImageUtils.getImagePackageFromAssets(Objects.requireNonNull(FileManager.class.getResourceAsStream("/assets/flashcards/media/add_image.png")), "add_image");
         }
         catch (IOException e) {
             throw new UncheckedIOException(e);

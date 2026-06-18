@@ -1,6 +1,7 @@
 package io.github.dennisochulor.flashcards.config;
 
 import io.github.dennisochulor.flashcards.FileManager;
+import io.github.dennisochulor.flashcards.ImageUtils;
 import io.github.dennisochulor.flashcards.questions.Question;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.minecraft.client.Minecraft;
@@ -30,14 +31,21 @@ public class EditScreen extends Screen {
 
     private final Button categoryRenameButton = Button.builder(Component.literal("Rename"),_ -> {
         Objects.requireNonNull(categoryList.getSelected());
-        Minecraft.getInstance().gui.setScreen(new CategoryRenameScreen(categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(CategoryEditScreen.renameCategory(categoryList.getSelected().name));
     }).build();
-    private final Button categoryAddButton = Button.builder(Component.literal("Add"), _ -> Minecraft.getInstance().gui.setScreen(new CategoryAddScreen())).build();
+    private final Button categoryAddButton = Button.builder(Component.literal("Add"), _ -> Minecraft.getInstance().gui.setScreen(CategoryEditScreen.newCategory())).build();
     private final Button categoryDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
         categoriesMap.remove(categoryList.getSelected().name);
         categoryList.remove(categoryList.getSelected());
         categoryList.setSelected(null);
+
+        questionList.children().forEach(entry -> {
+            if (entry.question.imageName() != null) {
+                ImageUtils.release(FileManager.getImageFile(entry.question.imageName()));
+            }
+        });
+
         questionList.changeList(List.of()); // clear
         questionList.setSelected(null);
     }).build();
@@ -45,18 +53,24 @@ public class EditScreen extends Screen {
     private final Button questionEditButton = Button.builder(Component.literal("Edit"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
         Objects.requireNonNull(questionList.getSelected());
-        Minecraft.getInstance().gui.setScreen(new QuestionEditScreen(questionList.getSelected(),categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(QuestionEditScreen.fromExistingQuestion(categoryList.getSelected().name, questionList.getSelected()));
     }).build();
     private final Button questionDeleteButton = Button.builder(Component.literal("Delete"), _ -> {
         Objects.requireNonNull(questionList.getSelected());
         Objects.requireNonNull(categoryList.getSelected());
-        categoriesMap.get(categoryList.getSelected().name).remove(questionList.getSelected().question);
+
+        Question question = questionList.getSelected().question;
+        if (question.imageName() != null) {
+            ImageUtils.release(FileManager.getImageFile(question.imageName()));
+        }
+
+        categoriesMap.get(categoryList.getSelected().name).remove(question);
         questionList.remove(questionList.getSelected());
         questionList.setSelected(null);
     }).build();
     private final Button questionAddButton = Button.builder(Component.literal("Add"), _ -> {
         Objects.requireNonNull(categoryList.getSelected());
-        Minecraft.getInstance().gui.setScreen(new QuestionAddScreen(categoryList.getSelected().name));
+        Minecraft.getInstance().gui.setScreen(QuestionEditScreen.newQuestion(categoryList.getSelected().name));
     }).build();
 
     private final Button applyButton = Button.builder(Component.literal("Apply Changes"), _ -> {

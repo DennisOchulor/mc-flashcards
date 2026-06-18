@@ -34,14 +34,16 @@ public class ClientModInit implements ClientModInitializer {
         }
 
         LOGGER.info("Initializing flashcards client");
-        FileManager.init();
-        QuestionScheduler.reload();
         ClientPlayConnectionEvents.JOIN.register((_, _, _) -> QuestionScheduler.schedule());
         ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> QuestionScheduler.stop());
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
             if (minecraft.player == null || minecraft.level == null) return;
             if (minecraft.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = minecraft.level.getGameTime();
+        });
+        ClientLifecycleEvents.CLIENT_STARTED.register(_ -> {
+            FileManager.init();
+            QuestionScheduler.reload();
         });
         ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> QuestionScheduler.close());
 
