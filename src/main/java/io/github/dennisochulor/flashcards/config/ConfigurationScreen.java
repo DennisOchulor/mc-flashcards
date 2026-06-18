@@ -28,17 +28,7 @@ public class ConfigurationScreen extends Screen {
         else button.setMessage(Component.literal("ON"));
     }).build();
     private final Button editButton = Button.builder(Component.literal("Edit Questions"), _ -> Minecraft.getInstance().gui.setScreen(new EditScreen())).build();
-    private final Button doneButton = Button.builder(Component.literal("Done"), _ -> {
-        ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getValue()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
-        if (newConfig.equals(config)) {
-            this.onClose();
-            return;
-        }
-
-        FileManager.updateConfig(newConfig);
-        QuestionScheduler.updateConfig(newConfig);
-        this.onClose();
-    }).build();
+    private final Button doneButton = Button.builder(Component.literal("Done"), _ -> this.onClose()).build();
     private final Button generalConfigButton = Button.builder(Component.literal("General Config..."),_ -> Minecraft.getInstance().gui.setScreen(new GeneralConfigScreen())).build();
     private final Button additionalConfigButton = Button.builder(Component.literal("Additional Config..."), _ -> Minecraft.getInstance().gui.setScreen(new AdditionalConfigScreen())).build();
     private final Button statsButton = Button.builder(Component.literal("Stats"), _ -> {
@@ -110,4 +100,19 @@ public class ConfigurationScreen extends Screen {
         }
     }
 
+    @Override
+    public void onClose() {
+        super.onClose();
+
+        ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getValue()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
+        if (!newConfig.equals(config)) {
+            FileManager.updateConfig(newConfig);
+            QuestionScheduler.updateConfig(newConfig);
+        }
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return doneButton.active;
+    }
 }
