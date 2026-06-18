@@ -7,8 +7,8 @@ import net.minecraft.network.chat.Component;
 
 public class AutoValidationQuestionScreen extends QuestionScreen {
 
-    private final MultiLineEditBox answerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your answer here..."))
-            .build(Minecraft.getInstance().font, 200, 50, Component.empty());
+    private MultiLineEditBox answerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your answer here..."))
+            .build(Minecraft.getInstance().font, 200, 50, Component.literal("Answer textbox"));
     private final Button submitButton;
 
     public AutoValidationQuestionScreen(Question question) {
@@ -21,9 +21,18 @@ public class AutoValidationQuestionScreen extends QuestionScreen {
     @Override
     public void init() {
         super.init();
-        answerEditBox.setPosition(width/2 - answerEditBox.getWidth()/2, height - 30 - answerEditBox.getHeight() - 20);
+
+        // have to recreate editbox everytime since its internal textfield cannot resize its width
+        int partWidth = (int) (width * 0.5);
+        int partHeight = (int) (height * 0.25);
+        String prevAnsValue = answerEditBox.getValue();
+
+        answerEditBox = MultiLineEditBox.builder().setPlaceholder(Component.literal("Write your answer here..."))
+                .build(Minecraft.getInstance().font, partWidth, partHeight, Component.literal("Answer textbox"));
+        answerEditBox.setPosition(width/2 - answerEditBox.getWidth()/2, height - 30 - answerEditBox.getHeight() - 10);
         answerEditBox.setCharacterLimit(300);
-        answerEditBox.setValueListener(_ -> submitButton.active = !answerEditBox.getValue().isBlank());
+        answerEditBox.setValueListener(value -> submitButton.active = !value.isBlank());
+        answerEditBox.setValue(prevAnsValue);
 
         submitButton.setRectangle(75,20,width/2 - 37,height - 30);
         submitButton.active = !answerEditBox.getValue().isBlank();
