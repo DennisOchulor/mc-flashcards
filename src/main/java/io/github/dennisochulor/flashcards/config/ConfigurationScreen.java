@@ -12,6 +12,8 @@ import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.Nullable;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.io.IOException;
 public class ConfigurationScreen extends Screen {
 
     private ModConfig config = FileManager.getConfig();
+    @Nullable private final Screen parent;
     private final EditBox intervalTextField = new EditBox(Minecraft.getInstance().font, 30, 20,Component.empty());
     private final StringWidget titleText = new StringWidget(Component.literal("Flashcards Mod Config"), Minecraft.getInstance().font);
     private final StringWidget intervalText = new StringWidget(Component.literal("Prompt a question every          minutes"), Minecraft.getInstance().font);
@@ -57,8 +60,10 @@ public class ConfigurationScreen extends Screen {
         }
     }).tooltip(Tooltip.create(Component.literal("Open Flashcards Mod Folder"))).build();
 
-    public ConfigurationScreen() {
+    public ConfigurationScreen(@Nullable Screen parent) {
         super(Component.literal("Flashcards Config"));
+
+        this.parent = parent;
         intervalTextField.setValue(String.valueOf(config.interval()));
         intervalTextField.setResponder(text -> {
             try {
@@ -102,7 +107,7 @@ public class ConfigurationScreen extends Screen {
 
     @Override
     public void onClose() {
-        super.onClose();
+        Minecraft.getInstance().gui.setScreen(parent);
 
         ModConfig newConfig = new ModConfig(Integer.parseInt(intervalTextField.getValue()), intervalButton.getMessage().getString().equals("ON"),config.validationToggle(),config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
         if (!newConfig.equals(config)) {

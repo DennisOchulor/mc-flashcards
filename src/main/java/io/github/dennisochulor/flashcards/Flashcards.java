@@ -72,7 +72,7 @@ public class Flashcards implements ClientModInitializer {
                     minecraft.gui.screen().onClose();
                 }
                 else if (minecraft.gui.screen() == null) {
-                    ConfigurationScreen screen = new ConfigurationScreen();
+                    ConfigurationScreen screen = new ConfigurationScreen(null);
                     minecraft.gui.setScreen(screen);
                 }
             }

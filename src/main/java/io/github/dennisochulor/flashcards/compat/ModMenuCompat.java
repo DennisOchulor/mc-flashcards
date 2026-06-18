@@ -7,6 +7,6 @@ import io.github.dennisochulor.flashcards.config.ConfigurationScreen;
 public class ModMenuCompat implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return _ -> new ConfigurationScreen();
+        return ConfigurationScreen::new;
     }
 }
