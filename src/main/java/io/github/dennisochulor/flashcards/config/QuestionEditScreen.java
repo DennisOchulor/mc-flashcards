@@ -31,7 +31,7 @@ class QuestionEditScreen extends Screen {
     private final StringWidget answerTitle = new StringWidget(Component.literal("Answer:"),Minecraft.getInstance().font);
     private MultiLineEditBox questionEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
     private MultiLineEditBox answerEditBox = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 200, 50, Component.empty());
-    private final Button doneButton;
+    private final Button applyButton;
 
     @Nullable private File imageFile = null;
     @Nullable private Identifier imageId = null;
@@ -51,7 +51,7 @@ class QuestionEditScreen extends Screen {
         super(titleText);
 
         this.title = new StringWidget(titleText, Minecraft.getInstance().font);
-        this.doneButton = Button.builder(Component.literal("Done"),_ -> {
+        this.applyButton = Button.builder(Component.literal("Apply"), _ -> {
             doneButtonAction.onDoneButtonPressed(parent, questionEditBox.getValue(), answerEditBox.getValue(), imageFile);
             this.onClose();
         }).size(100, 20).build();
@@ -111,7 +111,7 @@ class QuestionEditScreen extends Screen {
         HeaderAndFooterLayout root = new HeaderAndFooterLayout(this, 20, 30);
         root.addToHeader(title);
         root.addToContents(contents);
-        root.addToFooter(doneButton);
+        root.addToFooter(applyButton);
 
         root.arrangeElements();
         FrameLayout.alignInRectangle(root, 0, 0, this.width, this.height, 0.5F, 0.1F);
@@ -126,7 +126,7 @@ class QuestionEditScreen extends Screen {
 
     @Override
     public void tick() {
-        doneButton.active = !questionEditBox.getValue().isBlank() && !answerEditBox.getValue().isBlank();
+        applyButton.active = !questionEditBox.getValue().isBlank() && !answerEditBox.getValue().isBlank();
         removeButton.visible = imageFile != null;
     }
 
