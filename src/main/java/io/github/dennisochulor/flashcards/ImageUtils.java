@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class ImageUtils {
     private ImageUtils() {}
 
-    public static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("JPG/JPEG/PNG image files","jpg","png","jpeg");
+    public static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("JPG/JPEG/PNG/GIF/BMP image files",
+            "jpg", "jpeg", "png", "bmp", "gif");
     public static final Identifier MISSING_TEXTURE_ID = Identifier.withDefaultNamespace("textures/missing.png");
     public static final ImagePackage MISSING_TEXTURE = new ImagePackage(MISSING_TEXTURE_ID, "Missing Image File", 1, 1);
 
@@ -38,54 +39,46 @@ public final class ImageUtils {
      * if the image file is using an unsupported filename extension according to {@link ImageUtils#FILE_NAME_EXTENSION_FILTER}
      */
     public static ImagePackage getImagePackage(File file) {
+        if (!file.exists() || !FILE_NAME_EXTENSION_FILTER.accept(file)) return MISSING_TEXTURE;
+
+        long fileLength = file.length();
+        String key = file.getName() + "_" + fileLength;
+        ImagePackage cachedImg = REGISTERED_IMAGES.get(key);
+        if (cachedImg != null) {
+            Flashcards.LOGGER.debug("from the cache {}", cachedImg.id);
+            return cachedImg;
+        }
+
+        NativeImage img;
         try {
-            if (!file.exists() || !FILE_NAME_EXTENSION_FILTER.accept(file)) return MISSING_TEXTURE;
-
-            long fileLength = file.length();
-            String key = file.getName() + "_" + fileLength;
-            ImagePackage cachedImg = REGISTERED_IMAGES.get(key);
-            if (cachedImg != null) {
-                Flashcards.LOGGER.debug("from the cache {}", cachedImg.id);
-                return cachedImg;
-            }
-
-            NativeImage img;
-            if (file.getName().endsWith(".png")) {
-                img = NativeImage.read(new FileInputStream(file));
-            }
-            else if (file.getName().endsWith(".jpeg") || file.getName().endsWith(".jpg")) {
-                BufferedImage bufferedImage = ImageIO.read(file);
-                img = new NativeImage(bufferedImage.getWidth(),bufferedImage.getHeight(),false);
-                for (int y=0;y<bufferedImage.getHeight();y++) {
-                    for (int x=0;x<bufferedImage.getWidth();x++) {
-                        int argb = bufferedImage.getRGB(x,y);
-                        img.setPixel(x,y,argb);
-                    }
+            BufferedImage bufferedImage = ImageIO.read(file);
+            img = new NativeImage(bufferedImage.getWidth(), bufferedImage.getHeight(), false);
+            for (int y=0; y<bufferedImage.getHeight(); y++) {
+                for (int x=0; x<bufferedImage.getWidth(); x++) {
+                    int argb = bufferedImage.getRGB(x, y);
+                    img.setPixel(x, y, argb);
                 }
             }
-            else {
-                throw new IllegalStateException("File bypassed extension filter: " + file.getPath());
-            }
-
-            DynamicTexture texture = new DynamicTexture(file::getName, img);
-            float greaterDimension = Math.max(img.getHeight(), img.getWidth());
-            Identifier id = Identifier.fromNamespaceAndPath("flashcards", "image_" + IMAGE_ID_COUNTER.getAndIncrement());
-            ImagePackage imgPkg = new ImagePackage(id, file.getName(), img.getWidth()/greaterDimension, img.getHeight()/greaterDimension);
-
-            // Max 100 MiB worth of images cached, if over release in LRU order
-            currentTotalImageBytes += fileLength;
-            while (currentTotalImageBytes > ONE_HUNDRED_MiB) {
-                release(FileManager.getImageFile(REGISTERED_IMAGES.firstEntry().getValue().name()));
-            }
-
-            REGISTERED_IMAGES.put(key, imgPkg);
-            Minecraft.getInstance().getTextureManager().register(id, texture);
-            Flashcards.LOGGER.debug("new one {}", imgPkg.id);
-            return imgPkg;
         }
         catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new IllegalStateException("Failed to read file: " + file.getPath());
         }
+
+        DynamicTexture texture = new DynamicTexture(file::getName, img);
+        float greaterDimension = Math.max(img.getHeight(), img.getWidth());
+        Identifier id = Identifier.fromNamespaceAndPath("flashcards", "image_" + IMAGE_ID_COUNTER.getAndIncrement());
+        ImagePackage imgPkg = new ImagePackage(id, file.getName(), img.getWidth()/greaterDimension, img.getHeight()/greaterDimension);
+
+        // Max 100 MiB worth of images cached, if over release in LRU order
+        currentTotalImageBytes += fileLength;
+        while (currentTotalImageBytes > ONE_HUNDRED_MiB) {
+            release(FileManager.getImageFile(REGISTERED_IMAGES.firstEntry().getValue().name()));
+        }
+
+        REGISTERED_IMAGES.put(key, imgPkg);
+        Minecraft.getInstance().getTextureManager().register(id, texture);
+        Flashcards.LOGGER.debug("new one {}", imgPkg.id);
+        return imgPkg;
     }
 
     public static ImagePackage getImagePackageFromAssets(InputStream input, String name) {
