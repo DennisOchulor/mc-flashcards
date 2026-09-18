@@ -6,7 +6,6 @@ import io.github.dennisochulor.flashcards.ImageUtils;
 import io.github.dennisochulor.flashcards.questions.Question;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.*;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -15,16 +14,24 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.sdl.SDLDialog;
+import org.lwjgl.sdl.SDL_DialogFileCallback;
+import org.lwjgl.sdl.SDL_DialogFileFilter;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 class QuestionEditScreen extends Screen {
+    private static final String SDL_FILE_FILTER = Arrays.stream(ImageUtils.FILE_NAME_EXTENSION_FILTER.getExtensions())
+            .reduce((s, s2) -> s + ";" + s2).orElseThrow();
+
     private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().gui.screen());
     private final StringWidget title;
     private final StringWidget questionTitle = new StringWidget(Component.literal("Question:"),Minecraft.getInstance().font);
@@ -131,21 +138,36 @@ class QuestionEditScreen extends Screen {
     }
 
     private void chooseImage(MouseButtonEvent event, boolean doubleClick) {
-        Thread.ofPlatform().start(() -> { // don't hang the Render thread
-            JDialog wrapper = new JDialog((Dialog) null);
-            wrapper.setAlwaysOnTop(true);
+        // SDL3 will invoke the OS native file picker yay!
 
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Choose an image file");
-            fileChooser.setFileFilter(ImageUtils.FILE_NAME_EXTENSION_FILTER);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setMultiSelectionEnabled(false);
-            fileChooser.showOpenDialog(wrapper);
+        SDL_DialogFileCallback callback = SDL_DialogFileCallback.create((_, filelist, _) -> {
+            if (filelist != MemoryUtil.NULL) {
+                PointerBuffer pointers = MemoryUtil.memPointerBuffer(filelist, 1);
+                long strPtr = pointers.get(0);
 
-            File file = fileChooser.getSelectedFile();
-            if (file != null) tryAttachImage(file);
-            wrapper.dispose();
+                if (strPtr != MemoryUtil.NULL) {
+                    String filePath = MemoryUtil.memUTF8(strPtr);
+                    tryAttachImage(new File(filePath));
+                }
+            }
         });
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            SDL_DialogFileFilter.Buffer filters = SDL_DialogFileFilter.calloc(1, stack);
+
+            filters.get(0)
+                    .name(stack.UTF8("Images"))
+                    .pattern(stack.UTF8(SDL_FILE_FILTER));
+
+            SDLDialog.SDL_ShowOpenFileDialog(
+                    callback,
+                    MemoryUtil.NULL,
+                    MemoryUtil.NULL,
+                    filters,
+                    (CharSequence) null,
+                    false
+            );
+        }
     }
 
     private void tryAttachImage(File file) {

@@ -1,7 +1,7 @@
 package io.github.dennisochulor.flashcards;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.dennisochulor.flashcards.config.*;
+import io.github.dennisochulor.flashcards.config.ConfigurationScreen;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -15,7 +15,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.swing.UIManager;
 
 public class Flashcards implements ClientModInitializer {
 
@@ -24,14 +23,6 @@ public class Flashcards implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        System.setProperty("java.awt.headless","false"); // needed for question image chooser to function
-        try { // still isn't truly native looking but it is the best we got...
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
         LOGGER.info("Initializing flashcards client");
         ClientPlayConnectionEvents.JOIN.register((_, _, _) -> QuestionScheduler.schedule());
         ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> QuestionScheduler.stop());
