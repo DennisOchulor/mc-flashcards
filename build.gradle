@@ -16,6 +16,18 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = mavenCentral().url
+            }
+        }
+        filter {
+            // this repository *only* contains artifacts with this group
+            includeGroup "org.lwjgl"
+        }
+    }
 }
 
 dependencies {
@@ -28,7 +40,23 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
-    include(implementation "com.opencsv:opencsv:5.9")
+    include(implementation "com.opencsv:opencsv:5.12.0")
+
+
+    def lwjglNatives = [
+            "natives-windows",
+            "natives-windows-arm64",
+            "natives-linux",
+            "natives-linux-arm64",
+            "natives-macos",
+            "natives-macos-arm64"
+    ]
+
+    // https://mvnrepository.com/artifact/org.lwjgl/lwjgl-nfd
+    include(implementation "org.lwjgl:lwjgl-nfd:3.3.3")
+    lwjglNatives.each { nativePlatform ->
+        include(runtimeOnly "org.lwjgl:lwjgl-nfd::$nativePlatform")
+    }
 }
 
 processResources {

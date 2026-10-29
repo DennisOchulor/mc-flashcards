@@ -7,14 +7,23 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.PopupScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.*;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.EditBoxWidget;
+import net.minecraft.client.gui.widget.IconWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.nfd.NFDFilterItem;
+import org.lwjgl.util.nfd.NativeFileDialog;
 
-import javax.swing.*;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 class QuestionEditScreen extends Screen {
     protected QuestionEditScreen(QuestionListWidget.Entry entry, String category) {
@@ -44,6 +53,10 @@ class QuestionEditScreen extends Screen {
         else imageWidget = null;
     }
 
+    private static final boolean FILE_DIALOG_ASYNC = Util.getOperatingSystem() != Util.OperatingSystem.OSX;
+    private static final String NFD_FILE_FILTER = Arrays.stream(ImageUtils.FILE_NAME_EXTENSION_FILTER.getExtensions())
+            .reduce((s, s2) -> s + "," + s2).orElseThrow();
+
     private String category;
     private QuestionListWidget.Entry entry;
     private final EditScreen parent = (EditScreen) MinecraftClient.getInstance().currentScreen;
@@ -66,45 +79,36 @@ class QuestionEditScreen extends Screen {
     }).build();
 
     private final ButtonWidget imageButton = ButtonWidget.builder(Text.literal("Add Image"),button -> {
-        Thread.startVirtualThread(() -> { // don't hang the Render thread
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Choose an image file");
-            fileChooser.setFileFilter(ImageUtils.FILE_NAME_EXTENSION_FILTER);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setMultiSelectionEnabled(false);
-            fileChooser.showOpenDialog(null);
-            File file = fileChooser.getSelectedFile();
-            if(file == null) return;
-            if(!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
-                MinecraftClient.getInstance().execute(() -> {
-                    PopupScreen popup = new PopupScreen.Builder(this,Text.literal("Encountered error with chosen file " + file.getName())).message(Text.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription())).button(Text.literal("Done"),PopupScreen::close).build();
-                    MinecraftClient.getInstance().setScreen(popup);
-                });
-                return;
-            }
-            if(MinecraftClient.getInstance().currentScreen != this) return;
+        // NFD will invoke the OS native file picker yay!
 
-            MinecraftClient.getInstance().execute(() -> {
-                if(image != null) {
-                    remove(imageWidget);
-                    remove(removeButton);
-                    MinecraftClient.getInstance().getTextureManager().destroyTexture(imageId);
+        Runnable runnable = () -> {
+            NativeFileDialog.NFD_Init();
+
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                NFDFilterItem.Buffer filters = NFDFilterItem.malloc(1, stack);
+                filters.get(0)
+                        .name(stack.UTF8("Images"))
+                        .spec(stack.UTF8(NFD_FILE_FILTER));
+
+                PointerBuffer outPath = stack.mallocPointer(1);
+
+                int result = NativeFileDialog.NFD_OpenDialog(outPath, filters, (CharSequence) null);
+
+                if (result == NativeFileDialog.NFD_OKAY) {
+                    // Extract the string path from the pointer
+                    String selectedPath = outPath.getStringUTF8(0);
+                    NativeFileDialog.NFD_FreePath(outPath.get(0));
+                    tryAttachImage(new File(selectedPath), button);
                 }
+            }
+        };
 
-                ImageUtils.ImagePackage imgPkg = ImageUtils.getImageId(file);
-                int width = (int)(100 * imgPkg.widthScaler());
-                int height = (int)(100 * imgPkg.heightScaler());
-                image = file.toPath();
-                imageWidget = IconWidget.create(width,height,imgPkg.id(),width,height);
-                imageId = imgPkg.id();
-
-                imageWidget.setTooltip(Tooltip.of(Text.literal(file.getName())));
-                imageWidget.setPosition(button.getX() - 10, button.getY() + 25);
-                addDrawable(imageWidget);
-                addDrawableChild(removeButton);
-                button.setMessage(Text.literal("Change Image"));
-            });
-        });
+        if (FILE_DIALOG_ASYNC) {
+            Thread.ofPlatform().start(runnable);
+        }
+        else {
+            runnable.run();
+        }
     }).build();
 
     private final ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"),button -> {
@@ -155,6 +159,40 @@ class QuestionEditScreen extends Screen {
     @Override
     public void tick() {
         doneButton.active = !questionEditBox.getText().isBlank() && !answerEditBox.getText().isBlank();
+    }
+
+    private void tryAttachImage(File file, ButtonWidget button) {
+        if (!ImageUtils.FILE_NAME_EXTENSION_FILTER.accept(file)) {
+            MinecraftClient.getInstance().execute(() -> {
+                PopupScreen popup = new PopupScreen.Builder(this,Text.literal("Encountered error with chosen file " + file.getName()))
+                        .message(Text.literal("The chosen file must be one of the following file formats: " + ImageUtils.FILE_NAME_EXTENSION_FILTER.getDescription()))
+                        .button(Text.literal("Done"),PopupScreen::close).build();
+                MinecraftClient.getInstance().setScreen(popup);
+            });
+            return;
+        }
+        if (MinecraftClient.getInstance().currentScreen != this) return;
+
+        MinecraftClient.getInstance().execute(() -> {
+            if (image != null) {
+                remove(imageWidget);
+                remove(removeButton);
+                MinecraftClient.getInstance().getTextureManager().destroyTexture(imageId);
+            }
+
+            ImageUtils.ImagePackage imgPkg = Objects.requireNonNull(ImageUtils.getImageId(file));
+            int width = (int)(100 * imgPkg.widthScaler());
+            int height = (int)(100 * imgPkg.heightScaler());
+            image = file.toPath();
+            imageWidget = IconWidget.create(width,height,imgPkg.id(),width,height);
+            imageId = imgPkg.id();
+
+            imageWidget.setTooltip(Tooltip.of(Text.literal(file.getName())));
+            imageWidget.setPosition(button.getX() - 10, button.getY() + 25);
+            addDrawable(imageWidget);
+            addDrawableChild(removeButton);
+            button.setMessage(Text.literal("Change Image"));
+        });
     }
 
 }
