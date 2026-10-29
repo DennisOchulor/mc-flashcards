@@ -6,7 +6,6 @@ import io.github.dennisochulor.flashcards.ImageUtils;
 import io.github.dennisochulor.flashcards.questions.Question;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.*;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -14,17 +13,25 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.nfd.NFDFilterItem;
+import org.lwjgl.util.nfd.NativeFileDialog;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 class QuestionEditScreen extends Screen {
+    private static final boolean FILE_DIALOG_ASYNC = Util.getPlatform() != Util.OS.OSX;
+    private static final String NFD_FILE_FILTER = Arrays.stream(ImageUtils.FILE_NAME_EXTENSION_FILTER.getExtensions())
+            .reduce((s, s2) -> s + "," + s2).orElseThrow();
+
     private final EditScreen parent = (EditScreen) Objects.requireNonNull(Minecraft.getInstance().gui.screen());
     private final StringWidget title;
     private final StringWidget questionTitle = new StringWidget(Component.literal("Question:"),Minecraft.getInstance().font);
@@ -131,21 +138,36 @@ class QuestionEditScreen extends Screen {
     }
 
     private void chooseImage(MouseButtonEvent event, boolean doubleClick) {
-        Thread.ofPlatform().start(() -> { // don't hang the Render thread
-            JDialog wrapper = new JDialog((Dialog) null);
-            wrapper.setAlwaysOnTop(true);
+        // NFD will invoke the OS native file picker yay!
 
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Choose an image file");
-            fileChooser.setFileFilter(ImageUtils.FILE_NAME_EXTENSION_FILTER);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setMultiSelectionEnabled(false);
-            fileChooser.showOpenDialog(wrapper);
+        Runnable runnable = () -> {
+            NativeFileDialog.NFD_Init();
 
-            File file = fileChooser.getSelectedFile();
-            if (file != null) tryAttachImage(file);
-            wrapper.dispose();
-        });
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                NFDFilterItem.Buffer filters = NFDFilterItem.malloc(1, stack);
+                filters.get(0)
+                        .name(stack.UTF8("Images"))
+                        .spec(stack.UTF8(NFD_FILE_FILTER));
+
+                PointerBuffer outPath = stack.mallocPointer(1);
+
+                int result = NativeFileDialog.NFD_OpenDialog(outPath, filters, (CharSequence) null);
+
+                if (result == NativeFileDialog.NFD_OKAY) {
+                    // Extract the string path from the pointer
+                    String selectedPath = outPath.getStringUTF8(0);
+                    NativeFileDialog.NFD_FreePath(outPath.get(0));
+                    tryAttachImage(new File(selectedPath));
+                }
+            }
+        };
+
+        if (FILE_DIALOG_ASYNC) {
+            Thread.ofPlatform().start(runnable);
+        }
+        else {
+            runnable.run();
+        }
     }
 
     private void tryAttachImage(File file) {

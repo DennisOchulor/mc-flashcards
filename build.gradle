@@ -27,6 +27,18 @@ repositories {
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"
     }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = mavenCentral().url
+            }
+        }
+        filter {
+            // this repository *only* contains artifacts with this group
+            includeGroup "org.lwjgl"
+        }
+    }
 }
 
 dependencies {
@@ -40,6 +52,22 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
     include(implementation "com.opencsv:opencsv:5.12.0")
+
+
+    def lwjglNatives = [
+            "natives-windows",
+            "natives-windows-arm64",
+            "natives-linux",
+            "natives-linux-arm64",
+            "natives-macos",
+            "natives-macos-arm64"
+    ]
+
+    // https://mvnrepository.com/artifact/org.lwjgl/lwjgl-nfd
+    include(implementation "org.lwjgl:lwjgl-nfd:3.4.1")
+    lwjglNatives.each { nativePlatform ->
+        include(runtimeOnly "org.lwjgl:lwjgl-nfd::$nativePlatform")
+    }
 }
 
 processResources {
