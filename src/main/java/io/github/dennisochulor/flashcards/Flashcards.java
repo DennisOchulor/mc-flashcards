@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.swing.UIManager;
@@ -50,15 +51,15 @@ public class Flashcards implements ClientModInitializer {
 
         KeyMapping keyBindingConfigMenu = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "Flashcards Config Menu",
-                InputConstants.Type.KEYBOARD,
-                InputConstants.KEY_H,
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_H,
                 keyBindingCategory
         ));
 
         KeyMapping keyBindingPromptQuestion = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "Prompt a question",
-                InputConstants.Type.KEYBOARD,
-                InputConstants.KEY_G,
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_G,
                 keyBindingCategory
         ));
 
