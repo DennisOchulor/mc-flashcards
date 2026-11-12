@@ -2,16 +2,17 @@
   "schemaVersion": 1,
   "id": "flashcards",
   "version": "${version}",
-  "name": "Flashcards",
-  "description": "Study while playing Minecraft",
+  "name": "Flashcards: Anki + AI Edition",
+  "description": "Study your Anki deck in Minecraft, with answers graded by a local AI (Ollama). Fork of Flashcards by DennisOchulor; not an official release.",
   "authors": [
+    {
+      "name": "IvanIvanochko",
+      "contact": {
+        "homepage": "https://github.com/IvanIvanochko"
+      }
+    },
     "Ninjaking312"
   ],
-  "contact": {
-    "sources": "https://github.com/DennisOchulor/mc-flashcards",
-    "issues": "https://gist.github.com/DennisOchulor/3882fbed8efcffcc61b60db49a2ecc4c",
-    "homepage": "https://modrinth.com/mod/flashcards"
-  },
   "license": "MIT",
   "icon": "icon.png",
   "environment": "client",

@@ -1,17 +1,9 @@
 package io.github.dennisochulor.flashcards.questions;
 
-import io.github.dennisochulor.flashcards.FileManager;
-import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.CommonColors;
-import net.minecraft.util.RandomSource;
-
-import java.util.Objects;
 
 // NOTE: There is no ManualValidationResultScreen because everything is done in this class.
 public class ManualValidationQuestionScreen extends QuestionScreen {
@@ -25,45 +17,8 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
         correctAnswerText = new ScalableMultilineTextWidget(Component.literal("§n§lCorrect answer:§r\n" + question.answer()), Minecraft.getInstance().font, 65);
         correctAnswerText.setCentered(true).setMaxWidth(175);
 
-        LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
-        ClientPacketListener packetListener = Objects.requireNonNull(Minecraft.getInstance().getConnection());
-
-        correctButton = Button.builder(Component.literal("Correct").withColor(CommonColors.GREEN),_ -> {
-            player.playSound(SoundEvents.PLAYER_LEVELUP);
-            FileManager.updateStats(FileManager.getStats().incrementCorrect());
-            QuestionScheduler.schedule();
-            this.onClose();
-            ModConfig config = FileManager.getConfig();
-
-            // run correct commands
-            switch(config.commandSelectionStrategy()) {
-                case EXECUTE_ALL -> config.correctAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
-                case RANDOMISE_ONE -> {
-                    RandomSource random = player.getRandom();
-                    String command = config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size()));
-                    packetListener.sendCommand("execute as @s at @s run " + command);
-                }
-                case OFF -> {}
-            }
-        }).build();
-        wrongButton = Button.builder(Component.literal("Wrong").withColor(CommonColors.SOFT_RED),_ -> {
-            player.playSound(SoundEvents.ANVIL_LAND);
-            FileManager.updateStats(FileManager.getStats().incrementWrong());
-            QuestionScheduler.schedule();
-            this.onClose();
-            ModConfig config = FileManager.getConfig();
-
-            // run wrong commands
-            switch(config.commandSelectionStrategy()) {
-                case EXECUTE_ALL -> config.wrongAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
-                case RANDOMISE_ONE -> {
-                    RandomSource random = player.getRandom();
-                    String command = config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
-                    packetListener.sendCommand("execute as @s at @s run " + command);
-                }
-                case OFF -> {}
-            }
-        }).build();
+        correctButton = Button.builder(Component.literal("Correct").withColor(CommonColors.GREEN),_ -> answer(true)).build();
+        wrongButton = Button.builder(Component.literal("Wrong").withColor(CommonColors.SOFT_RED),_ -> answer(false)).build();
 
         showAnswerButton = Button.builder(Component.literal("Show Answer"), button -> {
             addRenderableOnly(correctAnswerText);
@@ -71,6 +26,13 @@ public class ManualValidationQuestionScreen extends QuestionScreen {
             addRenderableWidget(wrongButton);
             removeWidget(button);
         }).build();
+    }
+
+    private void answer(boolean correct) {
+        AnswerOutcome.playSoundAndRecordStats(correct);
+        QuestionScheduler.schedule();
+        this.onClose();
+        AnswerOutcome.runCommands(correct);
     }
 
     @Override

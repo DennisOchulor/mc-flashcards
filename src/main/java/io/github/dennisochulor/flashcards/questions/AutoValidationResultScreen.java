@@ -1,9 +1,7 @@
 package io.github.dennisochulor.flashcards.questions;
 
 import io.github.dennisochulor.flashcards.FileManager;
-import io.github.dennisochulor.flashcards.ModStats;
 import io.github.dennisochulor.flashcards.ImageUtils;
-import io.github.dennisochulor.flashcards.config.ModConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageWidget;
@@ -12,14 +10,8 @@ import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.CommonColors;
-import net.minecraft.util.RandomSource;
-
-import java.util.Objects;
 
 class AutoValidationResultScreen extends Screen {
 
@@ -54,30 +46,10 @@ class AutoValidationResultScreen extends Screen {
         doneButton = Button.builder(Component.literal("Done"), _ -> {
             QuestionScheduler.schedule();
             this.onClose();
-            ModConfig config = FileManager.getConfig();
-
-            LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
-            ClientPacketListener packetListener = Objects.requireNonNull(Minecraft.getInstance().getConnection());
-
-            // run correct/wrong commands
-            switch(config.commandSelectionStrategy()) {
-                case EXECUTE_ALL -> {
-                    if (isCorrect) config.correctAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
-                    else config.wrongAnswerCommands().forEach(c -> packetListener.sendCommand("execute as @s at @s run " + c));
-                }
-                case RANDOMISE_ONE -> {
-                    RandomSource random = player.getRandom();
-                    String command = isCorrect ? config.correctAnswerCommands().get(random.nextInt(config.correctAnswerCommands().size())) : config.wrongAnswerCommands().get(random.nextInt(config.wrongAnswerCommands().size()));
-                    Minecraft.getInstance().getConnection().sendCommand("execute as @s at @s run " + command);
-                }
-                case OFF -> {}
-            }
+            AnswerOutcome.runCommands(isCorrect);
         }).size(75, 20).build();
 
-        Objects.requireNonNull(Minecraft.getInstance().player).playSound(isCorrect ? SoundEvents.PLAYER_LEVELUP : SoundEvents.ANVIL_LAND);
-        ModStats stats = FileManager.getStats();
-        if (isCorrect) FileManager.updateStats(stats.incrementCorrect());
-        else FileManager.updateStats(stats.incrementWrong());
+        AnswerOutcome.playSoundAndRecordStats(isCorrect);
     }
 
     @Override

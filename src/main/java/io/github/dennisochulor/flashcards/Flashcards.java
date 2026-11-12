@@ -1,36 +1,61 @@
 package io.github.dennisochulor.flashcards;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.dennisochulor.flashcards.anki.AnkiSession;
+import io.github.dennisochulor.flashcards.anki.StudyStats;
 import io.github.dennisochulor.flashcards.config.ConfigurationScreen;
+import io.github.dennisochulor.flashcards.questions.AnkiQuestionScreen;
 import io.github.dennisochulor.flashcards.questions.QuestionScheduler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import org.slf4j.Logger;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 public class Flashcards implements ClientModInitializer {
 
     public static final String MOD_ID = "flashcards";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    @Nullable private static KeyMapping promptKey = null;
+
+    /** @return the key bound to "Prompt a question", or null if it's unbound */
+    public static @Nullable Component promptKeyName() {
+        return promptKey == null || promptKey.isUnbound() ? null : promptKey.getTranslatedKeyMessage();
+    }
 
     @Override
     public void onInitializeClient() {
         LOGGER.info("Initializing flashcards client");
-        ClientPlayConnectionEvents.JOIN.register((_, _, _) -> QuestionScheduler.schedule());
-        ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> QuestionScheduler.stop());
+        ClientPlayConnectionEvents.JOIN.register((_, _, minecraft) -> minecraft.execute(() -> {
+            StudyStats.resetSession();
+            AnkiSession.syncIfEnabled(true); // pull in reviews done on other devices before the first card
+            AnkiSession.refreshStats();
+            QuestionScheduler.schedule(); // needs the level, hence execute()
+        }));
+        ClientPlayConnectionEvents.DISCONNECT.register((_,_) -> {
+            QuestionScheduler.stop();
+            AnkiQuestionScreen.clearBackground();
+            AnkiSession.syncIfEnabled(false); // push this session's reviews to AnkiWeb
+        });
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
             if (minecraft.player == null || minecraft.level == null) return;
             if (minecraft.player.hurtTime != 0) QuestionScheduler.playerLastHurtTime = minecraft.level.getGameTime();
+            QuestionScheduler.tick(minecraft);
+            AnkiQuestionScreen.tickBackground(minecraft);
         });
+        // attached to the scoreboard so it follows the same rules, e.g. hidden with F1
+        HudElementRegistry.attachElementBefore(VanillaHudElements.SCOREBOARD, Identifier.fromNamespaceAndPath(MOD_ID, "study_hud"), StudyHud::extract);
         ClientLifecycleEvents.CLIENT_STARTED.register(_ -> {
             FileManager.init();
             QuestionScheduler.reload();
@@ -46,7 +71,7 @@ public class Flashcards implements ClientModInitializer {
                 keyBindingCategory
         ));
 
-        KeyMapping keyBindingPromptQuestion = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        KeyMapping keyBindingPromptQuestion = promptKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "Prompt a question",
                 InputConstants.Type.KEYBOARD,
                 InputConstants.KEY_G,

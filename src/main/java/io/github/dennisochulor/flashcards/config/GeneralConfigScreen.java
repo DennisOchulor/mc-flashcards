@@ -33,6 +33,21 @@ class GeneralConfigScreen extends Screen {
                 default -> throw new IllegalArgumentException("Invalid validationToggle button value");
             }).create(0,0,200,20,Component.literal("Answer Validation Mode"));
 
+    private final CycleButton<ModConfig.TimerMode> timerModeButton =
+            new CycleButton.Builder<ModConfig.TimerMode>(mode -> Component.literal(mode.friendlyName), config::timerMode)
+            .withValues(ModConfig.TimerMode.values())
+            .withTooltip(mode -> Tooltip.create(Component.literal(mode.description)))
+            .create(0, 0, 200, 20, Component.literal("Question timer"));
+
+    private final CycleButton<Boolean> hudButton = CycleButton.onOffBuilder(config.hudEnabled())
+            .withTooltip(_ -> Tooltip.create(Component.literal("Show a countdown to the next question plus your study stats on screen.")))
+            .create(0, 0, 200, 20, Component.literal("Timer & stats HUD"));
+
+    private final CycleButton<ModConfig.HudPosition> hudPositionButton =
+            new CycleButton.Builder<ModConfig.HudPosition>(pos -> Component.literal(pos.friendlyName), config::hudPosition)
+            .withValues(ModConfig.HudPosition.values())
+            .create(0, 0, 200, 20, Component.literal("HUD position"));
+
     private final Button doneButton = Button.builder(Component.literal("Done"), _ -> this.onClose())
             .size(100, 20).build();
 
@@ -41,6 +56,9 @@ class GeneralConfigScreen extends Screen {
         LinearLayout options = LinearLayout.vertical().spacing(10);
         options.defaultCellSetting().alignHorizontallyCenter();
         options.addChild(validationToggleButton);
+        options.addChild(timerModeButton);
+        options.addChild(hudButton);
+        options.addChild(hudPositionButton);
 
         HeaderAndFooterLayout root = new HeaderAndFooterLayout(this, 25, 40);
         root.addToHeader(titleText);
@@ -56,7 +74,8 @@ class GeneralConfigScreen extends Screen {
     public void onClose() {
         boolean validationToggle = validationToggleButton.getValue().equals("Automatic");
 
-        ModConfig newConfig = new ModConfig(config.interval(),config.intervalToggle(),validationToggle,config.categoryToggle(),config.correctAnswerCommands(),config.wrongAnswerCommands(),config.commandSelectionStrategy());
+        ModConfig newConfig = FileManager.getConfig().withValidationToggle(validationToggle)
+                .withTimerAndHud(timerModeButton.getValue(), hudButton.getValue(), hudPositionButton.getValue());
         FileManager.updateConfig(newConfig);
         QuestionScheduler.updateConfig(newConfig);
 

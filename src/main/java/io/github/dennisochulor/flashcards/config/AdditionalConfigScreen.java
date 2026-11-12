@@ -84,8 +84,7 @@ class AdditionalConfigScreen extends Screen {
     public void onClose() {
         List<String> correctAnswerCommands = Arrays.asList(correctAnswerEditBox.getValue().split("\n"));
         List<String> wrongAnswerCommands = Arrays.asList(wrongAnswerEditBox.getValue().split("\n")); // withers i need you now!!!!
-        FileManager.updateConfig(new ModConfig(config.interval(),config.intervalToggle(),config.validationToggle(),config.categoryToggle(),
-                correctAnswerCommands,wrongAnswerCommands, commandSelectionButton.getValue()));
+        FileManager.updateConfig(FileManager.getConfig().withCommands(correctAnswerCommands, wrongAnswerCommands, commandSelectionButton.getValue()));
 
         Minecraft.getInstance().gui.setScreen(parent);
     }
